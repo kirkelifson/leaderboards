@@ -4,12 +4,19 @@ from sqlalchemy.exc import OperationalError
 
 from core import app
 from core.models import db, DBScore
+import urllib2
+import json
 
 
 @app.route('/leaderboards')
 @app.route('/leaderboards/<int:page>')
 def leaderboards_main(page=1):
     stats_page = DBScore.query.order_by(DBScore.tick_time).paginate(page)
+    for stat in stats_page.items:
+        content = urllib2.urlopen('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' +
+                                  app.config['STEAM_API_KEY'] + '&steamids=' + stat.steamid).read()
+        work = json.loads(content)
+        stat.steamid = work["response"]["players"][0]["personaname"]
     return render_template('leaderboards/index.html', stats_page=stats_page)
 
 @app.route('/postscore/<steamid>/<map>/<int:ticks>', methods=['GET'])
