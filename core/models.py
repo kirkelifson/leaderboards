@@ -18,20 +18,20 @@ db = SQLAlchemy(app)
 
 
 class DBScore(db.Model):
-    __tablename__ = 'products'
+    __tablename__ = 'scores'
     id = db.Column(INTEGER(unsigned=True), primary_key=True)
     steamid = db.Column(VARCHAR(512), nullable=False)
     game_map = db.Column(VARCHAR(5000))
-    time = db.Column(INTEGER(unsigned=True))
+    tick_time = db.Column(INTEGER(unsigned=True))
     zone_hash = db.Column(VARCHAR(512))
-    date = db.Column(INTEGER(unsigned=True))
+    date = db.Column(DATETIME())
 
-    def __init__(self, steamid, game_map, time, zone_hash):
+    def __init__(self, steamid, game_map, tick_time, zone_hash):
         self.steamid = steamid
         self.game_map = game_map
-        self.time = time
+        self.tick_time = tick_time
         self.zone_hash = zone_hash
-        self.date = int(round(time.time() * 1000))
+        self.date = time.strftime('%Y-%m-%d %H:%M:%S')
 
     def __repr__(self):
         return '<Score %s>' % self.id
