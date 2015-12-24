@@ -127,6 +127,7 @@
                                             <th>Name</th>
                                             <th>Map</th>
                                             <th>Time</th>
+                                            <th>Tick Rate</th>
                                             <th>Date</th>
                                         </tr>
                                     </thead>
@@ -136,6 +137,7 @@
                                             <th>Name</th>
                                             <th>Map</th>
                                             <th>Time</th>
+                                            <th>Tick Rate</th>
                                             <th>Date</th>
                                         </tr>
                                     </tfoot>
@@ -145,7 +147,8 @@
                                             <tr>
                                                 <td><img class="chat-pic" src="{{score.avatar}}"/><div class="username" style="margin-top:10px; font-weight:bold;">{{score.steamid}}</div></td>
                                                 <td>{{score.game_map}}</td>
-                                                <td>{{score.tick_time}}</td>
+                                                <td>{{score.timeconverted}}</td>
+                                                <td>{{score.tick_rate}}</td>
                                                 <td>{{score.date}}</td>
                                             </tr>
                                         {% endfor %}

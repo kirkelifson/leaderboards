@@ -26,13 +26,15 @@ class DBScore(db.Model):
     steamid = db.Column(VARCHAR(512), nullable=False)
     game_map = db.Column(VARCHAR(5000))
     tick_time = db.Column(INTEGER(unsigned=True))
+    tick_rate = db.Column(INTEGER(unsigned=True))
     zone_hash = db.Column(VARCHAR(512))
     date = db.Column(DATETIME())
 
-    def __init__(self, steamid, game_map, tick_time, zone_hash):
+    def __init__(self, steamid, game_map, tick_time, tick_rate, zone_hash):
         self.steamid = steamid
         self.game_map = game_map
         self.tick_time = tick_time
+        self.tick_rate = tick_rate
         self.zone_hash = zone_hash
         self.date = time.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -43,6 +45,7 @@ class DBScore(db.Model):
             'steamid'    : self.steamid,
             'game_map'   : self.game_map,
             'tick_time'  : self.tick_time,
+            'tick_rate'  : self.tick_rate,
             'zone_hash'  : self.zone_hash,
             'date'       : dump_datetime(self.date)
         }
