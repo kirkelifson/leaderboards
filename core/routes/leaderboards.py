@@ -15,6 +15,7 @@ def leaderboards_main(page=1):
 @app.route('/postscore/<steamid>/<map>/<int:ticks>', methods=['GET'])
 def post_score(steamid, map, ticks):
     try:
+        # takes 64-bit steamid
         score = DBScore(steamid, map, ticks, 0)
         db.session.add(score)
         db.session.commit()
