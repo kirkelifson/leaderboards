@@ -17,7 +17,9 @@ def leaderboards_main(page=1):
                                   app.config['STEAM_API_KEY'] + '&steamids=' + stat.steamid).read()
         work = json.loads(content)
         stat.steamid = work["response"]["players"][0]["personaname"]
+        stat.avatar = work["response"]["players"][0]["avatar"]
     return render_template('leaderboards/index.html', stats_page=stats_page)
+
 
 @app.route('/postscore/<steamid>/<map>/<int:ticks>', methods=['GET'])
 def post_score(steamid, map, ticks):
@@ -30,6 +32,7 @@ def post_score(steamid, map, ticks):
         print e
         return "{\"result\": \"False\"}"
     return "{\"result\": \"True\"}"
+
 
 @app.route('/getscores', methods=['GET'])
 def get_scores():
