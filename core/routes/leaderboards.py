@@ -1,21 +1,15 @@
 __author__ = 'gnaughton'
-from flask import render_template, redirect, request, flash, url_for, jsonify
-from flask_login import login_user, logout_user
+from flask import render_template, jsonify
 from sqlalchemy.exc import OperationalError
-
-from valve.steam import id as steamid
 
 from core import app
 from core.models import db, DBScore
-import json
 
 
 @app.route('/leaderboards')
 @app.route('/leaderboards/<int:page>')
 def leaderboards_main(page=1):
     stats_page = DBScore.query.order_by(DBScore.tick_time).paginate(page)
-    #for score in stats_page.items:
-        #score.steamid =
     return render_template('leaderboards/index.html', stats_page=stats_page)
 
 @app.route('/postscore/<steamid>/<map>/<int:ticks>', methods=['GET'])
@@ -35,5 +29,4 @@ def get_scores(filter=None):
     if filter is None:
         allscores = DBScore.query.order_by(DBScore.tick_time)
         return jsonify(json_list=[i.serialize for i in allscores.all()])
-
     return "wtf"
