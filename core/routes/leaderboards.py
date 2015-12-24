@@ -1,5 +1,5 @@
 __author__ = 'gnaughton'
-from flask import render_template, redirect, request, flash, url_for
+from flask import render_template, redirect, request, flash, url_for, jsonify
 from flask_login import login_user, logout_user
 from sqlalchemy.exc import OperationalError
 
@@ -7,6 +7,7 @@ from valve.steam import id as steamid
 
 from core import app
 from core.models import db, DBScore
+import json
 
 
 @app.route('/leaderboards')
@@ -17,8 +18,8 @@ def leaderboards_main(page=1):
         #score.steamid =
     return render_template('leaderboards/index.html', stats_page=stats_page)
 
-@app.route('/postscore/<steamid>/<map>/<int:ticks>')
-def post_score(ticks=0):
+@app.route('/postscore/<steamid>/<map>/<int:ticks>', methods=['GET'])
+def post_score(steamid, map, ticks):
     try:
         score = DBScore(steamid, map, ticks, 0)
         db.session.add(score)
@@ -27,3 +28,12 @@ def post_score(ticks=0):
         print e
         return "{\"result\": \"False\"}"
     return "{\"result\": \"True\"}"
+
+@app.route('/getscores', methods=['GET'])
+@app.route('/getscores/<filter>', methods=['GET'])
+def get_scores(filter=None):
+    if filter is None:
+        allscores = DBScore.query.order_by(DBScore.tick_time)
+        return jsonify(json_list=[i.serialize for i in allscores.all()])
+
+    return "wtf"

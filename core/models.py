@@ -4,9 +4,11 @@ import hashlib
 import random
 import string
 import time
+import json
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.mysql import *
+from sqlalchemy.ext.declarative import declarative_base as real_declarative_base
 
 from core import app
 from flask.ext.login import UserMixin
@@ -16,6 +18,12 @@ saltset = string.letters + string.digits
 
 db = SQLAlchemy(app)
 
+
+def dump_datetime(value):
+    """Deserialize datetime object into string form for JSON processing."""
+    if value is None:
+        return None
+    return [value.strftime("%Y-%m-%d"), value.strftime("%H:%M:%S")]
 
 class DBScore(db.Model):
     __tablename__ = 'scores'
@@ -32,6 +40,25 @@ class DBScore(db.Model):
         self.tick_time = tick_time
         self.zone_hash = zone_hash
         self.date = time.strftime('%Y-%m-%d %H:%M:%S')
+
+    @property
+    def serialize(self):
+       """Return object data in easily serializeable format"""
+       return {
+           'id'         : self.id,
+           'steamid': self.steamid,
+           'game_map': self.game_map,
+           'tick_time': self.tick_time,
+           'zone_hash': self.zone_hash,
+           'date': dump_datetime(self.date)
+       }
+    @property
+    def serialize_many2many(self):
+       """
+       Return object's relations in easily serializeable format.
+       NB! Calls many2many's serialize property.
+       """
+       return [ item.serialize for item in self.many2many]
 
     def __repr__(self):
         return '<Score %s>' % self.id
