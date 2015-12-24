@@ -25,9 +25,6 @@ def post_score(steamid, map, ticks):
     return "{\"result\": \"True\"}"
 
 @app.route('/getscores', methods=['GET'])
-@app.route('/getscores/<filter>', methods=['GET'])
-def get_scores(filter=None):
-    if filter is None:
-        allscores = DBScore.query.order_by(DBScore.tick_time)
-        return jsonify(json_list=[i.serialize for i in allscores.all()])
-    return "wtf"
+def get_scores():
+    allscores = DBScore.query.order_by(DBScore.tick_time)
+    return jsonify(json_list=[i.serialize for i in allscores.all()])
