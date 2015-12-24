@@ -17,7 +17,7 @@ try:
     db.session.commit()
 
     print "Creating first score"
-    score = DBScore("STEAM_0:1:35061356", "bhop_monsterjam", 3960, "lololololololololol")
+    score = DBScore("76561198030388441", "bhop_monsterjam", 3960, "lololololololololol")
 
     db.session.add(score)
     db.session.commit()

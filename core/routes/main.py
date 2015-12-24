@@ -1,7 +1,7 @@
 __author__ = 'gnaughton'
 
 from flask import render_template, redirect, request, flash, url_for
-from flask_login import login_user
+from flask_login import login_user, logout_user
 
 from core import app
 from core.models import DBUser
@@ -10,10 +10,6 @@ from core.models import DBUser
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/store')
-def storefront():
-    return render_template('store.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -30,6 +26,8 @@ def login():
     flash('Logged in successfully', 'success')
     return redirect(request.args.get('next') or url_for('dashboard'))
 
-@app.route('/dashboard/')
-def dashboard():
-    return render_template('dashboard/index.html')
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
