@@ -13,11 +13,13 @@ import datetime
 @app.route('/leaderboards/<int:page>')
 def leaderboards_main(page=1):
     stats_page = DBScore.query.order_by(DBScore.tick_time).paginate(page)
+
+    time_convert = {'66': 0.015, '100': 0.01}
     for stat in stats_page.items:
         content = urllib2.urlopen('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' +
                                   app.config['STEAM_API_KEY'] + '&steamids=' + stat.steamid).read()
         work = json.loads(content)
-        stat.timeconverted = float(stat.tick_time) / stat.tick_rate
+        stat.timeconverted = float(stat.tick_time) * time_convert[str(stat.tick_rate)]
         stat.timeconverted = str(datetime.timedelta(seconds=stat.timeconverted))
         if "." in stat.timeconverted:
             stat.timeconverted = stat.timeconverted[:-4]
