@@ -1,0 +1,28 @@
+
+
+//some variables for bavely theme, you can create your own easily.
+$body-bg:#fff;
+$base-line-height:24px;
+$skincolor:#3288C4;//Theme default color code, paste your own code here
+$lightcolor:#fff; //white color and background
+$graycolor:#777; //gray color for p tags
+$darkcolor:#333; //dark color for heading
+$primary-font: 'Open Sans', sans-serif; //default font family
+$title-font: 'Montserrat', sans-serif;; //Title and headings font family
+$base-font-size:13px; //default basic font size
+$alert-color:red; //alert color
+
+//navbar
+$bgDefault      : #fff;
+$colDefault     : #474747;
+$colHighlight   : #FFD600;
+$dropDown       : false;
+
+//backgrounds
+
+$quote-bg: url(../../assets/images/bg-2.jpg) no-repeat center center;
+$testimonials-bg:url(../../assets/images/blog-2.jpg) no-repeat center center;
+$twitter-bg:url(../../assets/images/blog-1.jpg) no-repeat center center;
+$cta-1-bg:url(../../assets/images/bg-3.jpg) no-repeat center center;
+$contact-bg:url(../../assets/images/map-bg.jpg) no-repeat;
+$parallax-bg:url(../../assets/images/bg-1.jpg) fixed;
