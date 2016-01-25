@@ -45,3 +45,18 @@ def post_score(steamid, map, ticks, tickrate):
 def get_scores():
     allscores = DBScore.query.order_by(DBScore.tick_time)
     return jsonify(json_list=[i.serialize for i in allscores.all()])
+
+@app.route('/getscores/<map>/<tickrate>/<steamid>', methods=['GET'])
+def get_scores_filtered(map, tickrate, steamid):
+    user_scores = DBScore.query.filter_by(steamid=steamid).filter_by(game_map=map).first()
+    if user_scores is None:
+        data = DBScore.query.filter_by(game_map=map).order_by(DBScore.tick_time).paginate(1, 10)
+    else:
+        id = user_scores.id
+        start = id - 5
+        end = id + 5
+        while start < 0:
+            start += 1
+            end += 1
+        data = DBScore.query.filter_by(game_map=map).offset(start).limit(10).all()
+    return jsonify(json_list=[i.serialize for i in data])
