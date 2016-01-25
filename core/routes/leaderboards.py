@@ -3,7 +3,7 @@ from flask import render_template, jsonify
 from sqlalchemy.exc import OperationalError
 
 from core import app
-from core.models import db, DBScore
+from core.models import db, DBScore, DBMap
 import urllib2
 import json
 import datetime
@@ -60,3 +60,15 @@ def get_scores_filtered(map, tickrate, steamid):
             end += 1
         data = DBScore.query.filter_by(game_map=map).offset(start).limit(10).all()
     return jsonify(json_list=[i.serialize for i in data])
+
+@app.route('/mapinfo/<map>/<gamemode>/<difficulty>/<layout>',  methods=['GET'])
+def map_info_getter(map, gamemode, difficulty, layout):
+	map_results = DBMap.query.filter(DBMap.map_fullname.like('%' + map + '%'))
+	if gamemode > 0:
+		map_results.filter_by(gamemode=gamemode)
+	if difficulty > 0:
+		map_results.filter_by(difficulty=difficulty)
+	if layout > 0:
+		map_results.filter_by(layout=layout)
+
+	return jsonify(json_list=[i.serialize for i in map_results])

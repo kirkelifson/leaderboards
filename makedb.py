@@ -2,7 +2,7 @@ __author__ = 'gnaughton'
 
 from sqlalchemy.exc import OperationalError, IntegrityError
 
-from core.models import db, DBUser, DBScore
+from core.models import db, DBUser, DBScore, DBMap
 
 
 try:
@@ -19,6 +19,10 @@ try:
     print "Creating first score"
     score = DBScore("76561198030388441", "bhop_monsterjam", 3960, 66, "lololololololololol")
 
+    print "Creating first map"
+    map = DBMap("bhop_monsterjam", "Monster Jam", 2, 3, 1)
+
+    db.session.add(map)
     db.session.add(score)
     db.session.commit()
 

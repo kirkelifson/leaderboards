@@ -19,6 +19,35 @@ def dump_datetime(value):
         return None
     return [value.strftime("%Y-%m-%d"), value.strftime("%H:%M:%S")]
 
+class DBMap(db.Model):
+    __tablename__ = 'maps'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True)
+    map_filename = db.Column(VARCHAR(128))
+    map_fullname = db.Column(VARCHAR(5000))
+    gamemode = db.Column(INTEGER(unsigned=True))
+    difficulty = db.Column(INTEGER(unsigned=True))
+    layout = db.Column(INTEGER(unsigned=True))
+
+    def __init__(self, map_filename, map_fullname, gamemode, difficulty, layout):
+        self.map_filename = map_filename
+        self.map_fullname = map_fullname
+        self.gamemode = gamemode
+        self.difficulty = difficulty
+        self.layout = layout
+
+    @property
+    def serialize(self):
+        return {
+            'id'         : self.id,
+            'map_fullname'    : self.map_fullname,
+            'map_filename'   : self.map_filename,
+            'gamemode'  : self.gamemode,
+            'difficulty'  : self.difficulty,
+            'layout'  : self.layout,
+        }
+
+    def __repr__(self):
+        return '<Map %s>' % self.id
 
 class DBScore(db.Model):
     __tablename__ = 'scores'
