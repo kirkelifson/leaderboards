@@ -37,8 +37,8 @@ def post_score(steamid, map, ticks, tickrate):
         db.session.commit()
     except OperationalError as e:
         print e
-        return "{\"result\": \"False\"}"
-    return "{\"result\": \"True\"}"
+        return "{\"result\": \"false\"}"
+    return "{\"result\": \"true\"}"
 
 
 @app.route('/getscores', methods=['GET'])
