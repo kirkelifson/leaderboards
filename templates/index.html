@@ -74,6 +74,7 @@
                     <li><a href="/leaderboards">Leaderboards</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#faq">FAQ</a></li>
+                    <li><a href="{{ url_for('contact') }}">Contact us</a></li>
                 </ul>
             </div>
             <!--/.nav-collapse -->
@@ -124,7 +125,8 @@
                         <h3>The team</h3>
                         <p>
                             Led by Source runner <span class="colored-text">Gocnak</span> we're a group of
-                                volunteers who spend free time developing the mod.
+                                volunteers who spend free time developing the mod. <u>We're looking for people who
+                                want to help!</u>
                         </p>
                     </div>
                     <!--service features-->
@@ -132,9 +134,9 @@
                 <div class="col-sm-4 margin-bottom30">
                     <div class="service-features wow animated fadeIn" data-wow-delay=".4s">
                         <i class="ion-ios-color-wand-outline"></i>
-                        <h3>Contact us</h3>
+                        <h3>We're in active development</h3>
                         <p>
-                            You can contact us using our GitHub repo, <a href="https://github.com/momentum-mod/">https://github.com/momentum-mod/</a>
+                            You can check what we're doing in our GitHub repo <a href="https://github.com/momentum-mod/">https://github.com/momentum-mod/</a>
                         </p>
                     </div>
                     <!--service features-->
@@ -253,7 +255,7 @@
         <div class="gray-cta">
             <div class="container text-center scroll-to">
                 <h2>Are you ready to start a conversation?</h2>
-                <a href="" class="btn btn-lg btn-theme-bg">Get in touch</a>
+                <a href="{{ url_for('contact') }}" class="btn btn-lg btn-theme-bg">Get in touch</a>
             </div>
         </div>
         <!--gray cta-->
