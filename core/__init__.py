@@ -30,5 +30,5 @@ import core.csrf
 import core.routes.main
 #import core.routes.dashboard
 import core.routes.leaderboards
-import core.routes.forms
+import core.routes.contact
 import core.routes.errors

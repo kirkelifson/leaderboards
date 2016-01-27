@@ -69,4 +69,8 @@ def contact():
                 return render_template('contact.html', form=form, success=False)
     else:
         return render_template('contact.html', form=form)
-    
+
+
+@app.route('/contactmanagement', methods=['POST'])
+def contactmanagement():
+    return 'Ey',200
