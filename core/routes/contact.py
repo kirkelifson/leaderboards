@@ -53,7 +53,7 @@ def contact():
             flash('Errors on the form. Fix them and try submititng again')
             return render_template('contact.html', form=form, success=False)
         else:
-            department_convert = {'gen': '<@channel>', 'pro': '<#coders>', 'map':'<#mapping>', 'web':'<#webbackend> & <#webfrontend>'}
+            department_convert = {'gen': '<@channel>', 'pro': '<#C053U99PL>', 'map':'<#C054J6L49>', 'web':'<#C0540H60C> & <#C054N9BDH>'}
             msg = "Message"
             try:
                 msg =  "New message from *" + str(form.name.data.encode('utf-8')) + "* (" + str(form.email.data.encode('utf-8')) + ") directed to " + department_convert.get(str(form.department.data.encode('utf-8')), "@channel") +"\nSubject: " + str(form.subject.data.encode('utf-8')) + "\n\n" + str(form.message.data.encode('utf-8'))
