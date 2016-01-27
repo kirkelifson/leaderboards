@@ -26,6 +26,16 @@
 
 
     <script src="{{ url_for('static', filename='js/vendor/' 'modernizr.js') }}" type="text/javascript"></script>
+
+    <style>
+    body { 
+        background: url({{ url_for_random_background() }}) no-repeat center center fixed; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+}
+    </style>
 </head>
 
 <body>
@@ -46,13 +56,14 @@
                     <!-- Profile -->
                     <div class="profile">
                         <img alt="" class="" src="{{ url_for('static', filename='frontend/images/' 'icon.png') }}">
-                        <h3>Momentum Mod - Error {{ error.code }}</h3>
+                        <h3 style="color:red">Momentum-Mod Error {{ error.code }}</h3>
                     </div>
                     <!-- End of Profile -->
                     <!-- /.box-header -->
                     <div class="box-body " style="display: block;">
                     <h3>{{ msg }}</h3>
                         <p style="color:#FFF; font-weight: bold">{{ error.description }}</p>
+                        <a href="{{ url_for('contact',department='web',subject='I got an unexpected error ' + error.code|string )}}">If you feel like it's needed, you can contact us</a>
                     </div>
                     <!-- end .timeline -->
                 </div>

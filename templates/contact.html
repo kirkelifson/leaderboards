@@ -39,6 +39,13 @@
         .flash:last-of-type {
              border-bottom: 0px;
         }
+    body { 
+        background: url({{ url_for_random_background() }}) no-repeat center center fixed; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+}
     </style>
 
 </head>
@@ -112,13 +119,12 @@
                         </form>
 
                         {% endif %}
-
-
                     </div>
                     <!-- end .timeline -->
+                    <center><a href="{{ url_for('index') }}">&lt;&lt; Back to Home page</center>
                 </div>
                 <!-- box -->
-                <center><a href="{{ url_for('index') }}">&lt;&lt; Back to Home page</center>
+                
             </div>
         </div>
         <!-- End of Container Begin -->

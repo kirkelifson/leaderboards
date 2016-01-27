@@ -68,4 +68,11 @@ def contact():
                 flash('Contact API failed. Try again later')
                 return render_template('contact.html', form=form, success=False)
     else:
+        deps = ['gen','pro','map','web']
+        depart = request.args.get('department').encode('utf-8')
+        if depart in deps:
+            form.department.data = depart
+        subject = request.args.get('subject').encode('utf-8')
+        if not subject is None:
+            form.subject.data = subject
         return render_template('contact.html', form=form)

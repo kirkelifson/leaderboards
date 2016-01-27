@@ -10,7 +10,7 @@ from core import app
 @app.errorhandler(403)
 @app.errorhandler(500)
 def page_not_found(e):
-    messages = {404:"We lost something", 403:"You shall not pass", 405:"Site was not desgined to handle that",500:"Something went horribly wrong"}
+    messages = {404:"We lost something", 403:"You shall not pass", 405:"Site was not designed to handle that",500:"Something went horribly wrong"}
     phrase = ""
     try:
         phrase = messages[e.code]
