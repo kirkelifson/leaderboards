@@ -32,9 +32,10 @@
         <div class="tp-banner">
             <ul>
                 <!-- SLIDE  -->
-                <li data-transition="fade" data-slotamount="1" data-masterspeed="1500" data-thumb="{{ url_for('static', filename='frontend/images/' 'bg-2.jpg') }}" data-delay="10000" data-saveperformance="off" data-title="slider 1">
+                {% set background = url_for_random_background() %}
+                <li data-transition="fade" data-slotamount="1" data-masterspeed="1500" data-thumb="{{ background }}" data-delay="10000" data-saveperformance="off" data-title="slider 1">
                     <!-- MAIN IMAGE -->
-                    <img src="{{ url_for('static', filename='frontend/images/' 'bg-2.jpg') }}" alt="kenburns1">
+                    <img src="{{ background }}" alt="kenburns1">
                     <!-- LAYERS -->
 
                     <!-- LAYER NR. 1 -->
