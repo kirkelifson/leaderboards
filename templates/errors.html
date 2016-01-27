@@ -47,11 +47,11 @@
                     <div class="profile">
                         <img alt="" class="" src="{{ url_for('static', filename='frontend/images/' 'icon.png') }}">
                         <h3>Momentum Mod - Error {{ error.code }}</h3>
-                        <h4>{{ msg }}</h4>
                     </div>
                     <!-- End of Profile -->
                     <!-- /.box-header -->
                     <div class="box-body " style="display: block;">
+                    <h3>{{ msg }}</h3>
                         <p style="color:#FFF; font-weight: bold">{{ error.description }}</p>
                     </div>
                     <!-- end .timeline -->
