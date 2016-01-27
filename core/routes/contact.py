@@ -69,10 +69,9 @@ def contact():
                 return render_template('contact.html', form=form, success=False)
     else:
         deps = ['gen','pro','map','web']
-        depart = request.args.get('department').encode('utf-8')
-        if depart in deps:
-            form.department.data = depart
-        subject = request.args.get('subject').encode('utf-8')
-        if not subject is None:
-            form.subject.data = subject
+        depart = request.args.get('department')
+        if not depart is None and depart.encode('utf-8') in deps:
+            form.department.data = depart.encode('utf-8')
+        if not request.args.get('subject') is None:
+            form.subject.data = request.args.get('subject').encode('utf-8')
         return render_template('contact.html', form=form)
