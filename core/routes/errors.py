@@ -2,7 +2,7 @@ __author__ = 'rabsrincon'
 
 #Super simple error management, I was tried of the plain default error page!
 
-from flask import render_template
+from flask import render_template, flash
 from core import app
 
 @app.errorhandler(405)
@@ -16,5 +16,6 @@ def page_not_found(e):
         phrase = messages[e.code]
     except:
         phrase = "Houston, we've had a problem here"
-    return render_template('errors.html', error = e, msg = phrase), e.code
+    flash(phrase)
+    return render_template('errors.html', error = e), e.code
 
