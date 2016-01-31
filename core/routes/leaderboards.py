@@ -57,6 +57,13 @@ def get_scores_filtered(map, tickrate, steamid):
             start += 1
         data = DBScore.query.filter_by(game_map=map).offset(start).limit(10).all()
     return jsonify(json_list=[i.serialize for i in data])
+@app.route('/getfriendscores/<map>/<steamid>', methods=['GET'])
+def get_scores_friends(map, steamid):
+    content = urllib2.urlopen('http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=' + app.config['STEAM_API_KEY'] + '&steamid=' + steamid +'&relationship=friend').read()
+    work = json.loads(content)
+    idlist = [trend['steamid'] for trend in work['friendslist']['friends']]
+    data = DBScore.query.filter_by(game_map=map).filter(DBScore.steamid.in_(idlist)).all()
+    return jsonify(json_list=[i.serialize for i in data])
 
 @app.route('/mapinfo/<map>/<gamemode>/<difficulty>/<layout>',  methods=['GET'])
 def map_info_getter(map, gamemode, difficulty, layout):
@@ -69,3 +76,8 @@ def map_info_getter(map, gamemode, difficulty, layout):
 		map_results.filter_by(layout=layout)
 
 	return jsonify(json_list=[i.serialize for i in map_results])
+
+def get_total_runs():
+    return db.session.query(DBScore).count()
+
+app.jinja_env.globals.update(get_total_runs=get_total_runs)

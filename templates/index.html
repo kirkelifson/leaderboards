@@ -165,7 +165,8 @@
             <div class="row">
                 <div class="col-md-3 col-sm-6 margin-bottom30">
                     <div class="fun-facts-inner wow animated fadeIn" data-wow-delay=".1s">
-                        <h2>52620</h2>
+                        {% set total_runs = get_total_runs() %}
+                        <h2>{{total_runs}}</h2>
                         <h4>Runs completed</h4>
                     </div>
                 </div>
