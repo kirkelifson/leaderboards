@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Leaderboards Login</title>
+    <title>Contact form</title>
     <link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
     <link href="{{ url_for('static', filename='css/' 'foundation.css') }}" rel="stylesheet">
 
@@ -27,6 +27,27 @@
 
     <script src="{{ url_for('static', filename='js/vendor/' 'modernizr.js') }}" type="text/javascript"></script>
 
+    <style>
+        .flash {
+            background-color: #FBB0B0;
+            color: #FFF;
+            font-weight: bold;
+            padding: 10px;
+            border-bottom: 1px dotted #5B2345;
+        }
+
+        .flash:last-of-type {
+             border-bottom: 0px;
+        }
+    body { 
+        background: url({{ url_for_random_background() }}) no-repeat center center fixed; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+}
+    </style>
+
 </head>
 
 <body>
@@ -47,69 +68,70 @@
                     <!-- Profile -->
                     <div class="profile">
                         <img alt="" class="" src="{{ url_for('static', filename='frontend/images/' 'icon.png') }}">
-                        <h3>Momentum-Mod Login</h3>
+                        <h3>Contact the team</h3>
 
                     </div>
                     <!-- End of Profile -->
-
                     <!-- /.box-header -->
                     <div class="box-body " style="display: block;">
-                        <div class="row">
+                        {% if success %}
+                        <p style="color:green">Thank you for your message {{ sender_name }}. We'll get back to you shortly.</p>
+                        {% else %}
+                        {% for message in get_flashed_messages() %}
+                        <div class="flash">{{ message }}</div>
+                        {% endfor %}
+                        {% for message in form.name.errors %}
+                        <div class="flash">{{ message }}</div>
+                        {% endfor %}
+                        {% for message in form.email.errors %}
+                        <div class="flash">{{ message }}</div>
+                        {% endfor %}
+                        {% for message in form.department.errors %}
+                        <div class="flash">{{ message }}</div>
+                        {% endfor %}
+                        {% for message in form.subject.errors %}
+                        <div class="flash">{{ message }}</div>
+                        {% endfor %}
+                        {% for message in form.message.errors %}
+                        <div class="flash">{{ message }}</div>
+                        {% endfor %}
+                        <form action="{{ url_for('contact') }}" method=post>
+                        <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                            {{ form.csrf_token }}
+                            {{ form.name.label }}
+                            {{ form.name(placeholder='Your name') }}
 
-                            <div class="large-12 columns">
-                                <div class="row">
-                                    <div class="edumix-signup-panel">
-                                        <p class="welcome"> Welcome to this awesome app!</p>
-                                        <form role="form" action="" method="POST">
-                                            <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
-                                            <div class="row collapse">
-                                                <div class="small-2  columns">
-                                                    <span class="prefix bg-green"><i class="text-white icon-user"></i></span>
-                                                </div>
-                                                <div class="small-10  columns">
-                                                    <input type="text" id="username" name="username" placeholder="Username">
-                                                </div>
-                                            </div>
-                                            <div class="row collapse">
-                                                <div class="small-2 columns ">
-                                                    <span class="prefix bg-green"><i class="text-white icon-lock"></i></span>
-                                                </div>
-                                                <div class="small-10 columns ">
-                                                    <input type="text" id="password" name="password" placeholder="Password">
-                                                </div>
-                                            </div>
-                                        <p>Already have an account? <a href="#">Forgot password?</a>
-                                        </p>
-                                            <center><button type="submit" class="bg-green">Login</button></center>
+                            {{ form.email.label }}
+                            {{ form.email(placeholder='Your email') }}
 
-                                        </form>
-                                    </div>
-                                </div>
+                            {{ form.department.label }}
+                            {{ form.department }}
 
-                            </div>
+                            {{ form.subject.label }}
+                            {{ form.subject(placeholder='What do you want to talk about with us? (Optional but helpful)') }}
 
+                            {{ form.message.label }}
+                            {{ form.message(placeholder='Write your message here',rows=15) }}
 
+                            {{ form.recaptcha }}
 
-                        </div>
+                            {{ form.submit }}
+                        </form>
 
-
+                        {% endif %}
                     </div>
                     <!-- end .timeline -->
+                    <center><a href="{{ url_for('index') }}">&lt;&lt; Back to Home page</center>
                 </div>
                 <!-- box -->
+                
             </div>
         </div>
         <!-- End of Container Begin -->
     </div>
 
     <!-- end paper bg -->
-
-
-
     <!-- end of inner-wrap -->
-
-
-
     <!-- main javascript library -->
     <script src="{{ url_for('static', filename='js/' 'jquery.js') }}" type="text/javascript"></script>
     <script src="{{ url_for('static', filename='js/' 'waypoints.min.js') }}" type="text/javascript"></script>
@@ -128,7 +150,7 @@
 
 
     <script>
-    $(document).foundation();
+        $(document).foundation();
     </script>
 
 
