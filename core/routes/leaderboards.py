@@ -46,6 +46,11 @@ def get_scores():
     allscores = DBScore.query.order_by(DBScore.tick_time)
     return jsonify(json_list=[i.serialize for i in allscores.all()])
 
+@app.route('/getscores/<map>', methods=['GET'])
+def get_scores_filtered(map):
+    user_scores = DBScore.query.filter_by(game_map=map)
+    return jsonify(json_list=[i.serialize for i in user_scores.all()])
+
 @app.route('/getscores/<map>/<tickrate>/<steamid>', methods=['GET'])
 def get_scores_filtered(map, tickrate, steamid):
     user_scores = DBScore.query.filter_by(steamid=steamid).filter_by(game_map=map).first()
@@ -57,6 +62,7 @@ def get_scores_filtered(map, tickrate, steamid):
             start += 1
         data = DBScore.query.filter_by(game_map=map).offset(start).limit(10).all()
     return jsonify(json_list=[i.serialize for i in data])
+
 @app.route('/getfriendscores/<map>/<steamid>', methods=['GET'])
 def get_scores_friends(map, steamid):
     content = urllib2.urlopen('http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=' + app.config['STEAM_API_KEY'] + '&steamid=' + steamid +'&relationship=friend').read()
