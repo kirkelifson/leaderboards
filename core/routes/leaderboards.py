@@ -47,7 +47,7 @@ def get_scores():
     return jsonify(json_list=[i.serialize for i in allscores.all()])
 
 @app.route('/getscores/<map>', methods=['GET'])
-def get_scores_filtered(map):
+def get_scores_map(map):
     user_scores = DBScore.query.filter_by(game_map=map)
     return jsonify(json_list=[i.serialize for i in user_scores.all()])
 
