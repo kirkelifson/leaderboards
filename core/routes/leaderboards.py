@@ -8,12 +8,12 @@ import urllib2
 import json
 import datetime
 
+time_convert = {'66': 0.015, '100': 0.01}
 
 @app.route('/leaderboards')
 @app.route('/leaderboards/<int:page>')
 def leaderboards_main(page=1):  
     stats_page = DBScore.query.order_by(DBScore.tick_time).paginate(page)
-    time_convert = {'66': 0.015, '100': 0.01}
     for stat in stats_page.items:
         if str(stat.tick_rate) not in time_convert:
             print "Run #ID " + str(stat.id) + " had invalid tick_rate(" + str(stat.tick_rate) + "). Set to 66"
@@ -36,23 +36,35 @@ def leaderboards_main(page=1):
 
 @app.route('/postscore/<steamid>/<map>/<int:ticks>/<int:tickrate>', methods=['GET'])
 def post_score(steamid, map, ticks, tickrate):
-    response = {'result': 'true', 'message': None}
+    if str(tickrate) not in time_convert:
+        #In case someone tries to submit an invalid tick_rate.
+        #Todo: Dehardcode?
+        tickrate = '66'
+    response = {'result': 'true', 'status': None, 'message': None}
     try:
-        # takes 64-bit steamid                    
-        score = DBScore(steamid, map, ticks, tickrate, 0)
-        db.session.add(score)
-        db.session.commit()
-        user = DBUser.query.filter_by(steamid=steamid).first()   
-        if user is not None:
-            if user.access == 0:
-                response['message'] = '#MOM_WebMsg_NeedsEmailVerification'
+        # takes 64-bit steamid
+        previous = DBScore.query.filter_by(steamid=steamid).filter_by(game_map=map).filter_by(tick_rate=tickrate).first()
+        if previous is None:
+            score = DBScore(steamid, map, ticks, tickrate, 0)
+            db.session.add(score)
+            response['status'] = 'submitted'
+            db.session.commit()
         else:
+            if previous.tick_time >= ticks:
+                previous.update_runtime(tickrate, ticks)
+                response['status'] = 'updated'
+            else:
+                response['status'] = 'slower'
+                response['message'] = '#MOM_WebMsg_RunIsSlowerThanStored'
+        user = DBUser.query.filter_by(steamid=steamid).first()   
+        if user is None:
             response['message'] = '#MOM_WebMsg_NeedsFirstLogin'
     except OperationalError as e:
         print e
         response['result'] = 'false'
+        response['status'] = 'error'
         response['message'] = '#MOM_WebMsg_RunNotSaved_InternalServerErrors'
-    return jsonify(response)
+    return jsonify(json_list=[response])
 
 
 @app.route('/getscores', methods=['GET'])
@@ -98,6 +110,7 @@ def map_info_getter(map, gamemode, difficulty, layout):
 	return jsonify(json_list=[i.serialize for i in map_results])
 
 def get_total_runs():
-    return db.session.query(DBScore).count()
+    totals = db.session.query(DBScore).all()
+    return .count()
 
 app.jinja_env.globals.update(get_total_runs=get_total_runs)
