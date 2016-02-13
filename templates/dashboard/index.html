@@ -75,13 +75,6 @@
                                     </a>
 
                                 </li>
-                                <li>
-                                    <a class="tooltip-tip" href="#">
-                                        <i class=" icon-window"></i>
-                                        <span>Back to the main page</span>
-
-                                    </a>
-                                </li>
                                 {% if current_user.access >= lvl_min_userof_momentumteam() %}
                                 <li>
                                     <a class="tooltip-tip {%if destination == 'manage'%}selected{%endif%}"
@@ -92,6 +85,13 @@
                                     </a>
                                 </li>
                                 {%endif%}
+                                <li>
+                                    <a class="tooltip-tip" href="{{ url_for('index') }}">
+                                        <i class=" icon-window"></i>
+                                        <span>Back to the main page</span>
+
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                         <!-- end of Menu sidebar  
