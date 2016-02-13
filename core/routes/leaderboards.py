@@ -110,7 +110,6 @@ def map_info_getter(map, gamemode, difficulty, layout):
 	return jsonify(json_list=[i.serialize for i in map_results])
 
 def get_total_runs():
-    totals = db.session.query(DBScore).all()
-    return .count()
+    return db.session.query(DBScore).all().count()
 
 app.jinja_env.globals.update(get_total_runs=get_total_runs)
