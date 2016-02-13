@@ -279,3 +279,9 @@ class DBTeam(db.Model):
         self.role = role
         self.priority = priority
 
+    def user_updateinfo(self, nickname, realname, role):
+        self.nickname = nickname
+        self.realname = realname
+        self.role = role
+        db.session.commit()        
+

@@ -43,7 +43,6 @@ def login():
 def create_or_login(resp):
     match = _steam_id_re.search(resp.identity_url)
     current_user = DBUser.get_or_create(match.group(1),lvl_newuser_noverified())
-    print str(current_user.steamid)
     steamdata = current_user.get_steam_userinfo()
     current_user.update_steam_userinfo(steamdata)
     current_user.update_lastlogin()
