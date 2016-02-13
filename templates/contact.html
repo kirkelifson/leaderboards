@@ -99,11 +99,14 @@
                         <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
                             {{ form.csrf_token }}
                             {{ form.name.label }}
-                            {{ form.name(placeholder='Your name') }}
+                            {{ form.name(placeholder='Your name',value=current_user.username|string) }}
 
                             {{ form.email.label }}
+                            {% if current_user.email is not none %}
+                            {{ form.email(placeholder='Your email',value=current_user.email|string) }}
+                            {%else%}
                             {{ form.email(placeholder='Your email') }}
-
+                            {%endif%}
                             {{ form.department.label }}
                             {{ form.department }}
 
@@ -122,6 +125,7 @@
                     </div>
                     <!-- end .timeline -->
                     <center><a href="{{ url_for('index') }}">&lt;&lt; Back to Home page</center>
+                    {{ place_steamlink()|safe }}
                 </div>
                 <!-- box -->
                 
