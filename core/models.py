@@ -152,13 +152,20 @@ class DBUser(db.Model, UserMixin):
         rv = DBUser.query.filter_by(steamid=steamid).first()
         if rv is None:
             newuser = get_steam_userinfo(steamid)
-            rv = DBUser(steamid, access=access)
-            if rv.access >= lvl_min_userof_momentumteam():
-                member = DBTeam(rv.steamid, priority = lvl_userof_momentumteam_admin() - rv.access)
-                db.session.add(member)
+            rv = DBUser(steamid, username=newuser["personaname"], access=access)
             db.session.add(rv)
             db.session.commit()
+        if rv is not None and rv.access >=lvl_min_userof_momentumteam() and DBTeam.query.filter_by(steamid=rv.steamid).first() is None:
+            rv.upgradeto_memberof_momentum()
         return rv
+
+    def upgradeto_memberof_momentum(self):
+        if self.access >= lvl_min_userof_momentumteam():
+            pre = DBTeam.query.filter_by(steamid=self.steamid).first()
+            if pre is None:
+                member = DBTeam(self.steamid, nickname=self.username, priority = lvl_userof_momentumteam_admin() - self.access)
+                db.session.add(member)
+                db.session.commit()
 
     def get_steam_userinfo(self):
         options = {
@@ -202,6 +209,8 @@ class DBUser(db.Model, UserMixin):
         if self.access < lvl_min_userof_momentumteam() and newaccess >= lvl_min_userof_momentumteam:
             member = DBTeam(self.steamid, nickname=self.username, priority = lvl_userof_momentumteam_admin() - newaccess)
             db.session.add(member)
+        if self.access >= lvl_min_userof_momentumteam() and newaccess < lvl_min_userof_momentumteam:
+            db.session.delete(DBTeam.query.filter_by(steamid=self.steamid).first())
         self.access = newaccess
         db.session.commit()
 
