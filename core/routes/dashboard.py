@@ -43,7 +43,7 @@ def dashboard_home():
 
 def momteam_pending():
     if current_user.get_id() is not None and current_user.is_authenticated and current_user.access >= lvl_min_userof_momentumteam():
-        member = DBTeam.query.filter_by(steamid=current_user).first()
+        member = DBTeam.query.filter_by(steamid=current_user.steamid).first()
         if member is not None:
             if member.realname is None or member.role is None:
                 return True
