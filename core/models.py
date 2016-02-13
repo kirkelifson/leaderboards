@@ -74,6 +74,8 @@ class DBScore(db.Model):
     tick_rate = db.Column(INTEGER(unsigned=True), nullable=False)
     zone_hash = db.Column(VARCHAR(512))
     date = db.Column(DATETIME(), nullable=False)
+    lastmodify = db.Column(DATETIME(), onupdate=func.utc_timestamp())
+    timesupdated = db.Column(INTEGER(unsigned=True),default=1)
 
     def __init__(self, steamid, game_map, tick_time, tick_rate, zone_hash):
         self.steamid = steamid
@@ -82,6 +84,13 @@ class DBScore(db.Model):
         self.tick_rate = tick_rate
         self.zone_hash = zone_hash
         self.date = time.strftime('%Y-%m-%d %H:%M:%S')
+
+    def update_runtime(self, newtickrate, newticktime):
+        self.tick_rate = newtickrate
+        self.tick_time = newticktime
+        self.timesupdated = self.timesupdated + 1
+        self.date = time.strftime('%Y-%m-%d %H:%M:%S')
+        db.session.commit()
 
     @property
     def serialize(self):
@@ -191,7 +200,7 @@ class DBUser(db.Model, UserMixin):
         if newaccess < lvl_user_banned():
             newaccess = lvl_user_banned()
         if self.access < lvl_min_userof_momentumteam() and newaccess >= lvl_min_userof_momentumteam:
-            member = DBTeam(self.steamid, priority = lvl_userof_momentumteam_admin() - newaccess)
+            member = DBTeam(self.steamid, nickname=self.username, priority = lvl_userof_momentumteam_admin() - newaccess)
             db.session.add(member)
         self.access = newaccess
         db.session.commit()
@@ -221,12 +230,14 @@ class DBTeam(db.Model):
     id = db.Column(INTEGER(unsigned=True), primary_key=True)
     steamid = db.Column(BIGINT(unsigned=True), unique=True, nullable=False)
     realname = db.Column(VARCHAR(255))
+    nickname = db.Column(VARCHAR(255))
     role = db.Column(VARCHAR(255))
     priority = db.Column(TINYINT())
 
-    def __init__(self, steamid, realname=None, role=None, priority=0):
+    def __init__(self, steamid, realname=None, nickname=None, role=None, priority=0):
         self.steamid = steamid
         self.realname = realname
+        self.nickname = nickname
         self.role = role
         self.priority = priority
 
