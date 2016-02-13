@@ -21,7 +21,7 @@ _steam_id_re = re.compile('steamcommunity.com/openid/id/(.*?)$')
 oid = OpenID(app)
 
 def next_is_valid(next):
-    return next in ['dashboard_r_home','index']
+    return next in ['dashboard_r_home','index','leaderboards_main']
         
 def choose_next(userdesired, fallback):
     if userdesired is not None and next_is_valid(userdesired):

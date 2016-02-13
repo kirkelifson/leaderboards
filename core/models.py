@@ -232,7 +232,36 @@ def get_steam_userinfo(steamid):
         url = 'http://api.steampowered.com/ISteamUser/' \
           'GetPlayerSummaries/v0001/?%s' % urllib.urlencode(options)
         rv = json.load(urllib2.urlopen(url))
-        return rv['response']['players']['player'][0] or {}  
+        return rv['response']['players']['player'][0] or {}
+def get_steamid_avatar(steamid):
+    try:
+        user = DBUser.query.filter_by(steamid=steamid).first()
+        if user is not None and user.avatar is not None:
+            return user.avatar
+        else:
+            info = get_steam_userinfo(steamid)
+            if info is not None and info.avatar is not None:
+                return info.avatar
+        #Default Steam '?' avatar
+        return 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'
+    except:
+        return 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'
+def get_steamid_personaname(steamid):
+    try:
+        user = DBUser.query.filter_by(steamid=steamid).first()
+        if user is not None:
+            return user.username
+        else:
+            info = get_steam_userinfo(steamid)
+            if info is not None and info.personaname is not None:
+                return info.personaname
+        return 'Unknown'
+    except:
+        return 'Unknown'
+
+app.jinja_env.globals.update(get_steamid_avatar=get_steamid_avatar)
+app.jinja_env.globals.update(get_steamid_personaname=get_steamid_personaname)
+        
 
 class DBTeam(db.Model):
     __tablename__ = 'team'
