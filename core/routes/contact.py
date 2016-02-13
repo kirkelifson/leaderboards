@@ -53,9 +53,12 @@ def contact():
             flash('Errors on the form. Fix them and try submititng again')
             return render_template('contact.html', form=form, success=False)
         else:
-            department_convert = {'gen': '<@channel>', 'pro': '<#C053U99PL>', 'map':'<#C054J6L49>', 'web':'<#C0540H60C> & <#C054N9BDH>'}
+            department_convert = {'gen': '<@channel>', 'pro': '<#C053U99PL|coders>', 'map':'<#C054J6L49|mappers>', 'web':'<#C0540H60C> & <#C054N9BDH>'}
             msg = "Message"
             try:
+                userid = ''
+                if current_user.get_id() is not None and current_user.is_authenticated:
+                    userid = '(Is logged in as <' + str(current_user.steamid) +'>)'
                 msg =  "New message from *" + str(form.name.data.encode('utf-8')) + "* (" + str(form.email.data.encode('utf-8')) + ") directed to " + department_convert.get(str(form.department.data.encode('utf-8')), "@channel") +"\nSubject: " + str(form.subject.data.encode('utf-8')) + "\n\n" + str(form.message.data.encode('utf-8'))
             except:
                 flash('An error ocurred while processing the message. Ensure the message is valid')
