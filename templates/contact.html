@@ -95,7 +95,7 @@
                         {% for message in form.message.errors %}
                         <div class="flash">{{ message }}</div>
                         {% endfor %}
-                        <form action="{{ url_for('contact') }}" method=post>
+                        <form action="#" method=post>
                         <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
                             {{ form.csrf_token }}
                             {{ form.name.label }}
