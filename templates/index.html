@@ -72,19 +72,26 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right scroll-to">
                     <li class="active"><a href="#home">Home</a></li>
-                    <li><a href="/leaderboards">Leaderboards</a></li>
+                    <li><a href="{{ url_for('leaderboards_main') }}">Leaderboards</a></li>
+                    {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('dashboard',destination='home') }}">Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('docs') }}">Documentation</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#faq">FAQ</a></li>
                     <li><a href="{{ url_for('contact') }}">Contact us</a></li>
+                    {% if not current_user.is_authenticated %}
+                    <li><a href="{{ url_for('login') }}"><img src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_small.png"></a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                    <li><sub><img src="{{ current_user.avatar }}" alt="{{ current_user.username }}'s profile picture" class="img-thumbnail">Hello, {{ current_user.username }}</sub></li>
+                    {% endif %}
                 </ul>
             </div>
             <!--/.nav-collapse -->
         </div>
         <!--/.container -->
     </nav>
-
-
-
     <section id="about" class="section-padding">
         <div class="container">
             <div class="row">
@@ -125,8 +132,8 @@
                         <i class="ion-ios-people-outline"></i>
                         <h3>The team</h3>
                         <p>
-                            Led by Source runner <span class="colored-text">Gocnak</span> we're a group of
-                            volunteers who spend free time developing the mod. <u>We're looking for people willing to help!</u>
+                            Led by Source speedrunner <span class="colored-text">Gocnak</span> we're a group of
+                            volunteers who spend free time developing the mod. <u><a href="{{ url_for('team') }}">You can view the credits page here</a></u>
                         </p>
                     </div>
                     <!--service features-->
@@ -167,7 +174,7 @@
                     <div class="fun-facts-inner wow animated fadeIn" data-wow-delay=".1s">
                         {% set total_runs = get_total_runs() %}
                         <h2>{{total_runs}}</h2>
-                        <h4>Runs completed</h4>
+                        <h4>Recorded runs</h4>
                     </div>
                 </div>
                 <!--fun facts col-->
@@ -202,6 +209,7 @@
             <div class="container text-center">
                 <div class="col-sm-8 col-sm-offset-2 wow animated fadeIn" data-wow-delay=".2s">
                     <div id="wrapper">
+                    <h1>You can always <a href="{{ url_for('contact') }}">contact us</a></h1>
                         <div class="head-text">Momentum Mod FAQ</div>
                         <div id="cback" class="cback">
                             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
@@ -240,7 +248,20 @@
                                     </div>
                                     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
                                         <div class="panel-body">
-                                            The mod is currently being worked on with no realistic ETA in sight. We want to keep people informed about progress! If you wish to contact us, you can find how on the footer
+                                            The mod is currently being worked on with no realistic ETA in sight. We want to keep people informed about progress!
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingFour">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Where can I find the mod docs?
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                                        <div class="panel-body">
+                                            <a href="{{ url_for('docs') }}">Here you will be able to find everything you need to know about technical stuff about the mod</a>
                                         </div>
                                     </div>
                                 </div>
@@ -346,6 +367,7 @@
             <p>&copy; 2015. Made
                 <!--with <i class="ion-ios-heart-outline"></i> -->
                 by Design_mylife</p>
+            {{ place_steamlink()|safe }}
         </div>
     </footer>
     <!--footer end-->

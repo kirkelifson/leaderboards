@@ -11,10 +11,11 @@ try:
     print "Committing schema..."
     db.session.commit()
 
-    print "Creating admin user"
-    user = DBUser('admin', 'admin@admin.com', 'admin', access=10)
-    db.session.add(user)
-    db.session.commit()
+    #We don't create it because we just don't need it (yet)
+    print "Creating webmaster user"
+    #user = DBUser(3123123, access=1)
+    #db.session.add(user)
+    #db.session.commit()
 
     print "Creating first score"
     score = DBScore("76561198030388441", "bhop_monsterjam", 3960, 66, "lololololololololol")
@@ -26,8 +27,7 @@ try:
     db.session.add(score)
     db.session.commit()
 
-    print "Successfully set up the DB. Log in with admin:admin"
-    print "Be sure to change your password."
+    print "Successfully set up the DB."
 
 except OperationalError as e:
     print "Error: Failed to provision database.\n" \

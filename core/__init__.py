@@ -28,7 +28,10 @@ import core.csrf
 
 # to add new routes just import them here
 import core.routes.main
-#import core.routes.dashboard
+import core.routes.defuseraccess
+import core.routes.usersession
+import core.routes.dashboard
 import core.routes.leaderboards
 import core.routes.contact
+import core.routes.docs
 import core.routes.errors

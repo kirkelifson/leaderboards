@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Momentum Leaderboards</title>
+    <link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
 
     <link href="{{ url_for('static', filename='css/' 'foundation.css') }}" rel="stylesheet">
 
@@ -31,9 +32,12 @@
     <link href="{{ url_for('static', filename='js/footable/css/' 'footable.core.css?v=2-0-1') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='js/footable/css/' 'footable.standalone.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='js/footable/css/' 'footable-demos.css') }}" rel="stylesheet">
-
 </head>
-
+<style>
+.self {
+	background-color:green;
+}
+</style>
 <body>
     <!-- preloader -->
     <div id="preloader">
@@ -64,35 +68,35 @@
 
                                 <h3 style="display: block;">Leaderboards</h3>
                             </ul>
-
+                            {% if current_user.is_authenticated and current_user.get_id is not none %}
                             <ul class="right">
                                 <li class=" has-dropdown bg-white">
-                                    <a class="bg-white" href="#"><img alt="" class="admin-pic img-circle" src="http://api.randomuser.me/portraits/thumb/men/28.jpg"><span class="admin-pic-text text-gray">Hi, {{current_user.username}} </span>
+                                    <a class="bg-white" href="#"><img alt="" class="admin-pic img-circle" src="{{current_user.avatar}} "><span class="admin-pic-text text-gray">Hi, {{current_user.username}} </span>
                                     </a>
 
                                     <ul class="dropdown dropdown-nest profile-dropdown">
-
-                                        <li>
-                                            <i class="icon-user"></i>
-                                            <a href="#">
-                                                <h4>Profile<span class="text-aqua fontello-record" ></span></h4>
-                                            </a>
-                                        </li>
                                         <li>
                                             <i class="icon-folder-open"></i>
-                                            <a href="#">
+                                            <a href="{{ url_for('dashboard_home')}}">
                                                 <h4>Account<span class="text-blue fontello-record" ></span></h4>
                                             </a>
                                         </li>
                                         <li>
                                             <i class="icon-upload"></i>
-                                            <a href="/logout">
+                                            <a href="{{ url_for('logout')}}">
                                                 <h4>Logout<span class="text-dark-blue fontello-record" ></span></h4>
                                             </a>
                                         </li>
                                     </ul>
                                 </li>
                             </ul>
+                            {% else %}
+                            <ul class="right">
+                                <li class="bg-white">
+                                    <a class="bg-white" href="{{ url_for('login',next='leaderboards_main') }}"><img alt="Log in through Steam" src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_small.png"></a>
+                                </li>
+                            </ul>
+                            {% endif %}
                         </section>
                     </nav>
                 </div>
@@ -106,14 +110,6 @@
                     <div class="large-12 columns">
                         <div class="box">
                             <div class="box-header bg-transparent">
-                                <!-- tools box -->
-                                <div class="pull-right box-tools">
-
-                                    <span class="box-btn" data-widget="collapse"><i class="icon-minus"></i>
-                                    </span>
-                                    <span class="box-btn" data-widget="remove"><i class="icon-cross"></i>
-                                    </span>
-                                </div>
                                 <h3 class="box-title"><i class="fontello-th-large-outline"></i>
                                     <span>Leaderboards</span>
                                 </h3>
@@ -145,8 +141,8 @@
                                     <tbody>
                                         {% for score in stats_page.items %}
                                             <tr>
-                                                <td><img class="chat-pic" src="{{score.avatar}}"/><div class="username" style="margin-top:10px; font-weight:bold;">{{score.steamid}}</div></td>
-                                                <td>{{score.game_map}}</td>
+                                                <td><img class="chat-pic" src="{{ get_steamid_avatar(score.steamid) }}"/><div class="username" style="margin-top:10px; font-weight:bold;">{{ get_steamid_personaname(score.steamid) }}</div></td>
+                                                <td>{{score.game_map}}</span></td>
                                                 <td>{{score.timeconverted}}</td>
                                                 <td>{{score.tick_rate}}</td>
                                                 <td>{{score.date}}</td>
@@ -178,6 +174,7 @@
                 <!-- End of Container Begin -->
 
                 <footer>
+                <center>{{ place_steamlink()|safe }}</center>
                     <div id="footer">Copyright &copy; 2015 <a href="http://themeforest.net/user/matirasa">Matirasa</a> Made with <i class="fontello-heart-1 text-green"></i></div>
 
                 </footer>
