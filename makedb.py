@@ -13,9 +13,9 @@ try:
 
     #We don't create it because we just don't need it (yet)
     print "Creating webmaster user"
-    #user = DBUser(3123123, access=1)
-    #db.session.add(user)
-    #db.session.commit()
+    user = DBUser(3123123, access=11)
+    db.session.add(user)
+    db.session.commit()
 
     print "Creating first score"
     score = DBScore("76561198030388441", "bhop_monsterjam", 3960, 66, "lololololololololol")
