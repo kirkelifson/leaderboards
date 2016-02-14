@@ -1,0 +1,32 @@
+<html>
+<head>
+	<title>Momentum Userslist management</title>
+	<link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
+</head>
+<body>
+<center>
+<p><strong>Access levels:</strong><br> 0 is banned for users<br>1 and 2 normal users.<br>7 is minimum momentum mod team member, up to 10, that is, admin.
+<br>11 is WebMaster. DO NOT USE IT
+<br>Note that your edits won't be taken into account if you try to edit a member with more access level than you, nor try to edit yourself
+<br>If you want to edit yourself, go <a href="{{ url_for('dashboard_settings',destination='settings')}}">to the settings page</a> or <a href="{{ url_for('dashboard_manage',destination='manage')}}">to the manage page</a></p>
+<br>
+</center>
+{% for user in listing %}
+ <form action="#" method=post>
+                <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                {{ user.csrf_token }}
+
+                {{ user.steamid(readonly="readonly") }}
+
+                {{ user.username }}
+
+                {{ user.email}}
+
+                {{ user.access.label }}
+                {{ user.access(placeholder='Access level',type='number',min="0",max="11") }}
+
+                {{ user.submit }}
+            </form>
+{% endfor %}
+</body>
+</html>

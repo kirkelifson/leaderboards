@@ -4,7 +4,7 @@ from flask_login import login_user, logout_user, current_user
 
 from core import app
 from core.models import DBUser, DBTeam
-from core.routes.defuseraccess import lvl_min_userof_momentumteam
+from core.routes.defuseraccess import lvl_min_userof_momentumteam, lvl_userof_momentumteam_admin, lvl_web_maintainment
 from flask.ext.wtf import Form
 from wtforms import TextField, TextAreaField, SubmitField
 from wtforms.validators import InputRequired, Email, Optional
@@ -34,7 +34,13 @@ class SettingsForm(Form):
     email = TextField("Email", validators=[InputRequired("Enter a valid email"), Email("Email must be valid")])
     submit = SubmitField("Send")
 
-dashboard_destinations = ['home','manage','settings']
+class UserlistForm(Form):
+    steamid = TextField("Steamid", validators=[InputRequired("Steamid can not be empty")])
+    username = 'Username'
+    access = TextField("Access", validators=[InputRequired("Access level can not be empty")])
+    email = 'Email'
+    submit = SubmitField("Send")
+dashboard_destinations = ['home','manage','settings','manageuserslist']
 
 def is_valid_destination(destination):
     return destination in dashboard_destinations
@@ -75,6 +81,52 @@ def dashboard_manage():
             except:
                 flash('An error occurred while trying to process your info. Your info has not been saved')
         return render_template('dashboard/manage.html',destination='manage',form=form)
+    else:
+        flash('Authorized personnel only.', category='login')
+        return redirect(url_for('login', next='dashboard_r_home'))
+
+@app.route('/dashboard/manage/userslist', methods=['GET', 'POST'])
+def dashboard_manage_userlists():
+    if current_user.get_id() is not None and current_user.is_authenticated:    
+        if current_user.access >= lvl_userof_momentumteam_admin():
+            if request.method == 'GET':
+                listing = []
+                users = DBUser.query.all()
+                for user in users:
+                    uform = UserlistForm()
+                    uform.username = user.username
+                    uform.email= user.email
+                    uform.access.data = user.access
+                    uform.steamid.data= user.steamid
+                    listing.append(uform)          
+                return render_template('dashboard/userlist.html',destination='manageuserslist', listing=listing)
+            else:
+                # We try to get a user with the given steamid
+                #try:
+                    if request.form.get('steamid') == None:
+                        return ('No steamid submited.')
+                    user = DBUser.query.filter_by(steamid=str(request.form.get('steamid'))).first()
+                    if user is None:
+                        return('Error while querying the user. No user found with desired steamid '+ str(request.form.get('steamid')) +'.')
+                    else:
+                        if user.access >= current_user.access:
+                            return ('You don\'t have enough permissions to edit this user.')
+                        else: # We can edit the user
+                            prev = user.access
+                            if str(user.access) == str(request.form.get('access')):
+                                return ('Tried to change to the same access.')
+                            else:
+                                if user.steamid == current_user.steamid:
+                                    # We can't reach here because last if checks if we have the same access than the modified.. I DO have the same access level than myself
+                                    return ('You can\'t edit yourself. Try with <a href=\"' + url_for('dashboard_settings') + '\">the settings page</a>.')
+                                else:
+                                    user.update_accesslevel(request.form.get('access'))
+                                    return '<center>User edited: (Access) ' + str(prev) + ' -> ' + str(user.access) + '<br><a href=\"' + url_for('dashboard_manage_userlists') + '\"><< Back to user list</a></center>'
+                #except:
+                    return ('Error while querying.')
+        else:
+            flash('Not enough permissions')
+            return redirect(url_for('dashboard_r_home'))
     else:
         flash('Authorized personnel only.', category='login')
         return redirect(url_for('login', next='dashboard_r_home'))

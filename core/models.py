@@ -22,6 +22,9 @@ def dump_datetime(value):
         return None
     return [value.strftime("%Y-%m-%d"), value.strftime("%H:%M:%S")]
 
+def clamp(n, smallest, largest):
+    return max(smallest, min(n, largest))
+
 class DBMap(db.Model):
     __tablename__ = 'maps'
     id = db.Column(INTEGER(unsigned=True), primary_key=True)
@@ -167,6 +170,19 @@ class DBUser(db.Model, UserMixin):
                 member = DBTeam(self.steamid, nickname=self.username, priority = lvl_userof_momentumteam_admin() - self.access)
                 db.session.add(member)
                 db.session.commit()
+            else:
+                pre.user_rejoined()
+
+    def upgradeto_memberof_momentum_access(self, access):
+        if access >= lvl_min_userof_momentumteam():
+            pre = DBTeam.query.filter_by(steamid=self.steamid).first()
+            if pre is None:
+                member = DBTeam(self.steamid, nickname=self.username, priority = lvl_userof_momentumteam_admin() - int(access))
+                db.session.add(member)
+                db.session.commit()
+            else:
+                pre.user_rejoined()
+            
 
     def get_steam_userinfo(self):
         options = {
@@ -202,19 +218,15 @@ class DBUser(db.Model, UserMixin):
             db.session.commit()
 
     def update_accesslevel(self, newaccess):
-        if self.access == newaccess:
-            return
-        if newaccess > lvl_userof_momentumteam_admin():
-            newaccess = lvl_userof_momentumteam_admin()
-        if newaccess < lvl_user_banned():
-            newaccess = lvl_user_banned()
-        if self.access < lvl_min_userof_momentumteam() and newaccess >= lvl_min_userof_momentumteam:
-            member = DBTeam(self.steamid, nickname=self.username, priority = lvl_userof_momentumteam_admin() - newaccess)
-            db.session.add(member)
-        if self.access >= lvl_min_userof_momentumteam() and newaccess < lvl_min_userof_momentumteam:
-            db.session.delete(DBTeam.query.filter_by(steamid=self.steamid).first())
-        self.access = newaccess
-        db.session.commit()
+        if not self.access == newaccess:
+            if self.access < lvl_min_userof_momentumteam() and newaccess >= lvl_min_userof_momentumteam():
+                self.upgradeto_memberof_momentum_access(newaccess)
+            if self.access >= lvl_min_userof_momentumteam() and newaccess < lvl_min_userof_momentumteam():
+                member = DBTeam.query.filter_by(steamid=self.steamid).first()
+                if member is not None:
+                    member.user_teamleft()
+            self.access = newaccess
+            db.session.commit()
 
     def update_lastlogin(self):
         self.last_login = func.utc_timestamp()
@@ -273,6 +285,7 @@ class DBTeam(db.Model):
     nickname = db.Column(VARCHAR(255))
     role = db.Column(VARCHAR(255))
     priority = db.Column(TINYINT())
+    left = db.Column(BOOLEAN(),default=False)
 
     def __init__(self, steamid, realname=None, nickname=None, role=None, priority=0):
         self.steamid = steamid
@@ -285,5 +298,13 @@ class DBTeam(db.Model):
         self.nickname = nickname
         self.realname = realname
         self.role = role
-        db.session.commit()        
+        db.session.commit()
+
+    def user_teamleft(self):
+        self.left = True
+        db.session.commit()
+
+    def user_rejoined(self):
+        self.left = False
+        db.session.commit()
 
