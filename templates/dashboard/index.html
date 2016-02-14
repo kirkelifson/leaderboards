@@ -75,6 +75,13 @@
                                     </a>
 
                                 </li>
+                                  <li>
+                                    <a class="tooltip-tip {%if destination == 'settings'%}selected{%endif%}"
+                                    href="{%if destination == 'settings'%}#{%else%}{{url_for('dashboard',destination='settings')}}{%endif%}" title="Manage your account">
+                                    <i class="fa fa-cogs"></i>
+                                    <span>Settings</span>
+
+                                </a>
                                 {% if current_user.access >= lvl_min_userof_momentumteam() %}
                                 <li>
                                     <a class="tooltip-tip {%if destination == 'manage'%}selected{%endif%}"

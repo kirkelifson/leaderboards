@@ -30,7 +30,11 @@ class ManageForm(Form):
     role = TextField("Role", validators=[InputRequired("Your role can not be empty")])
     submit = SubmitField("Send")
 
-dashboard_destinations = ['home','manage']
+class SettingsForm(Form):
+    email = TextField("Email", validators=[InputRequired("Enter a valid email"), Email("Email must be valid")])
+    submit = SubmitField("Send")
+
+dashboard_destinations = ['home','manage','settings']
 
 def is_valid_destination(destination):
     return destination in dashboard_destinations
@@ -81,6 +85,23 @@ def dashboard_home():
     else:
         flash('You need to log in before being able to acces the resource.', category='login')
         return redirect(url_for('login', next='dashboard_r_home'))
+
+@app.route('/dashboard/settings', methods=['GET', 'POST'])
+def dashboard_settings():
+    if current_user.get_id() is not None and current_user.is_authenticated and current_user.access >= lvl_min_userof_momentumteam():
+        form = SettingsForm()
+        if request.method == 'GET':
+            form.email.data = current_user.email
+        else:
+            try:
+                if not current_user.email == form.email.data:
+                    current_user.handlenewemail(form.email.data)
+            except:
+                flash('An error occurred while trying to process your info. Your info has not been saved',category='dashboard')
+        return render_template('dashboard/settings.html', destination='settings', form=form)
+    else:
+        flash('You need to log in before being able to acces the resource.', category='login')
+        return redirect(url_for('login', next='dashboard_settings'))
 
 def momteam_pending():
     if current_user.get_id() is not None and current_user.is_authenticated and current_user.access >= lvl_min_userof_momentumteam():

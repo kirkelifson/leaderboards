@@ -117,6 +117,7 @@ class DBUser(db.Model, UserMixin):
     id = db.Column(INTEGER(unsigned=True), primary_key=True)
     username = db.Column(VARCHAR(30), unique=False)
     email = db.Column(VARCHAR(255), unique=True)
+    verified = db.Column(BOOLEAN(), default=False)
     access = db.Column(SMALLINT(unsigned=True), default=lvl_newuser_noverified())
     steamid = db.Column(BIGINT(unsigned=True), unique=True, nullable=False)
     avatar = db.Column(TEXT())
@@ -191,9 +192,13 @@ class DBUser(db.Model, UserMixin):
             db.session.commit()
         return changes
 
-    def update_verifiedemail(self):
-        if self.access == lvl_newuser_noverified():
-            self.access = lvl_newuser_verified()
+    def update_handlenewemail(self, email):
+        if not self.verified and email is not None:
+            #Here goesa random token sent to the email to confirm it
+            #self.token = RANDOMTOKEN
+            self.email = email
+            #Here we would send an email to verify it, For now, we just set it to verified.
+            self.verified = True
             db.session.commit()
             flash('Your email ' + str(self.email) + ' has been verified')
         else:

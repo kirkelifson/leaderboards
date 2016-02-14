@@ -1,0 +1,21 @@
+{% extends "dashboard/index.html" %}
+{% block body %}
+<div class="large columns" style="margin-top: 1.2em">
+    <div class="your-account">
+        <div class="row">
+                {% for message in get_flashed_messages() %}
+                <div class="flash">{{ message }}</div>
+                {% endfor %}
+            <form action="#" method=post>
+                <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                {{ form.csrf_token }}
+
+                {{ form.email.label }}
+                {{ form.email(placeholder='Your email') }}
+
+                {{ form.submit }}
+            </form>
+        </div>
+    </div>
+</div>           
+{% endblock %}
