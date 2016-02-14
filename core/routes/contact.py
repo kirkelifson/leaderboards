@@ -4,7 +4,7 @@ from flask import render_template, redirect, request, flash, url_for, jsonify
 from flask.ext.wtf import Form, RecaptchaField
 from wtforms import TextField, TextAreaField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Email, Optional
-
+from flask_login import current_user
 from urlparse import urljoin
 from urllib import urlencode
 import urllib2 as urlrequest
@@ -58,8 +58,13 @@ def contact():
             try:
                 userid = ''
                 if current_user.get_id() is not None and current_user.is_authenticated:
-                    userid = '(Is logged in as <' + str(current_user.steamid) +'>)'
-                msg =  "New message from *" + str(form.name.data.encode('utf-8')) + "* (" + str(form.email.data.encode('utf-8')) + ") directed to " + department_convert.get(str(form.department.data.encode('utf-8')), "@channel") +"\nSubject: " + str(form.subject.data.encode('utf-8')) + "\n\n" + str(form.message.data.encode('utf-8'))
+                    userid = '\n(Is logged in as <http://steamcommunity.com/profiles/'+ str(current_user.steamid) +'|' + str(current_user.steamid) +'>'
+                    if current_user.email is not None:
+                        userid += ' Registered email: '+ current_user.email
+                        if not current_user.verified:
+                            userid += ' - Not verified'
+                    userid += ')'
+                msg =  "New message from *" + str(form.name.data.encode('utf-8')) + "* (" + str(form.email.data.encode('utf-8')) + ") directed to " + department_convert.get(str(form.department.data.encode('utf-8')), "@channel") + str(userid) + "\nSubject: " + str(form.subject.data.encode('utf-8')) + "\n\n" + str(form.message.data.encode('utf-8'))
             except:
                 flash('An error ocurred while processing the message. Ensure the message is valid')
                 return render_template('contact.html', form=form, success=False)
@@ -77,4 +82,7 @@ def contact():
             form.department.data = depart.encode('utf-8')
         if not request.args.get('subject') is None:
             form.subject.data = request.args.get('subject').encode('utf-8')
+        if current_user.email is not None:
+            form.email.data = current_user.email
+        form.name.data = current_user.username
         return render_template('contact.html', form=form)
