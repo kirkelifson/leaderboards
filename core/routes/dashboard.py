@@ -71,6 +71,7 @@ def dashboard_manage():
                     flash('A very big internal error has happend. Please contact the webmaster' + url_for(contact))
                 else: 
                     member.user_updateinfo(str(form.nickname.data.encode('utf-8')),str(form.realname.data.encode('utf-8')),str(form.role.data.encode('utf-8')))
+                    flash('Info updated')
             except:
                 flash('An error occurred while trying to process your info. Your info has not been saved')
         return render_template('dashboard/manage.html',destination='manage',form=form)
@@ -95,8 +96,10 @@ def dashboard_settings():
         else:
             try:
                 if not current_user.email == form.email.data:
-                    current_user.handlenewemail(form.email.data)
+                    current_user.update_handlenewemail(form.email.data)
+                    flash('Email adress updated')
             except:
+                form.email.data = None
                 flash('An error occurred while trying to process your info. Your info has not been saved',category='dashboard')
         return render_template('dashboard/settings.html', destination='settings', form=form)
     else:

@@ -193,16 +193,13 @@ class DBUser(db.Model, UserMixin):
         return changes
 
     def update_handlenewemail(self, email):
-        if not self.verified and email is not None:
+        if email is not None:
             #Here goesa random token sent to the email to confirm it
             #self.token = RANDOMTOKEN
             self.email = email
             #Here we would send an email to verify it, For now, we just set it to verified.
             self.verified = True
             db.session.commit()
-            flash('Your email ' + str(self.email) + ' has been verified')
-        else:
-            flash('Email already verified')
 
     def update_accesslevel(self, newaccess):
         if self.access == newaccess:
