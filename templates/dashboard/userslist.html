@@ -5,8 +5,9 @@
 </head>
 <body>
 <center>
-<p><strong>Access levels:</strong><br> 0 is banned for users<br>1 and 2 normal users.<br>7 is minimum momentum mod team member, up to 10, that is, admin.
-<br>11 is WebMaster. DO NOT USE IT
+<p><strong>Access levels:</strong><br>
+From <b>1</b> to <b>7</b>, the ranks names are:<br>
+rank_user_banned (<b><i>1</i></b>), rank_user_normal (<b><i>2</i></b>), rank_user_senior (<b><i>3</i></b>), rank_momentum_normal (<b><i>4</i></b>), rank_momentum_senior (<b><i>5</i></b>), rank_momentum_admin (<b><i>6</i></b>), rank_webmaster (<b><i>7</i></b>)
 <br>Note that your edits won't be taken into account if you try to edit a member with more access level than you, nor try to edit yourself
 <br>If you want to edit yourself, go <a href="{{ url_for('dashboard_settings',destination='settings')}}">to the settings page</a> or <a href="{{ url_for('dashboard_manage',destination='manage')}}">to the manage page</a></p>
 <br>
@@ -23,7 +24,7 @@
                 {{ user.email}}
 
                 {{ user.access.label }}
-                {{ user.access(placeholder='Access level',type='number',min="0",max="11") }}
+                {{ user.access(placeholder='Access level',type='number',min="1",max="7") }}
 
                 {{ user.submit }}
             </form>

@@ -11,7 +11,9 @@ from sqlalchemy.dialects.mysql import *
 from sqlalchemy.sql import func
 from core import app
 from flask.ext.login import UserMixin
-from core.routes.defuseraccess import lvl_newuser_noverified, lvl_min_userof_momentumteam, lvl_userof_momentumteam_admin, lvl_user_banned
+from flask import url_for
+from core.routes.defuseraccess import rank_user_banned, rank_user_normal, rank_momentum_normal, rank_momentum_admin, rank_webmaster
+from core.routes.sendemail import EmailConnection
 
 saltset = string.letters + string.digits
 db = SQLAlchemy(app)
@@ -21,9 +23,6 @@ def dump_datetime(value):
     if value is None:
         return None
     return [value.strftime("%Y-%m-%d"), value.strftime("%H:%M:%S")]
-
-def clamp(n, smallest, largest):
-    return max(smallest, min(n, largest))
 
 class DBMap(db.Model):
     __tablename__ = 'maps'
@@ -121,7 +120,7 @@ class DBUser(db.Model, UserMixin):
     username = db.Column(VARCHAR(30), unique=False)
     email = db.Column(VARCHAR(255), unique=True)
     verified = db.Column(BOOLEAN(), default=False)
-    access = db.Column(SMALLINT(unsigned=True), default=lvl_newuser_noverified())
+    access = db.Column(SMALLINT(unsigned=True), default=rank_user_normal)
     steamid = db.Column(BIGINT(unsigned=True), unique=True, nullable=False)
     avatar = db.Column(TEXT())
     token = db.Column(VARCHAR(32))
@@ -159,25 +158,25 @@ class DBUser(db.Model, UserMixin):
             rv = DBUser(steamid, username=newuser["personaname"], access=access)
             db.session.add(rv)
             db.session.commit()
-        if rv is not None and rv.access >=lvl_min_userof_momentumteam() and DBTeam.query.filter_by(steamid=rv.steamid).first() is None:
+        if rv is not None and rv.access >= rank_momentum_normal:
             rv.upgradeto_memberof_momentum()
         return rv
 
     def upgradeto_memberof_momentum(self):
-        if self.access >= lvl_min_userof_momentumteam():
+        if self.access >= rank_momentum_normal:
             pre = DBTeam.query.filter_by(steamid=self.steamid).first()
             if pre is None:
-                member = DBTeam(self.steamid, nickname=self.username, priority = lvl_userof_momentumteam_admin() - self.access)
+                member = DBTeam(self.steamid, nickname=self.username, priority = rank_momentum_admin - self.access)
                 db.session.add(member)
                 db.session.commit()
             else:
                 pre.user_rejoined()
 
     def upgradeto_memberof_momentum_access(self, access):
-        if access >= lvl_min_userof_momentumteam():
+        if access >= rank_momentum_normal:
             pre = DBTeam.query.filter_by(steamid=self.steamid).first()
             if pre is None:
-                member = DBTeam(self.steamid, nickname=self.username, priority = lvl_userof_momentumteam_admin() - int(access))
+                member = DBTeam(self.steamid, nickname=self.username, priority = rank_momentum_admin - int(access))
                 db.session.add(member)
                 db.session.commit()
             else:
@@ -210,18 +209,29 @@ class DBUser(db.Model, UserMixin):
 
     def update_handlenewemail(self, email):
         if email is not None:
-            #Here goesa random token sent to the email to confirm it
-            #self.token = RANDOMTOKEN
+            #Here goes a random token sent to the email to confirm it
+            self.verified = False
+            sep = ''
+            self.token = sep.join([random.choice(saltset) for x in xrange(42)])
             self.email = email
-            #Here we would send an email to verify it, For now, we just set it to verified.
-            self.verified = True
+            mailing = EmailConnection('sender','server','port','username','password')
+            mailing.send(email,'Momentum Mod verify email','Please follow <a href=\"http://momentum-mod.org'+url_for('dashboard_settings_verifyemail',token=self.token)+'\">'+url_for('dashboard_settings_verifyemail',token=self.token)++'</a> to verify your email')
             db.session.commit()
+
+    def update_verifyemail(self):
+        self.verified=True
+        self.token = None
+        db.session.commit()
 
     def update_accesslevel(self, newaccess):
         if not self.access == newaccess:
-            if self.access < lvl_min_userof_momentumteam() and newaccess >= lvl_min_userof_momentumteam():
+            if newaccess < rank_user_banned:
+                newaccess = rank_user_banned
+            if newaccess < rank_webmaster:
+                newaccess = rank_webmaster
+            if self.access < rank_momentum_normal and newaccess >= rank_momentum_normal:
                 self.upgradeto_memberof_momentum_access(newaccess)
-            if self.access >= lvl_min_userof_momentumteam() and newaccess < lvl_min_userof_momentumteam():
+            if self.access >= rank_momentum_normal and newaccess < rank_momentum_normal:
                 member = DBTeam.query.filter_by(steamid=self.steamid).first()
                 if member is not None:
                     member.user_teamleft()
@@ -233,7 +243,7 @@ class DBUser(db.Model, UserMixin):
         db.session.commit()
 
     def ban_user(self):
-        update_accesslevel(lvl_user_banned())
+        update_accesslevel(rank_user_banned)
         
     def __repr__(self):
         return '<User %r>' % self.username
