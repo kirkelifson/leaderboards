@@ -318,3 +318,19 @@ class DBTeam(db.Model):
         self.left = False
         db.session.commit()
 
+class DBContributor(db.Model):
+    __tablename__ = 'contributors'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True)
+    name = db.Column(VARCHAR(255), nullable=False)
+    role = db.Column(VARCHAR(255))
+    special = db.Column(BOOLEAN(),default=False)
+
+    def __init__(self, name, role=None, special=False):
+        self.name = name
+        self.role = role
+        self.special = special
+
+    def addmyself(self):
+        db.session.add(self)
+        db.session.commit()
+    

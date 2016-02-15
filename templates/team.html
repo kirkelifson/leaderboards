@@ -43,12 +43,21 @@
         }
         .box-body p {
         	color: #000;
-        	font-weight: bold;
+        	font-weight: normal;
+        	font-family: Arial, Courier
         }
 
         .box-body a {
         	text-decoration:underline;
         }
+
+       .name:first-letter {
+			text-transform: uppercase
+		}
+
+		h5 {
+			color:rgb(25,70,150);
+		}
     </style>
 </head>
 
@@ -75,9 +84,20 @@
                     <!-- End of Profile -->
                     <!-- /.box-header -->
                     <div class="box-body" style="display: block;">
+                    <h5>Momentum Team</h5>
                     {% for member in team %}
                         	<p>{% if member.realname is not none %}{{ member.realname }}{% endif %}{% if member.nickname is not none %} ({{ member.nickname }}){% endif %}{% if member.role is not none %} - {{ member.role }}{% endif %}</p>
-                    {% endfor %}              
+                    {% endfor %}
+                    <h5>Contributors</h5>
+                    {% for member in contributors %}
+						<p class="name">{{ member.name }}{% if member.role is not none %} for {{ member.role }}{% endif %}</p>
+					{% endfor %} 
+					<h5>Special thanks to...</h5>
+                    {% for member in specials %}
+						<p class="name">{{ member.name }}{% if member.role is not none %} for {{ member.role }}{% endif %}</p>
+					{% endfor %}
+					<p class="name">Everyone that has ever contributed</p>
+					<p class="name">And VALVe</p>
                     </div>
                     {% if showlink %}
                     <a href="{{ url_for('team_credits') }}">As credits.txt file</a>
@@ -131,6 +151,9 @@
 		font-face: Console;
 		padding:0px;
 		margin: 0px
+	}
+	.name:first-letter {
+		text-transform: uppercase
 	}
 	</style>
 	<link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
@@ -189,16 +212,18 @@
 <p>	" "	"CreditsOutroText"</p>
 <p>	"Contributors" "CreditsOutroTextLarge"</p>
 <p>	// Add yourself here</p>
-
+	{% for member in contributors %}
+<p class="name">"{{ member.name }}{% if member.role is not none %} for {{ member.role }}{% endif %}" "CreditsOutroText"</p>
+	{% endfor %}
 <p>	//-----------------</p>
 <p>	" "	"CreditsOutroText"</p>
 <p>	" "	"CreditsOutroText"</p>
 <p>	" "	"CreditsOutroText"</p>
 <p>	" "	"CreditsOutroText"</p>
 <p>	"Special thanks to:"   "CreditsOutroTextLarge"</p>
-<p>	"Ivan Vashchaev for his JSON parser GASON"   "CreditsOutroText"</p>
-<p>	"Slack Technologies Inc." "CreditsOutroText"</p>
-<p>	"The Rhino Burger for their cover of Tiagre at Dawn" "CreditsOutroText"</p>
+	{% for member in specials %}
+<p class="name">"{{ member.name }}{% if member.role is not none %} for {{ member.role }}{% endif %}" "CreditsOutroText"</p>
+	{% endfor %}
 <p>	"everyone who has ever contributed"   "CreditsOutroText"</p>
 <p>	"and"	"CreditsOutroText"</p>
 <p>	" "	"CreditsOutroText"</p>

@@ -3,17 +3,23 @@ from flask import render_template, redirect, request, flash, url_for, abort
 from flask_login import login_user, logout_user, current_user, login_required
 
 from core import app
-from core.models import DBUser, DBTeam
-from core.routes.defuseraccess import rank_user_banned, rank_momentum_normal, rank_momentum_admin, rank_webmaster, access_required
+from core.models import DBUser, DBTeam, DBContributor
+from core.routes.defuseraccess import rank_user_banned, rank_momentum_normal, rank_momentum_admin, rank_webmaster, access_required, rank_momentum_senior
 from flask.ext.wtf import Form
-from wtforms import TextField, TextAreaField, SubmitField
+from wtforms import TextField, BooleanField, SubmitField
 from wtforms.validators import InputRequired, Email, Optional
 
 class ManageForm(Form):
     nickname = TextField("Nickname")
     realname = TextField("Real name")
     role = TextField("Role", validators=[InputRequired("Your role can not be empty")])
-    submit = SubmitField("Send")
+    submit = SubmitField("Update info")
+
+class ContributorForm(Form):
+    name = TextField("Name", validators=[InputRequired("Name can not be empty")])
+    type = TextField("Role")
+    special = BooleanField("Is special thanks?")
+    submit = SubmitField("Add contributor")
 
 class SettingsForm(Form):
     email = TextField("Email", validators=[InputRequired("Enter a valid email"), Email("Email must be valid")])
@@ -46,6 +52,7 @@ def dashboard_r_home():
 @access_required(rank_momentum_normal,'dashboard_r_home')
 def dashboard_manage():
     form = ManageForm()
+    contrib = ContributorForm()
     if request.method == 'GET':
         member = DBTeam.query.filter_by(steamid=current_user.steamid).first()
         if member is None:
@@ -55,21 +62,53 @@ def dashboard_manage():
         form.role.data = member.role
     else:
         try:
-            member = DBTeam.query.filter_by(steamid=current_user.steamid).first()
-            if member is None:
-                flash('A very big internal error has happend. Please contact the webmaster' + url_for(contact))
-            else: 
-                member.user_updateinfo(str(form.nickname.data.encode('utf-8')),str(form.realname.data.encode('utf-8')),str(form.role.data.encode('utf-8')))
-                flash('Info updated')
+            if form.validate():
+                member = DBTeam.query.filter_by(steamid=current_user.steamid).first()
+                if member is None:
+                    flash('A very big internal error has happend. Please contact the webmaster' + url_for(contact))
+                else: 
+                    member.user_updateinfo(str(form.nickname.data.encode('utf-8')),str(form.realname.data.encode('utf-8')),str(form.role.data.encode('utf-8')))
+                    flash('Info updated')
+            else:
+                flash('Form validation failed. Check your inputs.')
         except:
             flash('An error occurred while trying to process your info. Your info has not been saved')
-    return render_template('dashboard/manage.html',destination='manage',form=form)
+    return render_template('dashboard/manage.html',destination='manage', form=form, form_contributor=contrib)
+
+@app.route('/dashboard/manage/addcontributor', methods=['GET', 'POST'])
+@access_required(rank_momentum_senior,'dashboard_r_home')
+def dashboard_manage_contributors():
+    if request.method == 'GET':
+        return redirect(url_for('dashboard_r_home'))
+    contrib = ContributorForm()
+    contrib.name.data = request.form.get('name')
+    rol = request.form.get('type')
+    if not rol:
+        rol = None
+    contrib.type.data = rol
+    special = False
+    if request.form.get('special') == 'y':
+        special = True
+    contrib.special.data = special
+    if contrib.validate() == True:
+        try:
+            contributor = DBContributor(contrib.name.data, contrib.type.data, contrib.special.data)
+            contributor.addmyself()
+            spec = ''
+            if contrib.special.data:
+                spec = '(special) '
+            return 'Succes, the '+ spec +'contributor '+ contrib.name.data +' added.<br><a href=\"'+ url_for('dashboard_manage') +'\"><< Back to manage</a>'
+        except:
+            return 'Error creating the new contributor.<br><a href=\"'+ url_for('dashboard_manage') +'\"><< Back to manage</a>'
+    else:
+        return 'Error creating the new contributor. Form input is faulty.<br>Name: '+ contrib.name.data +'<br>Role: '+ contrib.type.data +'<br>Special?: '+ str(contrib.special.data) + '<br><a href=\"'+ url_for('dashboard_manage') +'\"><< Back to manage</a>'
+                
 
 @app.route('/dashboard/manage/userslist', methods=['GET', 'POST'])
 @access_required(rank_momentum_admin,'dashboard_r_home')
-def dashboard_manage_userlists():    
+def dashboard_manage_userlists():
+    listing = []
     if request.method == 'GET':
-        listing = []
         users = DBUser.query.all()
         for user in users:
             uform = UserlistForm()
@@ -82,27 +121,31 @@ def dashboard_manage_userlists():
     else:
         # We try to get a user with the given steamid
         try:
-            if request.form.get('steamid') == None:
-                return ('No steamid submited.')
-            user = DBUser.query.filter_by(steamid=str(request.form.get('steamid'))).first()
-            if user is None:
-                return('Error while querying the user. No user found with desired steamid '+ str(request.form.get('steamid')) +'.')
-            else:
-                if user.access >= current_user.access:
-                    return ('You don\'t have enough permissions to edit this user.')
-                else: # We can edit the user
-                    prev = user.access
-                    if str(user.access) == str(request.form.get('access')):
-                        return ('Tried to change to the same access.')
-                    else:
-                        if user.steamid == current_user.steamid:
-                            # We can't reach here because last if checks if we have the same access than the modified.. I DO have the same access level than myself
-                            return ('You can\'t edit yourself. Try with <a href=\"' + url_for('dashboard_settings') + '\">the settings page</a>.')
+            if uform.validate():
+                if request.form.get('steamid') == None:
+                    return ('No steamid submited.')
+                user = DBUser.query.filter_by(steamid=str(request.form.get('steamid'))).first()
+                if user is None:
+                    return('Error while querying the user. No user found with desired steamid '+ str(request.form.get('steamid')) +'.')
+                else:
+                    if user.access >= current_user.access:
+                        return ('You don\'t have enough permissions to edit this user.')
+                    else: # We can edit the user
+                        prev = user.access
+                        if str(user.access) == str(request.form.get('access')):
+                            return ('Tried to change to the same access.')
                         else:
-                            user.update_accesslevel(request.form.get('access'))
-                            return '<center>User edited: (Access) ' + str(prev) + ' -> ' + str(user.access) + '<br><a href=\"' + url_for('dashboard_manage_userlists') + '\"><< Back to user list</a></center>'
+                            if user.steamid == current_user.steamid:
+                                # We can't reach here because last if checks if we have the same access than the modified.. I DO have the same access level than myself
+                                return ('You can\'t edit yourself. Try with <a href=\"' + url_for('dashboard_settings') + '\">the settings page</a>.')
+                            else:
+                                user.update_accesslevel(request.form.get('access'))
+                                return '<center>User edited: (Access) ' + str(prev) + ' -> ' + str(user.access) + '<br><a href=\"' + url_for('dashboard_manage_userlists') + '\"><< Back to user list</a></center>'
+            else:
+                return 'Form could not be validated'
         except:
             return ('Error while querying.')
+        return render_template('dashboard/userslist.html',destination='manageuserslist', listing=listing)
 
 @app.route('/dashboard/home')
 @login_required
