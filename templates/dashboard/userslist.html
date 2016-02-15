@@ -2,6 +2,12 @@
 <head>
 	<title>Momentum Userslist management</title>
 	<link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
+    <style type="text/css">
+    .flash {
+        background-color:red;
+        color:#FFF;
+    }
+    </style>
 </head>
 <body>
 <center>
@@ -11,7 +17,13 @@ rank_user_banned (<b><i>1</i></b>), rank_user_normal (<b><i>2</i></b>), rank_use
 <br>Note that your edits won't be taken into account if you try to edit a member with more access level than you, nor try to edit yourself
 <br>If you want to edit yourself, go <a href="{{ url_for('dashboard_settings',destination='settings')}}">to the settings page</a> or <a href="{{ url_for('dashboard_manage',destination='manage')}}">to the manage page</a></p>
 <br>
+ {% for message in get_flashed_messages() %}
+                        <div class="flash">
+                            <h3>{{ message }}</h3>
+                        </div>
+                    {% endfor %}
 </center>
+
 {% for user in listing %}
  <form action="#" method=post>
                 <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">

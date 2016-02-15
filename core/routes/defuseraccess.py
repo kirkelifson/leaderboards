@@ -44,6 +44,8 @@ class ExtendedLoginManager(LoginManager):
 		return self.unauthenticated_callback()
 
 app.jinja_env.globals.update(rank_momentum_normal=rank_momentum_normal)
+app.jinja_env.globals.update(rank_momentum_admin=rank_momentum_admin)
+
 
 
     

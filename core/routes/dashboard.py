@@ -121,7 +121,12 @@ def dashboard_manage_userlists():
     else:
         # We try to get a user with the given steamid
         try:
-            if uform.validate():
+            preform = UserlistForm()
+            preform.username = request.form.get('username')
+            preform.email= request.form.get('email')
+            preform.access.data = request.form.get('access')
+            preform.steamid.data= request.form.get('steamid')
+            if preform.validate():
                 if request.form.get('steamid') == None:
                     return ('No steamid submited.')
                 user = DBUser.query.filter_by(steamid=str(request.form.get('steamid'))).first()
@@ -133,7 +138,7 @@ def dashboard_manage_userlists():
                     else: # We can edit the user
                         prev = user.access
                         if str(user.access) == str(request.form.get('access')):
-                            return ('Tried to change to the same access.')
+                            return ('Tried to change to the same access rank. (Maybe you are editing yourself?)')
                         else:
                             if user.steamid == current_user.steamid:
                                 # We can't reach here because last if checks if we have the same access than the modified.. I DO have the same access level than myself
