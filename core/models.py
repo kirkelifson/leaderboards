@@ -76,8 +76,6 @@ class DBScore(db.Model):
     tick_rate = db.Column(INTEGER(unsigned=True), nullable=False)
     zone_hash = db.Column(VARCHAR(512))
     date = db.Column(DATETIME(), nullable=False)
-    lastmodify = db.Column(DATETIME(), onupdate=func.utc_timestamp())
-    timesupdated = db.Column(INTEGER(unsigned=True),default=1)
 
     def __init__(self, steamid, game_map, tick_time, tick_rate, zone_hash):
         self.steamid = steamid
@@ -86,13 +84,6 @@ class DBScore(db.Model):
         self.tick_rate = tick_rate
         self.zone_hash = zone_hash
         self.date = time.strftime('%Y-%m-%d %H:%M:%S')
-
-    def update_runtime(self, newtickrate, newticktime):
-        self.tick_rate = newtickrate
-        self.tick_time = newticktime
-        self.timesupdated = self.timesupdated + 1
-        self.date = time.strftime('%Y-%m-%d %H:%M:%S')
-        db.session.commit()
 
     @property
     def serialize(self):
@@ -183,15 +174,11 @@ class DBUser(db.Model, UserMixin):
                 pre.user_rejoined()
             
 
-    def get_steam_userinfo(self):
-        options = {
-            'key': app.config['STEAM_API_KEY'],
-            'steamids': self.steamid
-        }
-        url = 'http://api.steampowered.com/ISteamUser/' \
-          'GetPlayerSummaries/v0001/?%s' % urllib.urlencode(options)
-        rv = json.load(urllib2.urlopen(url))
-        return rv['response']['players']['player'][0] or {}  
+    def get_steam_userinfo(self): 
+        return get_steam_userinfo(self.steamid) or {}
+
+    def get_friendslist(self):
+        return get_friendslist(self.steamid) or {}
     
     def update_steam_userinfo(self, userinfo):
         if userinfo is None:
@@ -248,15 +235,26 @@ class DBUser(db.Model, UserMixin):
     def __repr__(self):
         return '<User %r>' % self.username
 
+def get_friendslist(steamid):
+        options = {
+            'key': app.config['STEAM_API_KEY'],
+            'steamid': str(steamid),
+            'relationship': 'friend'
+        }
+        url = 'http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?%s' % urllib.urlencode(options)
+        rv = json.load(urllib2.urlopen(url))
+        return [trend['steamid'] for trend in rv['friendslist']['friends']] or {}
+
 def get_steam_userinfo(steamid):
         options = {
             'key': app.config['STEAM_API_KEY'],
-            'steamids': steamid
+            'steamids': str(steamid)
         }
         url = 'http://api.steampowered.com/ISteamUser/' \
           'GetPlayerSummaries/v0001/?%s' % urllib.urlencode(options)
         rv = json.load(urllib2.urlopen(url))
         return rv['response']['players']['player'][0] or {}
+
 def get_steamid_avatar(steamid):
     try:
         user = DBUser.query.filter_by(steamid=steamid).first()
@@ -264,12 +262,13 @@ def get_steamid_avatar(steamid):
             return user.avatar
         else:
             info = get_steam_userinfo(steamid)
-            if info is not None and info.avatar is not None:
-                return info.avatar
+            if info is not None and info['avatar']:
+                return info['avatar']
         #Default Steam '?' avatar
         return 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'
     except:
         return 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'
+
 def get_steamid_personaname(steamid):
     try:
         user = DBUser.query.filter_by(steamid=steamid).first()
@@ -277,8 +276,8 @@ def get_steamid_personaname(steamid):
             return user.username
         else:
             info = get_steam_userinfo(steamid)
-            if info is not None and info.personaname is not None:
-                return info.personaname
+            if info is not None and info['personaname']:
+                return info['personaname']
         return 'Unknown'
     except:
         return 'Unknown'
@@ -333,4 +332,29 @@ class DBContributor(db.Model):
     def addmyself(self):
         db.session.add(self)
         db.session.commit()
-    
+
+class DBRunComment(db.Model):
+    __tablename__ = 'runcomments'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True)
+    targetid = db.Column(INTEGER(unsigned=True), nullable=False)
+    fromsteamid = db.Column(BIGINT(unsigned=True), unique=False, nullable=False)
+    comment = db.Column(TEXT(),nullable=False)
+    date = db.Column(DATETIME(),nullable=False)
+    last_modify = db.Column(DATETIME(), onupdate=func.utc_timestamp())
+    edited = db.Column(BOOLEAN(),default=False, nullable=False)
+    atsecond = db.Column(INTEGER(unsigned=True), default=None, nullable=True)
+
+    def __init__(self, targetid, fromsteamid, comment, date=func.utc_timestamp(), atsecond=None):
+        self.targetid = targetid
+        self.fromsteamid = fromsteamid
+        self.comment = comment
+        self.date = date
+        self.edited = False
+        self.atsecond = atsecond
+
+    def edit(self, newcomment, atsecond):
+        self.comment = newcomment
+        self.atsecond = atsecond
+        db.session.commit()
+
+        
