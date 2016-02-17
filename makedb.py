@@ -11,18 +11,18 @@ try:
     print "Committing schema..."
     db.session.commit()
 
-    #We don't create it because we just don't need it (yet)
     print "Creating webmaster user"
-    #user = DBUser(3123123, access=1)
-    #db.session.add(user)
-    #db.session.commit()
-
-    print "Creating first score"
-    score = DBScore("76561198030388441", "bhop_monsterjam", 3960, 66, "lololololololololol")
+    user = DBUser(76561198011358548, access=11)
+    db.session.add(user)
+    db.session.commit()
 
     print "Creating first map"
-    map = DBMap("bhop_monsterjam", "Monster Jam", 2, 3, 1)
+    map = DBMap("bhop_monsterjam", "Monster Jam", 'http://cdn.momentum-mod.org/maps/bhop_monsterjam/bhop_monsterjam.bsp', 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg', 2, 3, 1)
 
+    print "Creating first score"
+    score = DBScore(76561198011358548, 1, 3960, 66, "lololololololololol")
+
+    
     db.session.add(map)
     db.session.add(score)
     db.session.commit()

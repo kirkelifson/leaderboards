@@ -168,7 +168,7 @@
 										<tr>
 											<td><img class="chat-pic" src="{{ get_steamid_avatar(score.steamid) }}"/><div class="username" style="margin-top:10px; font-weight:bold;"><a href="{{ url_for('leaderboards_player', steamid = score.steamid) }}">{{ get_steamid_personaname(score.steamid) }}</a></div></td>
 											{% if qtype != 'map' %}
-											<td><a href="{{ url_for('leaderboards_map', map = score.game_map) }}">{{score.game_map}}</a></td>
+											<td><a href="{{ url_for('leaderboards_map', map = score.get_mapname() ) }}">{{ score.get_mapname() }}</a><img class="chat-pic" src="{{ get_map_thumbnail(score.get_mapname()) }}"/></td>
 											{% endif %}
 											<td>{{score.timeconverted}}</td>
 											<td>{{score.tick_rate}}</td>
