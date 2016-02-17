@@ -69,10 +69,13 @@ class DBMap(db.Model):
         return '<Map %s>' % self.id
     
 def get_map_thumbnail(mapfilename):
-    map = DBMap.query.filter_by(game_map=mapfilename).first()
-    if map is not None:
-        return str(map.thumbnail)
-    else:
+    try:
+        map = DBMap.query.filter_by(game_map=mapfilename).first()
+        if map is None or not map.thumbnail:
+            return 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'
+        else:
+            return str(map.thumbnail)
+    except:
         return 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'
     
 app.jinja_env.globals.update(get_map_thumbnail=get_map_thumbnail)
@@ -100,14 +103,12 @@ def get_steam_userinfo(steamid):
 def get_steamid_avatar(steamid):
     try:
         user = DBUser.query.filter_by(steamid=steamid).first()
-        if user is not None and user.avatar is not None:
-            return user.avatar
-        else:
+        if user is None or user.avatar is None:
             info = get_steam_userinfo(steamid)
             if info is not None and info['avatar']:
                 return info['avatar']
-        #Default Steam '?' avatar
-        return 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'
+        else:
+            return user.avatar
     except:
         return 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'
 
@@ -120,7 +121,6 @@ def get_steamid_personaname(steamid):
                 return info['personaname']
         else:
             return user.username
-        return 'Unknown'
     except:
         return 'Unknown'
 
