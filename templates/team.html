@@ -1,3 +1,4 @@
+{%if not asfile %}
 <!doctype html>
 <html class="no-js" lang="en">
 
@@ -42,12 +43,21 @@
         }
         .box-body p {
         	color: #000;
-        	font-weight: bold;
+        	font-weight: normal;
+        	font-family: Arial, Courier
         }
 
         .box-body a {
         	text-decoration:underline;
         }
+
+       .name:first-letter {
+			text-transform: uppercase
+		}
+
+		h5 {
+			color:rgb(25,70,150);
+		}
     </style>
 </head>
 
@@ -74,10 +84,24 @@
                     <!-- End of Profile -->
                     <!-- /.box-header -->
                     <div class="box-body" style="display: block;">
+                    <h5>Momentum Team</h5>
                     {% for member in team %}
                         	<p>{% if member.realname is not none %}{{ member.realname }}{% endif %}{% if member.nickname is not none %} ({{ member.nickname }}){% endif %}{% if member.role is not none %} - {{ member.role }}{% endif %}</p>
-                    {% endfor %}              
+                    {% endfor %}
+                    <h5>Contributors</h5>
+                    {% for member in contributors %}
+						<p class="name">{{ member.name }}{% if member.role is not none %} for {{ member.role }}{% endif %}</p>
+					{% endfor %} 
+					<h5>Special thanks to...</h5>
+                    {% for member in specials %}
+						<p class="name">{{ member.name }}{% if member.role is not none %} for {{ member.role }}{% endif %}</p>
+					{% endfor %}
+					<p class="name">Everyone that has ever contributed</p>
+					<p class="name">And VALVe</p>
                     </div>
+                    {% if showlink %}
+                    <a href="{{ url_for('team_credits') }}">As credits.txt file</a>
+                    {% endif %}
                     <!-- end .timeline -->
                     <center><a href="{{ url_for('index') }}">&lt;&lt; Back to Home page</center>
                     {{ place_steamlink()|safe }}
@@ -116,3 +140,98 @@
 </body>
 
 </html>
+{% else %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>credits.txt</title>
+	<style>
+	p {
+		font-family: Console, "Courier New";
+		font-face: Console;
+		padding:0px;
+		margin: 0px
+	}
+	.name:first-letter {
+		text-transform: uppercase
+	}
+	</style>
+	<link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
+</head>
+<body>
+<p>"credits.txt"</p>
+<p>{</p>
+
+<p>//========================================================</p>
+<p>//These are the names used in the intro (trainride)</p>
+<p>//========================================================</p>
+<p>"IntroCreditsNames"</p>
+<p>{
+<p>	"V"	"WeaponIcons"</p>
+<p>	" "	"CreditsText"</p>
+<p>	" "	"CreditsText"</p>
+<p>}</p>
+
+<p>"CreditsParams"</p>
+<p>{</p>
+<p>	"logo" "HALF-LIFE'"</p>
+	
+<p>	"fadeintime"	"2.5"</p>
+<p>	"fadeouttime"	"1"</p>
+<p>	"fadeholdtime"	"1.0"</p>
+<p>	"nextfadetime"	"1.0"</p>
+<p>	"pausebetweenwaves" "1.0"</p>
+<p>	"logotime" "1.0"</p>
+<p>	"posx"	"96"</p>
+<p>	"posy"	"360"</p>
+
+<p>	"color" "255 255 255 128"</p>
+
+<p>//Outro Parameters</p>
+<p>// When setting scrolltime value, don't make it too slow/too fast!</p>
+<p>// (3 s per team member + 1 per contributor + 10 for special thanks)</p>
+<p>	"scrolltime" "{{ time }}"</p>
+<p>	"separation"  "10"</p>
+<p>}</p>
+
+<p>//================================================================================</p>
+<p>//	These are the names used in the credits.</p>
+<p>//	If you contribute to the project, feel free to add yourself</p>
+<p>//	in the contributors section. </p>
+<p>//	(Add a new "YOUR NAME/USERNAME HERE" "CreditsOutroText" after the last one.)</p>
+<p>//================================================================================</p>
+<p>"OutroCreditsNames"</p>
+<p>{</p>
+<p>	"MOMENTUM MOD"	"CreditsOutroTextExtraLarge"</p>
+<p>	" "	"CreditsOutroText"</p>
+<p>	" "	"CreditsOutroText"</p>
+<p>	"Momentum Team" "CreditsOutroTextLarge"</p>
+	{% for member in team %}
+<p>	"{% if member.realname is not none %}{{ member.realname }}{% endif %}{% if member.nickname is not none %} ({{ member.nickname }}){% endif %}{% if member.role is not none %} - {{ member.role }}{% endif %}" "CreditsOutroText"</p>
+	{% endfor %}
+<p>	" "	"CreditsOutroText"</p>
+<p>	"Contributors" "CreditsOutroTextLarge"</p>
+<p>	// Add yourself here</p>
+	{% for member in contributors %}
+<p class="name">"{{ member.name }}{% if member.role is not none %} for {{ member.role }}{% endif %}" "CreditsOutroText"</p>
+	{% endfor %}
+<p>	//-----------------</p>
+<p>	" "	"CreditsOutroText"</p>
+<p>	" "	"CreditsOutroText"</p>
+<p>	" "	"CreditsOutroText"</p>
+<p>	" "	"CreditsOutroText"</p>
+<p>	"Special thanks to:"   "CreditsOutroTextLarge"</p>
+	{% for member in specials %}
+<p class="name">"{{ member.name }}{% if member.role is not none %} for {{ member.role }}{% endif %}" "CreditsOutroText"</p>
+	{% endfor %}
+<p>	"everyone who has ever contributed"   "CreditsOutroText"</p>
+<p>	"and"	"CreditsOutroText"</p>
+<p>	" "	"CreditsOutroText"</p>
+<p>	" "	"CreditsOutroText"</p>
+<p>	"V"	"CreditsOutroLogos"</p>
+<p>}</p>
+
+<p>}</p>
+</body>
+</html>
+{% endif %}

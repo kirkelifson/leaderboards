@@ -1,4 +1,4 @@
-__author__ = 'gnaughton'
+__author__ = 'rabsrincon'
 
 from flask import render_template, redirect, request, flash, url_for
 from flask_login import login_user, logout_user, login_required, current_user
@@ -7,7 +7,7 @@ from wtforms import TextField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Email
 from flask.ext.openid import OpenID
 from sqlalchemy.sql import func
-from core.routes.defuseraccess import lvl_newuser_noverified
+from core.routes.defuseraccess import rank_user_normal
 
 from core import app
 from core.models import DBUser
@@ -42,7 +42,7 @@ def login():
 @oid.after_login
 def create_or_login(resp):
     match = _steam_id_re.search(resp.identity_url)
-    current_user = DBUser.get_or_create(match.group(1),lvl_newuser_noverified())
+    current_user = DBUser.get_or_create(match.group(1),rank_user_normal)
     steamdata = current_user.get_steam_userinfo()
     current_user.update_steam_userinfo(steamdata)
     current_user.update_lastlogin()

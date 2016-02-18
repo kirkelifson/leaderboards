@@ -82,7 +82,7 @@
                                     <span>Settings</span>
 
                                 </a>
-                                {% if current_user.access >= lvl_min_userof_momentumteam() %}
+                                {% if current_user.access >= rank_momentum_normal %}
                                 <li>
                                     <a class="tooltip-tip {%if destination == 'manage'%}selected{%endif%}"
                                     href="{%if destination == 'manage'%}#{%else%}{{url_for('dashboard',destination='manage')}}{%endif%}" title="{%if momteam_pending() %}Some things may require you{%else%}Momentum Mod team membership management{%endif%}">

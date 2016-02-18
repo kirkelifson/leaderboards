@@ -1,14 +1,22 @@
 {% extends "dashboard/index.html" %}
 {% block body %}
+{% if form is not none %}
 <div class="large columns" style="margin-top: 1.2em">
     <div class="your-account">
         <div class="row">
-        {% if momteam_pending()%}
-            <h4>Your Account isn't complete!</h4>
+            <h4>Your Momentum member info</h4>
+            {% if momteam_pending()%}
+            <h4 style="color:rgb(175,85,90);">Your Account isn't complete!</h4>
             {% endif %}
-                            {% for message in get_flashed_messages() %}
-                <div class="flash">{{ message }}</div>
+            {% with messages = get_flashed_messages(with_categories=false) %}
+            {% if messages %}
+            <ul class=flashes>
+                {% for message in messages %}
+                <li class="flash">{{ message }}</li>
                 {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
             <form action="#" method=post>
                 <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
                 {{ form.csrf_token }}
@@ -26,5 +34,72 @@
             </form>
         </div>
     </div>
-</div>           
+</div>
+{% endif %}
+{% if current_user.access > rank_momentum_normal and form_contributor is not none%}
+<div class="large columns" style="margin-top: 0.7em">
+    <div class="your-account">
+        <div class="row">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <ul class=flashes>
+                {% for category, message in messages %}
+                {% if category=='contributor' %}
+                <li class="flash">{{ message }}</li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+            <h4>Add new contributor</h4>
+            <pre>Preview: <p id="ContribPreview" style="display:inline;"></p></pre>
+            
+            <script type="text/javascript">
+                function preview()
+                {
+                    var printed = "";
+                    var preview = document.getElementById("ContribPreview")
+                    var name = document.getElementById("name").value;
+                    var type = document.getElementById("type").value;
+                    var special = document.getElementById("special").value;
+                    if (name != "")
+                    {
+                        printed = name;
+                        if (type != "")
+                        {
+                            printed += " for " + type
+                        }
+                    }
+
+                    preview.innerText = printed;
+                }
+            </script>
+            <form action="{{url_for('dashboard_manage_contributors')}}" method=post>
+                <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                {{ form_contributor.csrf_token }}
+
+                {{ form_contributor.name.label }}
+                {{ form_contributor.name(placeholder='Contributor name',onkeypress='preview()') }}
+
+                {{ form_contributor.type.label }}
+                {{ form_contributor.type(placeholder='What has the contributor done? (Optional)',onkeypress='preview()') }}
+
+                {{ form_contributor.special.label }}
+                {{ form_contributor.special(placeholder='Is this a special thanks?',onchange='preview()') }}
+                <br>
+                {{ form_contributor.submit }}
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if current_user.access >= rank_momentum_admin %}
+<div class="large columns" style="margin-top: 0.5em">
+    <div class="your-account">
+        <div class="row">
+        <center><a href="{{ url_for('dashboard_manage_userlists') }}">Manage users - Apha version</a></center>
+        </div>
+    </div>
+</div>
+{% endif %}                  
 {% endblock %}
