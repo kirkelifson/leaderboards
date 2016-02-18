@@ -1,0 +1,45 @@
+<html>
+<head>
+	<title>Momentum Userslist management</title>
+	<link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
+    <style type="text/css">
+    .flash {
+        background-color:red;
+        color:#FFF;
+    }
+    </style>
+</head>
+<body>
+<center>
+<p><strong>Access levels:</strong><br>
+From <b>1</b> to <b>7</b>, the ranks names are:<br>
+rank_user_banned (<b><i>1</i></b>), rank_user_normal (<b><i>2</i></b>), rank_user_senior (<b><i>3</i></b>), rank_momentum_normal (<b><i>4</i></b>), rank_momentum_senior (<b><i>5</i></b>), rank_momentum_admin (<b><i>6</i></b>), rank_webmaster (<b><i>7</i></b>)
+<br>Note that your edits won't be taken into account if you try to edit a member with more access level than you, nor try to edit yourself
+<br>If you want to edit yourself, go <a href="{{ url_for('dashboard_settings',destination='settings')}}">to the settings page</a> or <a href="{{ url_for('dashboard_manage',destination='manage')}}">to the manage page</a></p>
+<br>
+ {% for message in get_flashed_messages() %}
+                        <div class="flash">
+                            <h3>{{ message }}</h3>
+                        </div>
+                    {% endfor %}
+</center>
+
+{% for user in listing %}
+ <form action="#" method=post>
+                <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                {{ user.csrf_token }}
+
+                {{ user.steamid(readonly="readonly") }}
+
+                {{ user.username }}
+
+                {{ user.email}}
+
+                {{ user.access.label }}
+                {{ user.access(placeholder='Access level',type='number',min="1",max="7") }}
+
+                {{ user.submit }}
+            </form>
+{% endfor %}
+</body>
+</html>

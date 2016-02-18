@@ -2,270 +2,298 @@
 <html class="no-js" lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Momentum Leaderboards</title>
-    <link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Momentum Leaderboards</title>
+	<link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
 
-    <link href="{{ url_for('static', filename='css/' 'foundation.css') }}" rel="stylesheet">
-
-
-    <!-- Custom styles for this template -->
-
-    <link href="{{ url_for('static', filename='css/' 'dashboard.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/' 'style.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/' 'dripicon.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/' 'typicons.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/' 'font-awesome.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='sass/css/' 'theme.css') }}" rel="stylesheet">
-
-    <!-- pace loader -->
-    <script src="{{ url_for('static', filename='js/pace/' 'pace.js') }}" type="text/javascript"></script>
-    <link href="{{ url_for('static', filename='js/pace/themes/orange/' 'pace-theme-flash.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='js/slicknav/' 'slicknav.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/' 'foundation.css') }}" rel="stylesheet">
 
 
-    <script src="{{ url_for('static', filename='js/vendor/' 'modernizr.js') }}" type="text/javascript"></script>
+	<!-- Custom styles for this template -->
 
-    <link href="http://cdn.datatables.net/1.10.5/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+	<link href="{{ url_for('static', filename='css/' 'dashboard.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/' 'style.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/' 'dripicon.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/' 'typicons.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/' 'font-awesome.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='sass/css/' 'theme.css') }}" rel="stylesheet">
 
-    <link href="{{ url_for('static', filename='js/footable/css/' 'footable.core.css?v=2-0-1') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='js/footable/css/' 'footable.standalone.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='js/footable/css/' 'footable-demos.css') }}" rel="stylesheet">
+	<!-- pace loader -->
+	<script src="{{ url_for('static', filename='js/pace/' 'pace.js') }}" type="text/javascript"></script>
+	<link href="{{ url_for('static', filename='js/pace/themes/orange/' 'pace-theme-flash.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='js/slicknav/' 'slicknav.css') }}" rel="stylesheet">
+
+
+	<script src="{{ url_for('static', filename='js/vendor/' 'modernizr.js') }}" type="text/javascript"></script>
+
+	<link href="http://cdn.datatables.net/1.10.5/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+
+	<link href="{{ url_for('static', filename='js/footable/css/' 'footable.core.css?v=2-0-1') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='js/footable/css/' 'footable.standalone.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='js/footable/css/' 'footable-demos.css') }}" rel="stylesheet">
 </head>
 <style>
-.self {
-	background-color:green;
-}
+	.self {
+		background-color:green;
+	}
+	.flash {
+		color: rgb(145,45,10);
+		font-weight: bold;
+		padding: 10px;
+		font-size: 1.3em
+	}
 </style>
 <body>
-    <!-- preloader -->
-    <div id="preloader">
-        <div id="status">&nbsp;</div>
-    </div>
-    <!-- End of preloader -->
+	<!-- preloader -->
+	<div id="preloader">
+		<div id="status">&nbsp;</div>
+	</div>
+	<!-- End of preloader -->
 
-    <div class="off-canvas-wrap" data-offcanvas>
-        <!-- right sidebar wrapper -->
-        <div class="inner-wrap">
+	<div class="off-canvas-wrap" data-offcanvas>
+		<!-- right sidebar wrapper -->
+		<div class="inner-wrap">
 
-            <div class="wrap-fluid" id="paper-bg">
-                <!-- top nav -->
-                <div class="top-bar-nest">
-                    <nav class="top-bar" data-topbar role="navigation" data-options="is_hover: false">
-                        <ul class="title-area left">
-
-
-                            <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
-                            <li class="toggle-topbar menu-icon"><a href="#"><span></span></a>
-                            </li>
-                        </ul>
-
-                        <section class="top-bar-section ">
-                            <!-- Right Nav Section -->
-
-                            <ul class="left">
-
-                                <h3 style="display: block;">Leaderboards</h3>
-                            </ul>
-                            {% if current_user.is_authenticated and current_user.get_id is not none %}
-                            <ul class="right">
-                                <li class=" has-dropdown bg-white">
-                                    <a class="bg-white" href="#"><img alt="" class="admin-pic img-circle" src="{{current_user.avatar}} "><span class="admin-pic-text text-gray">Hi, {{current_user.username}} </span>
-                                    </a>
-
-                                    <ul class="dropdown dropdown-nest profile-dropdown">
-                                        <li>
-                                            <i class="icon-folder-open"></i>
-                                            <a href="{{ url_for('dashboard_home')}}">
-                                                <h4>Account<span class="text-blue fontello-record" ></span></h4>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <i class="icon-upload"></i>
-                                            <a href="{{ url_for('logout')}}">
-                                                <h4>Logout<span class="text-dark-blue fontello-record" ></span></h4>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                            {% else %}
-                            <ul class="right">
-                                <li class="bg-white">
-                                    <a class="bg-white" href="{{ url_for('login',next='leaderboards_main') }}"><img alt="Log in through Steam" src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_small.png"></a>
-                                </li>
-                            </ul>
-                            {% endif %}
-                        </section>
-                    </nav>
-                </div>
-                <!-- end of top nav -->
+			<div class="wrap-fluid" id="paper-bg">
+				<!-- top nav -->
+				<div class="top-bar-nest">
+					<nav class="top-bar" data-topbar role="navigation" data-options="is_hover: false">
+						<ul class="title-area left">
 
 
+							<!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+							<li class="toggle-topbar menu-icon"><a href="#"><span></span></a>
+							</li>
+						</ul>
 
-                <!-- Container Begin -->
-                <div class="row" style="margin-top:-20px">
+						<section class="top-bar-section ">
+							<!-- Right Nav Section -->
 
-                    <div class="large-12 columns">
-                        <div class="box">
-                            <div class="box-header bg-transparent">
-                                <h3 class="box-title"><i class="fontello-th-large-outline"></i>
-                                    <span>Leaderboards</span>
-                                </h3>
-                            </div>
-                            <!-- /.box-header -->
-                            <div class="box-body " style="display: block;">
+							<ul class="left">
 
-                                <table id="example" class="display" style="width:100%">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Map</th>
-                                            <th>Time</th>
-                                            <th>Tick Rate</th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </thead>
+								<h3 style="display: block;"><a href="{{ url_for('leaderboards_main') }}">Leaderboards</a></h3>
+							</ul>
+							{% if current_user.is_authenticated and current_user.get_id is not none %}
+							<ul class="right">
+								<li class=" has-dropdown bg-white">
+									<a class="bg-white" href="#"><img alt="" class="admin-pic img-circle" src="{{current_user.avatar}} "><span class="admin-pic-text text-gray">Hi, {{current_user.username}} </span>
+									</a>
 
-                                    <tfoot>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Map</th>
-                                            <th>Time</th>
-                                            <th>Tick Rate</th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </tfoot>
+									<ul class="dropdown dropdown-nest profile-dropdown">
+										<li>
+											<i class="icon-folder-open"></i>
+											<a href="{{ url_for('dashboard_home')}}">
+												<h4>Account<span class="text-blue fontello-record" ></span></h4>
+											</a>
+										</li>
+										<li>
+											<i class="icon-upload"></i>
+											<a href="{{ url_for('logout')}}">
+												<h4>Logout<span class="text-dark-blue fontello-record" ></span></h4>
+											</a>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							{% else %}
+							<ul class="right">
+								<li class="bg-white">
+									<a class="bg-white" href="{{ url_for('login',next='leaderboards_main') }}"><img alt="Log in through Steam" src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_small.png"></a>
+								</li>
+							</ul>
+							{% endif %}
+						</section>
+					</nav>
+				</div>
+				<!-- end of top nav -->
 
-                                    <tbody>
-                                        {% for score in stats_page.items %}
-                                            <tr>
-                                                <td><img class="chat-pic" src="{{ get_steamid_avatar(score.steamid) }}"/><div class="username" style="margin-top:10px; font-weight:bold;">{{ get_steamid_personaname(score.steamid) }}</div></td>
-                                                <td>{{score.game_map}}</span></td>
-                                                <td>{{score.timeconverted}}</td>
-                                                <td>{{score.tick_rate}}</td>
-                                                <td>{{score.date}}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-<ul class="pagination">
-	{% for page in stats_page.iter_pages() %}
-		{% if page %}
-			{% if page != stats_page.page %}
-				<li><a href="{{ url_for('leaderboards_main', page=page) }}">{{ page }}</a></li>
-			{% else %}
-				<li class="active">{{ page }}</li>
-			{% endif %}
-		{% else %}
-			<li class="disabled"><span class=ellipsis>…</span></li>
-		{% endif %}
-	{% endfor %}
-</ul>
+				<!-- Container Begin -->
+				<div class="row" style="margin-top:-20px">
 
-                            </div>
-                            <!-- end .timeline -->
-                        </div>
-                        <!-- box -->
-                    </div>
+					<div class="large-12 columns">
+						<div class="box">
+							<div class="box-header bg-transparent">
+								<h3 class="box-title"><i class="fontello-th-large-outline"></i>
+									<span><a href="{{ url_for('leaderboards_main') }}">Leaderboards</a></span>
+								</h3>
+								
+							</div>
+							<center>
+							{% for message in get_flashed_messages() %}
+								<div class="flash">
+									<h3 class="flash" style="color:red;font-size: 0.8em">{{ message }}</h3>
+								</div>
+								{% endfor %}
+								</center>
+							<!-- /.box-header -->
+							<div class="box-body " style="display: block;">
+								{% if qtype == 'map' %}
+								<h3>Runs for {{ map }}</h3>
+								{% elif qtype=='player' %}
+								<h3>Runs for <a href="{{ url_for('leaderboards_player', steamid = pinfo.steamid) }}">{{ pinfo.personaname }}</a>
+									{% if map %}
+									 for map <a href="{{ url_for('leaderboards_map', map = map) }}">{{ map }}</a>
+									{% endif %}
+								</h3>
+								{% endif %}
+								<table id="example" class="display" style="width:100%">
+									<thead>
+										<tr>
+											<th>Name</th>
+											{% if qtype != 'map' %}
+											<th>Map</th>
+											{% endif %}
+											<th>Time</th>
+											<th>Tick Rate</th>
+											<th>Date</th>
+										</tr>
+									</thead>
 
-                </div>
-                <!-- End of Container Begin -->
+									<tfoot>
+										<tr>
+											<th>Name</th>
+											{% if qtype != 'map' %}
+											<th>Map</th>
+											{% endif %}
+											<th>Time</th>
+											<th>Tick Rate</th>
+											<th>Date</th>
+										</tr>
+									</tfoot>
 
-                <footer>
-                <center>{{ place_steamlink()|safe }}</center>
-                    <div id="footer">Copyright &copy; 2015 <a href="http://themeforest.net/user/matirasa">Matirasa</a> Made with <i class="fontello-heart-1 text-green"></i></div>
+									<tbody>
+										{% for score in stats_page.items %}
+										{% if score.timeconverted %}
+										<tr>
+											<td><img class="chat-pic" src="{{ get_steamid_avatar(score.steamid) }}"/><div class="username" style="margin-top:10px; font-weight:bold;"><a href="{{ url_for('leaderboards_player', steamid = score.steamid) }}">{{ get_steamid_personaname(score.steamid) }}</a></div></td>
+											{% if qtype != 'map' %}
+											<td><a href="{{ url_for('leaderboards_map', map = score.get_mapname() ) }}">{{ score.get_mapname() }}</a><img class="chat-pic" src="{{ get_map_thumbnail(score.get_mapname()) }}"/></td>
+											{% endif %}
+											<td>{{score.timeconverted}}</td>
+											<td>{{score.tick_rate}}</td>
+											<td>{{score.date}}</td>
+										</tr>
+										{% endif %}
+										{% endfor %}
+									</tbody>
+								</table>
+								<ul class="pagination">
+									{% for page in stats_page.iter_pages() %}
+									{% if page %}
+									{% if page != stats_page.page %}
+									<li><a href="{{ url_for('leaderboards_main', page=page) }}">{{ page }}</a></li>
+									{% else %}
+									<li class="active">{{ page }}</li>
+									{% endif %}
+									{% else %}
+									<li class="disabled"><span class=ellipsis>…</span></li>
+									{% endif %}
+									{% endfor %}
+								</ul>
 
-                </footer>
-            </div>
+							</div>
+							<!-- end .timeline -->
+						</div>
+						<!-- box -->
+					</div>
 
-            <!-- close the off-canvas menu -->
-            <a class="exit-off-canvas"></a>
-            <!-- End of Right Menu -->
-        </div>
-        <!-- end paper bg -->
+				</div>
+				<!-- End of Container Begin -->
 
-    </div>
-    <!-- end of off-canvas-wrap -->
+				<footer>
+					<center>{{ place_steamlink()|safe }}</center>
+					<div id="footer">Copyright &copy; 2015 <a href="http://themeforest.net/user/matirasa">Matirasa</a> Made with <i class="fontello-heart-1 text-green"></i></div>
 
-    <!-- end of inner-wrap -->
+				</footer>
+			</div>
 
-        <script src="{{ url_for('static', filename='js/' 'jquery.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'waypoints.min.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'preloader-script.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'foundation.min.js') }}" type="text/javascript"></script>
-        <script src="{{ url_for('static', filename='js/foundation/' 'foundation.dropdown.js') }}" type="text/javascript"></script>
+			<!-- close the off-canvas menu -->
+			<a class="exit-off-canvas"></a>
+			<!-- End of Right Menu -->
+		</div>
+		<!-- end paper bg -->
 
-    <script src="{{ url_for('static', filename='js/' 'foundation.#111111.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/slimscroll/' 'jquery.slimscroll.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'sliding-menu.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/slicknav/' 'jquery.slicknav.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'scriptbreaker-multiple-accordion-1.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/number/' 'jquery.counterup.min.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/circle-progress/' 'jquery.circliful.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'app.js') }}" type="text/javascript"></script>
-    <link href="{{ url_for('static', filename='js/pace/themes/orange/' 'pace-theme-flash.css') }}" rel="stylesheet">
-    <!-- additional javascript -->
-    <script src="{{ url_for('static', filename='js/number-progress-bar/' 'jquery.velocity.min.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/number-progress-bar/' 'number-pb.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/loader/' 'loader.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/loader/' 'demo.js') }}" type="text/javascript"></script>
-    <!-- FLOT CHARTS -->
-    <script src="{{ url_for('static', filename='js/flot/' 'jquery.flot.js') }}" type="text/javascript"></script>
-    <!-- FLOT RESIZE PLUGIN - allows the chart to redraw when the window is resized -->
-    <script src="{{ url_for('static', filename='js/flot/' 'jquery.flot.resize.min.js') }}" type="text/javascript"></script>
-    <!-- FLOT PIE PLUGIN - also used to draw donut charts -->
-    <script src="{{ url_for('static', filename='js/flot/' 'jquery.flot.pie.min.js') }}" type="text/javascript"></script>
-    <!-- FLOT CATEGORIES PLUGIN - Used to draw bar charts -->
-    <script src="{{ url_for('static', filename='js/flot/' 'jquery.flot.categories.min.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/skycons/' 'skycons.js') }}" type="text/javascript"></script>
-    <!-- additional javascript -->
+	</div>
+	<!-- end of off-canvas-wrap -->
 
-    <script src="{{ url_for('static', filename='js/datatables/' 'jquery.dataTables.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/footable/js/' 'footable.js?v=2-0-1') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/footable/js/' 'footable.sort.js?v=2-0-1') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/footable/js/' 'footable.filter.js?v=2-0-1') }}" type="text/javascript"></script>
+	<!-- end of inner-wrap -->
 
+	<script src="{{ url_for('static', filename='js/' 'jquery.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/' 'waypoints.min.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/' 'preloader-script.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/' 'foundation.min.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/foundation/' 'foundation.dropdown.js') }}" type="text/javascript"></script>
 
-    <!-- page script -->
-    <script type="text/javascript">
-    (function($) {
-        "use strict";
-        $('#example').dataTable({
-            "order": [
-                [3, "desc"]
-            ]
-        });
-    })(jQuery);
+	<script src="{{ url_for('static', filename='js/' 'foundation.#111111.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/slimscroll/' 'jquery.slimscroll.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/' 'sliding-menu.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/slicknav/' 'jquery.slicknav.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/' 'scriptbreaker-multiple-accordion-1.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/number/' 'jquery.counterup.min.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/circle-progress/' 'jquery.circliful.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/' 'app.js') }}" type="text/javascript"></script>
+	<link href="{{ url_for('static', filename='js/pace/themes/orange/' 'pace-theme-flash.css') }}" rel="stylesheet">
+	<!-- additional javascript -->
+	<script src="{{ url_for('static', filename='js/number-progress-bar/' 'jquery.velocity.min.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/number-progress-bar/' 'number-pb.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/loader/' 'loader.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/loader/' 'demo.js') }}" type="text/javascript"></script>
+	<!-- FLOT CHARTS -->
+	<script src="{{ url_for('static', filename='js/flot/' 'jquery.flot.js') }}" type="text/javascript"></script>
+	<!-- FLOT RESIZE PLUGIN - allows the chart to redraw when the window is resized -->
+	<script src="{{ url_for('static', filename='js/flot/' 'jquery.flot.resize.min.js') }}" type="text/javascript"></script>
+	<!-- FLOT PIE PLUGIN - also used to draw donut charts -->
+	<script src="{{ url_for('static', filename='js/flot/' 'jquery.flot.pie.min.js') }}" type="text/javascript"></script>
+	<!-- FLOT CATEGORIES PLUGIN - Used to draw bar charts -->
+	<script src="{{ url_for('static', filename='js/flot/' 'jquery.flot.categories.min.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/skycons/' 'skycons.js') }}" type="text/javascript"></script>
+	<!-- additional javascript -->
+
+	<script src="{{ url_for('static', filename='js/datatables/' 'jquery.dataTables.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/footable/js/' 'footable.js?v=2-0-1') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/footable/js/' 'footable.sort.js?v=2-0-1') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/footable/js/' 'footable.filter.js?v=2-0-1') }}" type="text/javascript"></script>
 
 
+	<!-- page script -->
+	<script type="text/javascript">
+		(function($) {
+			"use strict";
+			$('#example').dataTable({
+				"order": [
+				[3, "desc"]
+				]
+			});
+		})(jQuery);
 
-    (function($) {
-        "use strict";
-        $('#footable-res2').footable().bind('footable_filtering', function(e) {
-            var selected = $('.filter-status').find(':selected').text();
-            if (selected && selected.length > 0) {
-                e.filter += (e.filter && e.filter.length > 0) ? ' ' + selected : selected;
-                e.clear = !e.filter;
-            }
-        });
 
-        $('.clear-filter').click(function(e) {
-            e.preventDefault();
-            $('.filter-status').val('');
-            $('table.demo').trigger('footable_clear_filter');
-        });
 
-        $('.filter-status').change(function(e) {
-            e.preventDefault();
-            $('table.demo').trigger('footable_filter', {
-                filter: $('#filter').val()
-            });
-        });
+		(function($) {
+			"use strict";
+			$('#footable-res2').footable().bind('footable_filtering', function(e) {
+				var selected = $('.filter-status').find(':selected').text();
+				if (selected && selected.length > 0) {
+					e.filter += (e.filter && e.filter.length > 0) ? ' ' + selected : selected;
+					e.clear = !e.filter;
+				}
+			});
 
-        $('.filter-api').click(function(e) {
-            e.preventDefault();
+			$('.clear-filter').click(function(e) {
+				e.preventDefault();
+				$('.filter-status').val('');
+				$('table.demo').trigger('footable_clear_filter');
+			});
+
+			$('.filter-status').change(function(e) {
+				e.preventDefault();
+				$('table.demo').trigger('footable_filter', {
+					filter: $('#filter').val()
+				});
+			});
+
+			$('.filter-api').click(function(e) {
+				e.preventDefault();
 
             //get the footable filter object
             var footableFilter = $('table').data('footable-filter');
@@ -276,18 +304,18 @@
 
             //clear the filter
             if (confirm('clear filter now?')) {
-                footableFilter.clearFilter();
+            	footableFilter.clearFilter();
             }
         });
-    })(jQuery);
-    </script>
+		})(jQuery);
+	</script>
 
 
 
 
-    <script>
-    $(document).foundation();
-    </script>
+	<script>
+		$(document).foundation();
+	</script>
 
 
 
