@@ -10,6 +10,7 @@ from wtforms import TextField, BooleanField, SubmitField
 from wtforms.validators import InputRequired, Email, Optional
 
 class ManageForm(Form):
+    steamid = TextField("SteamID")
     nickname = TextField("Nickname")
     realname = TextField("Real name")
     role = TextField("Role", validators=[InputRequired("Your role can not be empty")])
@@ -32,7 +33,7 @@ class UserlistForm(Form):
     translator = BooleanField("Is translator?")
     email = 'Email'
     submit = SubmitField("Update user")
-dashboard_destinations = ['home','manage','settings','manageuserslist']
+dashboard_destinations = ['home','manage','settings','manageuserslist','manageteamlist']
 
 def is_valid_destination(destination):
     return destination in dashboard_destinations
@@ -123,7 +124,7 @@ def dashboard_manage_userlists():
         for user in users:
             uform = UserlistForm()
             uform.username = user.username
-            uform.email= user.email
+            uform.email = user.email
             uform.access.data = user.access
             uform.steamid.data= user.steamid
             uform.translator.default = bool_to_formdata(user.is_translator)
@@ -134,7 +135,7 @@ def dashboard_manage_userlists():
         try:
             preform = UserlistForm()
             preform.username = request.form.get('username')
-            preform.email= request.form.get('email')
+            preform.email = request.form.get('email')
             preform.access.data = request.form.get('access')
             preform.steamid.data= request.form.get('steamid')
             preform.translator.data = request.form.get('translator')
