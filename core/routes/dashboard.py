@@ -29,6 +29,7 @@ class UserlistForm(Form):
     steamid = TextField("Steamid", validators=[InputRequired("Steamid can not be empty")])
     username = 'Username'
     access = TextField("Access", validators=[InputRequired("Access level can not be empty")])
+    translator = BooleanField("Is translator?")
     email = 'Email'
     submit = SubmitField("Update user")
 dashboard_destinations = ['home','manage','settings','manageuserslist']
@@ -104,6 +105,15 @@ def dashboard_manage_contributors():
         return 'Error creating the new contributor. Form input is faulty.<br>Name: '+ contrib.name.data +'<br>Role: '+ contrib.type.data +'<br>Special?: '+ str(contrib.special.data) + '<br><a href=\"'+ url_for('dashboard_manage') +'\"><< Back to manage</a>'
                 
 
+def bool_to_formdata(boolean):
+    if boolean:
+        return 'y'
+    else:
+        return 'n'
+
+def formdata_to_bool(char):
+    return char == 'y'
+
 @app.route('/dashboard/manage/userslist', methods=['GET', 'POST'])
 @access_required(rank_momentum_admin,'dashboard_r_home')
 def dashboard_manage_userlists():
@@ -116,6 +126,7 @@ def dashboard_manage_userlists():
             uform.email= user.email
             uform.access.data = user.access
             uform.steamid.data= user.steamid
+            uform.translator.default = bool_to_formdata(user.is_translator)
             listing.append(uform)          
         return render_template('dashboard/userslist.html',destination='manageuserslist', listing=listing)
     else:
@@ -126,6 +137,7 @@ def dashboard_manage_userlists():
             preform.email= request.form.get('email')
             preform.access.data = request.form.get('access')
             preform.steamid.data= request.form.get('steamid')
+            preform.translator.data = request.form.get('translator')
             if preform.validate():
                 if request.form.get('steamid') == None:
                     return ('No steamid submited.')
@@ -145,7 +157,11 @@ def dashboard_manage_userlists():
                                 return ('You can\'t edit yourself. Try with <a href=\"' + url_for('dashboard_settings') + '\">the settings page</a>.')
                             else:
                                 user.update_accesslevel(request.form.get('access'))
-                                return '<center>User edited: (Access) ' + str(prev) + ' -> ' + str(user.access) + '<br><a href=\"' + url_for('dashboard_manage_userlists') + '\"><< Back to user list</a></center>'
+                                plus = ''
+                                if user.is_translator != formdata_to_bool(preform.translator.data):
+                                    plus = 'Edited user translator status. From ' + str(user.is_translator) +' to '+ str(formdata_to_bool(preform.translator.data)) + '<br>'
+                                    user.update_translatorstatus(formdata_to_bool(preform.translator.data))
+                                return '<center>User edited: (Access) ' + str(prev) + ' -> ' + str(user.access) + '<br>'+ plus +'<a href=\"' + url_for('dashboard_manage_userlists') + '\"><< Back to user list</a></center>'
             else:
                 return 'Form could not be validated'
         except:

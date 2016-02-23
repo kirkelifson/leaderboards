@@ -112,6 +112,8 @@ def get_steamid_avatar(steamid):
     except:
         return 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'
 
+app.jinja_env.globals.update(get_steamid_avatar=get_steamid_avatar)
+
 def get_steamid_personaname(steamid):
     try:
         user = DBUser.query.filter_by(steamid=steamid).first()
@@ -124,7 +126,6 @@ def get_steamid_personaname(steamid):
     except:
         return 'Unknown'
 
-app.jinja_env.globals.update(get_steamid_avatar=get_steamid_avatar)
 app.jinja_env.globals.update(get_steamid_personaname=get_steamid_personaname)
 
 
@@ -151,7 +152,7 @@ class DBScore(db.Model):
         return {
             'id'         : self.id,
             'steamid'    : self.steamid,
-            'game_map'   : self.get_mapname,
+            'game_map'   : get_mapname(self.mapid),
             'tick_time'  : self.tick_time,
             'tick_rate'  : self.tick_rate,
             'zone_hash'  : self.zone_hash,
@@ -162,15 +163,18 @@ class DBScore(db.Model):
     def serialize_many2many(self):
         return [ item.serialize for item in self.many2many]
 
-    def get_mapname(self):
-        map = DBMap.query.filter_by(id=self.mapid).first()
-        if map is not None:
-            return str(map.game_map)
-        else:
-            return 'Unknown'
 
     def __repr__(self):
         return '<Score %s>' % self.id
+
+def get_mapname(MapID):
+    map = DBMap.query.filter_by(id=MapID).first()
+    if map is not None:
+        return str(map.game_map)
+    else:
+        return 'Unknown'
+
+app.jinja_env.globals.update(get_mapname=get_mapname)
 
 
 class DBUser(db.Model, UserMixin):

@@ -55,7 +55,7 @@ def api_post_score(steamid, map, ticks, tickrate):
 
 @app.route('/getscores', methods=['GET'])
 def api_get_scores():
-    allscores = DBScore.query.order_by(DBScore.tick_time)
+    allscores = DBScore.query.order_by(DBScore.tick_time * DBScore.tick_rate)
     return jsonify(json_list=[i.serialize for i in allscores.all()])
 
 @app.route('/getscores/<map>', methods=['GET'])
@@ -63,17 +63,42 @@ def api_get_scores_map(map):
     user_scores = DBScore.query.filter_by(game_map=map).order_by(DBScore.tick_time)
     return jsonify(json_list=[i.serialize for i in user_scores.all()])
 
+
+### THIS ONE NEEDS TO BE RETHOUGHT. I'M TOO DUMB TO KNOW WHAT IT EVEN WANTS TO RETURN AND HOW ###
 @app.route('/getscores/<map>/<tickrate>/<steamid>', methods=['GET'])
 def api_get_scores_filtered(map, tickrate, steamid):
-    user_scores = DBScore.query.filter_by(steamid=steamid).filter_by(game_map=map).first()
-    if user_scores is None:
-        data = DBScore.query.filter_by(game_map=map).order_by(DBScore.tick_time).paginate(1, 10)
-    else:
-        start = user_scores.id - 5
-        while start < 0:
-            start += 1
-        data = DBScore.query.filter_by(game_map=map).offset(start).limit(10).all()
-    return jsonify(json_list=[i.serialize for i in data])
+## OLD VERSION
+##     user_scores = DBScore.query.filter_by(steamid=steamid).filter_by(game_map=map).first()
+##     if user_scores is None:
+##         data = DBScore.query.filter_by(game_map=map).order_by(DBScore.tick_time).paginate(1, 10)
+##     else:
+##         start = user_scores.id - 5
+##         while start < 0:
+##             start += 1
+##         data = DBScore.query.filter_by(game_map=map).offset(start).limit(10).all()
+##     return jsonify(json_list=[i.serialize for i in data])
+    response = {}
+    response['result'] = False
+    response['message'] = 'Needs to be implemented'
+    # We even retuenr a 501 code.
+    return jsonify(response), 501
+## ""NEW VERSION""
+##    scores = DBScore.query
+##    data = None
+##    if map:
+##        scores = scores.filter_by(mapid=DBMap.get_id_for_game_map(map))
+##    if tickrate and tickrate in time_convert:
+##        scores = scores.filter_by(tick_rate=tickrate)
+##    if steamid:
+##        scores = scores.filter_by(steamid=steamid)
+##    if scores.first() is None:
+##        data = DBScore.query.filter_by(mapid=DBMap.get_id_for_game_map(map)).order_by(DBScore.tick_time * DBScore.tick_rate).paginate(1, 10)
+##    else:
+##        start = scores.first().id - 5
+##        while start < 0:
+##            start += 1
+##        data = DBScore.query.filter_by(mapid=DBMap.get_id_for_game_map(map)).offset(start).limit(10).all()   
+##    return jsonify(json_list=[i.serialize for i in data])
 
 @app.route('/getfriendscores/<steamid>/<map>', methods=['GET'])
 @app.route('/getfriendscores/<steamid>', methods=['GET'])
