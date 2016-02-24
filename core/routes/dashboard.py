@@ -35,6 +35,7 @@ class UserlistForm(Form):
     access = TextField("Access", validators=[InputRequired("Access level can not be empty")])
     translator = BooleanField("Is translator?")
     email = 'Email'
+    mapper = BooleanField("Is mapper?")
     submit = SubmitField("Update user")
 
 class MapsForm(Form):
@@ -138,7 +139,8 @@ def dashboard_manage_userlists():
             uform.email = user.email
             uform.access.data = user.access
             uform.steamid.data= user.steamid
-            uform.translator.default = bool_to_formdata(user.is_translator)
+            uform.translator.checked = user.is_translator
+            uform.mapper.checked = user.is_mapper
             listing.append(uform)          
         return render_template('dashboard/userslist.html',destination='manageuserslist', listing=listing)
     else:
@@ -149,36 +151,40 @@ def dashboard_manage_userlists():
             preform.email = request.form.get('email')
             preform.access.data = request.form.get('access')
             preform.steamid.data= request.form.get('steamid')
-            preform.translator.data = request.form.get('translator')
+            preform.translator.checked = formdata_to_bool(request.form.get('translator'))       
+            preform.mapper.checked = formdata_to_bool(request.form.get('mapper'))
             if preform.validate():
                 if request.form.get('steamid') == None:
-                    return ('No steamid submited.')
+                    flash('No steamid submited.')
                 user = DBUser.query.filter_by(steamid=str(request.form.get('steamid'))).first()
                 if user is None:
-                    return('Error while querying the user. No user found with desired steamid '+ str(request.form.get('steamid')) +'.')
+                    flash('Error while querying the user. No user found with desired steamid '+ str(request.form.get('steamid')) +'.')
                 else:
                     if user.access >= current_user.access:
-                        return ('You don\'t have enough permissions to edit this user.')
+                        flash('You don\'t have enough permissions to edit this user.')
                     else: # We can edit the user
                         prev = user.access
-                        if str(user.access) == str(request.form.get('access')):
-                            return ('Tried to change to the same access rank. (Maybe you are editing yourself?)')
+                        if user.steamid == current_user.steamid:
+                            # We can't reach here because last if checks if we have the same access than the modified.. I DO have the same access level than myself
+                            flash('You can\'t edit yourself. Try with the settings page.')
                         else:
-                            if user.steamid == current_user.steamid:
-                                # We can't reach here because last if checks if we have the same access than the modified.. I DO have the same access level than myself
-                                return ('You can\'t edit yourself. Try with <a href=\"' + url_for('dashboard_settings') + '\">the settings page</a>.')
-                            else:
+                            message = ''
+                            if str(user.access) != str(request.form.get('access')):
                                 user.update_accesslevel(request.form.get('access'))
-                                plus = ''
-                                if user.is_translator != formdata_to_bool(preform.translator.data):
-                                    plus = 'Edited user translator status. From ' + str(user.is_translator) +' to '+ str(formdata_to_bool(preform.translator.data)) + '<br>'
-                                    user.update_translatorstatus(formdata_to_bool(preform.translator.data))
-                                return '<center>User edited: (Access) ' + str(prev) + ' -> ' + str(user.access) + '<br>'+ plus +'<a href=\"' + url_for('dashboard_manage_userlists') + '\"><< Back to user list</a></center>'
+                                message = 'Access level edited from ' + str(prev) + ' to ' + str(user.access) + '.'
+                            if user.is_translator != preform.translator.checked:
+                                message = message + ' Translator status from ' + str(user.is_translator) +' to '+ str(preform.translator.checked) + '.'
+                                user.update_translatorstatus(preform.translator.checked)
+                            if user.is_mapper != preform.mapper.checked:
+                                message = message + ' Mapper status from ' + str(user.is_mapper) +' to '+ str(preform.mapper.checked) + '.'
+                                user.update_mapperstatus(preform.mapper.checked)
+                            flash('User edited: ' + message)
             else:
-                return 'Form could not be validated'
+                flash('Form could not be validated')
+            return redirect(url_for('dashboard_manage_userlists'))
         except:
-            return ('Error while querying.')
-        return render_template('dashboard/userslist.html',destination='manageuserslist', listing=listing)
+            flash('Error while querying.')
+            return render_template('dashboard/userslist.html',destination='manageuserslist', listing=listing)
 
 @app.route('/dashboard/home')
 @login_required

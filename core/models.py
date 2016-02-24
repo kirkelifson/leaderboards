@@ -268,6 +268,16 @@ class DBUser(db.Model, UserMixin):
             db.session.commit()
         return changes
 
+    def update_translatorstatus(self, is_translator):
+        if self.is_translator != is_translator:
+            self.is_translator = is_translator
+            db.session.commit()
+
+    def update_mapperstatus(self, is_mapper):
+        if self.is_mapper != is_mapper:
+            self.is_mapper = is_mapper
+            db.session.commit()
+
     def update_handlenewemail(self, email):
         if email is not None:
             #Here goes a random token sent to the email to confirm it

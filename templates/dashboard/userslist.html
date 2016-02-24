@@ -57,6 +57,7 @@
 							<th>Username</th>
 							<th>Email</th>
 							<th>Access</th>
+							<th>Is mapper?</th>
 							<th>Is translator?</th>
 							<th></th>
 						</tr>
@@ -68,6 +69,7 @@
 							<th>Username</th>
 							<th>Email</th>
 							<th>Access</th>
+							<th>Is mapper?</th>
 							<th>Is translator?</th>
 							<th></th>
 						</tr>
@@ -80,13 +82,15 @@
 								<input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
 								{{ user.csrf_token }}
 
-								<td><center>{{ user.steamid(readonly="readonly",style="display: none;")}} <a href="http://steamcommunity.com/profiles/{{user.steamid.data}}" target="_blanck">{{user.steamid.data }}</a></center></td>
+								<td id="{{user.steamid.data}}"><center>{{ user.steamid(readonly="readonly",style="display: none;")}} <a href="http://steamcommunity.com/profiles/{{user.steamid.data}}" target="_blanck">{{user.steamid.data }}</a></center></td>
 
 								<td><center>{{ user.username }}</center></td>
 
 								<td><center>{{ user.email}}</center></td>
 
 								<td><center>{{ user.access(placeholder='Access level',type='number',min="1",max="7",style="text-align: center;") }}</center></td>
+
+								<td><center>{{ user.mapper }}</center></td>
 
 								<td><center>{{ user.translator }}</center></td>
 
