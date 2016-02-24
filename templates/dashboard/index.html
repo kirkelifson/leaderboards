@@ -80,23 +80,30 @@
                                     href="{%if destination == 'settings'%}#{%else%}{{url_for('dashboard',destination='settings')}}{%endif%}" title="Manage your account">
                                     <i class="fa fa-cogs"></i>
                                     <span>Settings</span>
-
-                                </a>
+                                	</a>
+                                </li>
+                                {% if current_user.is_mapper or current_user.access >= rank_momentum_normal %}
+                                <li>
+                                    <a class="tooltip-tip {%if destination == 'maps'%}selected{%endif%}"
+                                    href="{%if destination == 'maps'%}#{%else%}{{url_for('dashboard',destination='maps')}}{%endif%}" title="Momentum Mod map management">
+                                    <i class="fontello-map"></i>
+                                    <span>Momentum Maps</span>
+                               	 	</a>
+                            	</li>
+                            	{%endif%}
                                 {% if current_user.access >= rank_momentum_normal %}
                                 <li>
                                     <a class="tooltip-tip {%if destination == 'manage'%}selected{%endif%}"
                                     href="{%if destination == 'manage'%}#{%else%}{{url_for('dashboard',destination='manage')}}{%endif%}" title="{%if momteam_pending() %}Some things may require you{%else%}Momentum Mod team membership management{%endif%}">
                                     <i class="fontello-beaker" {%if momteam_pending() %}style="color:yellow"{%endif%}></i>
                                     <span>Momentum Team</span>
-
-                                </a>
-                            </li>
-                            {%endif%}
+                               	 	</a>
+                            	</li>
+                            	{%endif%}
                             <li>
                                 <a class="tooltip-tip" href="{{ url_for('index') }}">
                                     <i class=" icon-window"></i>
                                     <span>Back to the main page</span>
-
                                 </a>
                             </li>
                         </ul>

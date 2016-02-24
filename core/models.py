@@ -70,7 +70,7 @@ class DBMap(db.Model):
     
 def get_map_thumbnail(mapfilename):
     try:
-        map = DBMap.query.filter_by(game_map=mapfilename).first()
+        map = DBMap.query.filter_by(id=DBMap.get_id_for_game_map(mapfilename)).first()
         if map is None or not map.thumbnail:
             return 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'
         else:
@@ -183,6 +183,8 @@ class DBUser(db.Model, UserMixin):
     username = db.Column(VARCHAR(30), unique=False)
     email = db.Column(VARCHAR(255), unique=True)
     verified = db.Column(BOOLEAN(), default=False)
+    is_translator = db.Column(BOOLEAN(), default=False)
+    is_mapper = db.Column(BOOLEAN(), default=False)
     access = db.Column(SMALLINT(unsigned=True), default=rank_user_normal)
     steamid = db.Column(BIGINT(unsigned=True), unique=True, nullable=False)
     avatar = db.Column(TEXT())

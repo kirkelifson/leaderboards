@@ -25,6 +25,24 @@ def access_required(access, nextUrl=None):
 		return decorated
 	return accessWrapper
 
+def mapper_required(nextUrl=None):
+	def accessWrapper(func):
+		@wraps(func)
+		def decorated(*args, **kwargs):
+			if current_app.login_manager._login_disabled:
+				return func(*args, **kwargs)
+			elif not current_user.is_authenticated:
+				if nextUrl is not None:
+					setattr(request, 'next_url', nextUrl)
+				return current_app.login_manager.unauthorized()
+			elif current_user.access < rank_momentum_normal or not current_user.is_mapper:
+				if nextUrl is not None:
+					setattr(request, 'next_url', nextUrl)
+				return current_app.login_manager.unauthorized()
+			return func(*args, **kwargs)
+		return decorated
+	return accessWrapper
+
 def unauthenticated_only(func):
 	@wraps(func)
 	def decorated(*args, **kwargs):

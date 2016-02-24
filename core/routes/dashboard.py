@@ -3,11 +3,14 @@ from flask import render_template, redirect, request, flash, url_for, abort
 from flask_login import login_user, logout_user, current_user, login_required
 
 from core import app
-from core.models import DBUser, DBTeam, DBContributor
-from core.routes.defuseraccess import rank_user_banned, rank_momentum_normal, rank_momentum_admin, rank_webmaster, access_required, rank_momentum_senior
+from core.models import DBUser, DBTeam, DBContributor, DBMap, db
+from core.routes.defuseraccess import rank_user_banned, rank_momentum_normal, rank_momentum_admin, rank_webmaster, access_required, rank_momentum_senior, mapper_required
 from flask.ext.wtf import Form
 from wtforms import TextField, BooleanField, SubmitField
 from wtforms.validators import InputRequired, Email, Optional
+
+import os
+import requests
 
 class ManageForm(Form):
     steamid = TextField("SteamID")
@@ -33,7 +36,15 @@ class UserlistForm(Form):
     translator = BooleanField("Is translator?")
     email = 'Email'
     submit = SubmitField("Update user")
-dashboard_destinations = ['home','manage','settings','manageuserslist','manageteamlist']
+
+class MapsForm(Form):
+    mapname = TextField("Map name", validators=[InputRequired("Map name can not be empty")])
+    filepath = TextField("File path", validators=[InputRequired("File path can not be empty")])
+    thumbnail = TextField("Thumbnail path", validators=[InputRequired("Thumbnail path can not be empty")])
+    difficulty = TextField("Map tier", validators=[InputRequired("Difficulty can not be none")])
+    submit = SubmitField("Submit map")
+    
+dashboard_destinations = ['home','manage','settings','manageuserslist','manageteamlist','maps']
 
 def is_valid_destination(destination):
     return destination in dashboard_destinations
@@ -189,6 +200,55 @@ def dashboard_settings():
             form.email.data = None
             flash('An error occurred while trying to process your info. Your info has not been saved',category='dashboard')
     return render_template('dashboard/settings.html', destination='settings', form=form)
+
+@app.route('/dashboard/maps', methods=['GET', 'POST'])
+@mapper_required('dashboard_maps')
+def dashboard_maps():
+    if request.method == 'GET':
+        mform = MapsForm()
+        return render_template('dashboard/maps.html',destination='maps', form = mform)
+    else:
+        try:
+            mfrom = MapsForm()
+            mfrom.mapname.data = request.form.get('mapname')
+            mfrom.filepath.data = request.form.get('filepath')
+            mfrom.thumbnail.data = request.form.get('thumbnail')
+            mfrom.difficulty.data = request.form.get('difficulty')
+            if mfrom.validate():
+                if DBMap.query.filter_by(stylized_mapname=str(request.form.get('mapname'))).count() != 0:
+                    flash('There is already a map called '+ str(request.form.get('mapname')) +'.')
+                else:
+                    mapfile = os.path.basename(mfrom.filepath.data)
+                    thumbnail = mfrom.thumbnail.data
+                    if mapfile.endswith('.bsp') and thumbnail.endswith('.jpg'):
+                        gamemode = -1
+                        if mapfile.startswith('bhop_'):
+                            gamemode = 2
+                        elif mapfile.startswith('surf_'):
+                            gamemode = 1
+                        else:
+                            gamemode = 3
+                        thumbnailcode = 0
+                        try:
+                            thumbnailcode = requests.head(thumbnail)
+                        except:
+                            thumbnailcode = None
+                        if thumbnail is not None and thumbnailcode.status_code == 200:
+                            mapo = DBMap(os.path.splitext(mapfile)[0], mfrom.mapname.data, mfrom.filepath.data, mfrom.thumbnail.data, gamemode, mfrom.difficulty.data, 0)
+                            db.session.add(mapo)
+                            db.session.commit()
+                            flash('Map added successfully')
+                        else:
+                            flash('Could not fetch thumbnail ' + str(thumbnail) + str(thumbnailcode) +'. Check the path to the image')
+                    else:
+                        flash('Check file extensions.')                    
+            else:
+                flash('Form could not be validated. Check the errors')
+            return render_template('dashboard/maps.html',destination='maps', form = mfrom)
+        except:
+            raise
+            flash('Error while querying.')
+            return render_template('dashboard/maps.html',destination='maps', form = mfrom)
 
 @app.route('/dashboard/settings/verify/<token>')
 def dashboard_settings_verifyemail(token):

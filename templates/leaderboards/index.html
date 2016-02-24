@@ -129,7 +129,7 @@
 							<!-- /.box-header -->
 							<div class="box-body " style="display: block;">
 								{% if qtype == 'map' %}
-								<h3>Runs for {{ map }}</h3>
+								<h3><img src="{{ get_map_thumbnail(map) }}" width="128px" height="128px" border="1px solid #CBA">Runs for {{ map }}</h3>
 								{% elif qtype=='player' %}
 								<h3>Runs for <a href="{{ url_for('leaderboards_player', steamid = pinfo.steamid) }}">{{ pinfo.personaname }}</a>
 									{% if map %}

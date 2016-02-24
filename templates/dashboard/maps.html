@@ -1,0 +1,43 @@
+{% extends "dashboard/index.html" %}
+{% block body %}
+{% if form is not none %}
+<script type="text/javascript">
+    function preview() {
+        document.getElementById("thumbnailprev").src = document.getElementById("thumbnail").value
+        document.getElementById("thumbnaillink").innerText = document.getElementById("thumbnail").value
+    }
+</script>
+<div class="large columns" style="margin-top: 1.2em">
+    <div class="your-account">
+        <div class="row">
+                {% for message in get_flashed_messages() %}
+                <h5 class="flash">{{ message }}</h5>
+                {% endfor %}
+            <form action="#" method=post>
+                <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                {{ form.csrf_token }}
+
+                {{ form.mapname.label }}
+                {{ form.mapname(placeholder='Stylized map name') }}
+
+                {{ form.filepath.label }}
+                {{ form.filepath(placeholder='Path to the map .bsp file') }}
+
+                <img id="thumbnailprev" src="" width="128px" height="128px">
+                <p id="thumbnaillink"></p>
+
+                {{ form.thumbnail.label }}
+                <i>Bear in mind that we usually display the map thumbnail with square dimensions, usually not bigger that 128x128</i>
+                {{ form.thumbnail(placeholder='Path to the thumbnail',onkeypress="preview()") }}
+
+
+                {{ form.difficulty.label }}
+                {{ form.difficulty(placeholder='Difficulty',type='number',min="1",max="6",style="text-align: center;width: 30%;")}}
+
+                {{ form.submit }}
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
