@@ -3,14 +3,16 @@ from flask import render_template, redirect, request, flash, url_for, abort
 from flask_login import login_user, logout_user, current_user, login_required
 
 from core import app
-from core.models import DBUser, DBTeam, DBContributor, DBMap, db
+from core.models import DBUser, DBTeam, DBContributor, DBMap, db, DBDoc
 from core.routes.defuseraccess import rank_user_banned, rank_momentum_normal, rank_momentum_admin, rank_webmaster, access_required, rank_momentum_senior, mapper_required
 from flask.ext.wtf import Form
-from wtforms import TextField, BooleanField, SubmitField
+from wtforms import TextField, BooleanField, SubmitField, TextAreaField
 from wtforms.validators import InputRequired, Email, Optional
 
 import os
 import requests
+import re
+import string
 
 class ManageForm(Form):
     steamid = TextField("SteamID")
@@ -45,8 +47,14 @@ class MapsForm(Form):
     thumbnail = TextField("Thumbnail path", validators=[InputRequired("Thumbnail path can not be empty")])
     difficulty = TextField("Map tier", validators=[InputRequired("Difficulty can not be none")])
     submit = SubmitField("Submit map")
+
+class DocsForm(Form):
+    title = TextField("Title", validators=[InputRequired("Title can not be empty")])
+    text = TextAreaField("Text", validators=[InputRequired("Documentation text can not be empty")])
+    subject = TextField("Subject", validators=[InputRequired("Subject can not be empty")])
+    submit = SubmitField("Submit doc")
     
-dashboard_destinations = ['home','manage','settings','manageuserslist','manageteamlist','maps']
+dashboard_destinations = ['home','manage','settings','manageuserslist','manageteamlist','maps','docs']
 
 def is_valid_destination(destination):
     return destination in dashboard_destinations
@@ -202,13 +210,87 @@ def dashboard_settings():
         form.email.data = current_user.email
     else:
         try:
-            if not current_user.email == form.email.data:
+            if not current_user.email == request.form.get('email'):
                 current_user.update_handlenewemail(form.email.data)
                 flash('Email adress updated. Verification email sent to ' + form.email.data)
         except:
             form.email.data = None
             flash('An error occurred while trying to process your info. Your info has not been saved',category='dashboard')
     return render_template('dashboard/settings.html', destination='settings', form=form)
+
+@app.route('/dashboard/docs', methods=['GET', 'POST'])
+@access_required(rank_momentum_normal,'dashboard_r_home')
+def dashboard_docs():
+    form = DocsForm()
+    if request.method == 'POST':
+        form.subject.data = request.form.get('subject')
+        form.title.data = request.form.get('title')
+        form.text.data = request.form.get('text')
+        pattern = re.compile('[\W_]+')
+        pattern.sub('', form.subject.data)
+        if form.validate():
+            other = DBDoc.query.filter_by(subject=form.subject.data).first()
+            tother = DBDoc.query.filter_by(title=form.title.data).first()
+            if other is None and tother is None:
+                doc = DBDoc(current_user.steamid, form.subject.data.lower(), form.title.data, form.text.data)
+                db.session.add(doc)
+                db.session.commit()
+                flash('Doc added successfully')
+            else:
+                flash('A doc has already the same subject/title than yours. Consider changing it')
+    return render_template('dashboard/docs.html',form = form, destination='docs',edit = False)
+
+@app.route('/dashboard/docs/edit/<int:id>', methods=['GET', 'POST'])
+@access_required(rank_momentum_normal,'dashboard_r_home')
+def dashboard_docs_edit(id=-1):
+    if request.method == 'GET':
+        if id <= 0:
+            return redirect(url_for('dashbaord_docs'))
+        doc = DBDoc.query.filter_by(id=id).first()
+        if doc is None:
+            flash('No doc with id ' + str(id))
+            return redirect(url_for('dashbaord_docs'))
+        form = DocsForm()
+        form.subject.data = doc.subject
+        form.title.data = doc.title
+        form.text.data = doc.text
+        return render_template('dashboard/docs.html',form = form, destination='docs',edit = True)
+    else:
+        try:
+            form = DocsForm()
+            form.subject.data = request.form.get('subject')
+            form.title.data = request.form.get('title')
+            form.text.data = request.form.get('text')
+            if form.validate():
+                edict = DBDoc.query.filter_by(subject=form.subject.data).first()
+                if edict is not None:
+                    edict.title = form.title.data
+                    edict.text = form.text.data
+                    db.session.commit()
+                    flash('Successfully edited doc.')
+                    return render_template('dashboard/docs.html',form = form, destination='docs', edit = True)
+                else:
+                    flash('Could not find matching doc.')
+                    raise Exception
+            else:
+                flash('Form could not be validated. Check for errors.')
+                return render_template('dashboard/docs.html',form = form, destination='docs', edit = True)
+        except:
+            raise
+            return redirect(url_for('dashboard_docs'))
+
+@app.route('/dashboard/docs/edit/remove/<int:id>', methods=['GET'])
+@access_required(rank_momentum_normal,'dashboard_r_home')
+def dashboard_docs_edit_remove(id=-1):
+    try:
+        if id > 0:
+            ## Security is not very high here because doc.delete does that job
+            doc = DBDoc.query.filter_by(id=id).first()
+            if doc is not None:
+                doc.delete()
+        return redirect(url_for('docs'))
+    except:
+        return redirect(url_for('docs'))
 
 @app.route('/dashboard/maps', methods=['GET', 'POST'])
 @mapper_required('dashboard_maps')

@@ -10,8 +10,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.mysql import *
 from sqlalchemy.sql import func
 from core import app
-from flask.ext.login import UserMixin
-from flask import url_for
+from flask.ext.login import UserMixin, current_user
+from flask import url_for, flash
 from core.routes.defuseraccess import rank_user_banned, rank_user_normal, rank_momentum_normal, rank_momentum_admin, rank_webmaster
 from core.routes.sendemail import EmailConnection
 
@@ -393,4 +393,46 @@ class DBComment(db.Model):
         self.atsecond = atsecond
         db.session.commit()
 
+class DBDoc(db.Model):
+    __tablename__ = 'docs'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True)
+    steamid = db.Column(BIGINT(unsigned=True), unique=False, nullable=False)
+    subject = db.Column(VARCHAR(56), nullable=False, unique=True)
+    title = db.Column(VARCHAR(516), nullable=False, unique=True)
+    text = db.Column(TEXT(),nullable=False)
+    date = db.Column(DATETIME(),nullable=False)
+    is_deleted = db.Column(BOOLEAN(), default=False, nullable=False)
+    
+    def __init__(self, author, subject, title, text, date=func.utc_timestamp()):
+        self.steamid = author
+        self.subject = subject
+        self.title = title
+        self.text = text
+        self.date = date
+
+    def delete(self):
+        if current_user is not None and current_user.is_authenticated and (current_user.access >= rank_momentum_admin or current_user.steamid == self.steamid):
+            self.is_deleted = True
+            db.session.commit()
+            flash('Successfully deleted doc.')
+
+    
+class DBGlobal(db.Model):
+    __tablename__ = 'globals'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True)
+    name = db.Column(VARCHAR(516), nullable=False, unique=True)
+    value = db.Column(VARCHAR(516), nullable=False)
+
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
         
+
+class DBLocalization(db.Model):
+    __tablename__ = 'localizations'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True)
+    isfromgame = db.Column(BOOLEAN(),default=True, nullable=False)
+    isbase = db.Column(BOOLEAN(),default=False, nullable=False)
+    language = db.Column(VARCHAR(516),default='unknown', nullable=False)
+    token_name = db.Column(TEXT(),nullable=False)
+    translation = db.Column(TEXT(),nullable=False)

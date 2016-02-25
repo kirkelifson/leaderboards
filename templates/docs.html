@@ -26,57 +26,88 @@
 
 
     <script src="{{ url_for('static', filename='js/vendor/' 'modernizr.js') }}" type="text/javascript"></script>
+    <link href="{{ url_for('static', filename='css/' 'bootstrap.css') }}" rel="stylesheet">
 
-    <style>
-    	body { 
-        	background: url({{ url_for_random_background() }}) no-repeat center center fixed; 
-        	-webkit-background-size: cover;
-        	-moz-background-size: cover;
-        	-o-background-size: cover;
-        	background-size: cover;
-		}
-        .centered {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color:rgb(0,25,125);
+    <style type="text/css">
+        body {
+            background-color: #CFF
         }
+
+        .flash {
+            background-color:red;
+            color:#FFF;
+            text-align: center;
+        }
+
     </style>
 </head>
 
 <body>
-    <!-- preloader -->
-    <div id="preloader">
-        <div id="status">&nbsp;</div>
-    </div>
-    <!-- End of preloader -->
-    <!-- right sidebar wrapper -->
+    <div class="container-fluid">
+        <!-- preloader -->
+        <div id="preloader">
+            <div id="status">&nbsp;</div>
+        </div>
+        <!-- End of preloader -->
+        <!-- right sidebar wrapper -->
 
-   <h1 class="centered">UNDER CONSTRUCTION
-                       <center><a href="{{ url_for('index') }}">&lt;&lt; Back to Home page</center></h1>
-    <!-- end paper bg -->
-    <!-- end of inner-wrap -->
-    <!-- main javascript library -->
-    <script src="{{ url_for('static', filename='js/' 'jquery.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'waypoints.min.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'preloader-script.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'foundation.min.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'foundation.#111111.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/slimscroll/' 'jquery.slimscroll.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'sliding-menu.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/slicknav/' 'jquery.slicknav.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'scriptbreaker-multiple-accordion-1.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/number/' 'jquery.counterup.min.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/circle-progress/' 'jquery.circliful.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='js/' 'app.js') }}" type="text/javascript"></script>
-    <!-- additional javascript -->
+        <div class="row">
+            {% for message in get_flashed_messages() %}
+            <div class="flash">
+                <h3>{{ message }}</h3>
+            </div>
+            {% endfor %}
+            <div class="col-sm-{%if not is_doc %}12{%else%}2{%endif%}" style="border-right: 1px solid black" {%if is_doc %}id="left"{%endif%}><h3>Documents List</h3>
+              <ul>
+                {% for doc in docs %}
+                <li>{%if subject == doc.subject %}<i class="glyphicon glyphicon-arrow-right"></i>{% endif %}<a href="{{url_for('docs')}}/{{doc.subject}}"{%if subject == doc.subject %} style="font-weight: bold;text-decoration: underline;" title="Current page"{% endif %}>{{doc.title}}</a></li>  
+                {% endfor %}
+            </ul>
+        </div>
+        {%if is_doc %}
+        <div class="col-sm-10" id="right">
+          <center><h2>{{ entry.title }}</h2></center>
+          <div style="text-align: center;">
+              {{ entry.text }}
+          </div>
+          {% if current_user is not none and current_user.is_authenticated and (current_user.steamid == entry.steamid or current_user.access >= rank_momentum_senior) %}
+
+           <div style="text-align: left;">
+              <a href="{{url_for('dashboard_docs_edit',id=entry.id)}}"><i class="glyphicon glyphicon-edit"></i>Edit</a>
+              {% if current_user.access >= rank_momentum_admin or current_user.steamid == entry.steamid%} 
+              | <a href="{{url_for('dashboard_docs_edit_remove',id=entry.id)}}"><i class="glyphicon glyphicon-remove"></i>Delete</a> 
+              {%endif %}
+          </div>
+          {% endif %}
+          <div style="text-align: right;color:gray">
+              Written by <a href="http://steamcommunity.com/profiles/{{entry.steamid}}" target="_blanck">{{ get_steamid_personaname(entry.steamid)}}</a><img src="{{get_steamid_avatar(entry.steamid)}}" style="border: 1px solid gray">
+          </div>
+      </div>
+      {%endif%}
+  </div>
+</div>
+<!-- end paper bg -->
+<!-- end of inner-wrap -->
+<!-- main javascript library -->
+<script src="{{ url_for('static', filename='js/' 'jquery.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/' 'waypoints.min.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/' 'preloader-script.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/' 'foundation.min.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/' 'foundation.#111111.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/slimscroll/' 'jquery.slimscroll.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/' 'sliding-menu.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/slicknav/' 'jquery.slicknav.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/' 'scriptbreaker-multiple-accordion-1.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/number/' 'jquery.counterup.min.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/circle-progress/' 'jquery.circliful.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/' 'app.js') }}" type="text/javascript"></script>
+<!-- additional javascript -->
 
 
 
-    <script>
-        $(document).foundation();
-    </script>
+<script>
+    $(document).foundation();
+</script>
 
 
 

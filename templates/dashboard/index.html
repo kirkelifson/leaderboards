@@ -93,6 +93,15 @@
                             	{%endif%}
                                 {% if current_user.access >= rank_momentum_normal %}
                                 <li>
+                                    <a class="tooltip-tip {%if destination == 'docs'%}selected{%endif%}"
+                                    href="{%if destination == 'docs'%}#{%else%}{{url_for('dashboard',destination='docs')}}{%endif%}" title="Momentum Mod documents">
+                                    <i class="fontello-doc-text"></i>
+                                    <span>Momentum Docs</span>
+                                    </a>
+                                </li>
+                                {%endif%}
+                                {% if current_user.access >= rank_momentum_normal %}
+                                <li>
                                     <a class="tooltip-tip {%if destination == 'manage'%}selected{%endif%}"
                                     href="{%if destination == 'manage'%}#{%else%}{{url_for('dashboard',destination='manage')}}{%endif%}" title="{%if momteam_pending() %}Some things may require you{%else%}Momentum Mod team membership management{%endif%}">
                                     <i class="fontello-beaker" {%if momteam_pending() %}style="color:yellow"{%endif%}></i>
