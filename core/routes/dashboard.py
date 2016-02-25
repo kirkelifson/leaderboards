@@ -36,6 +36,7 @@ class UserlistForm(Form):
     translator = BooleanField("Is translator?")
     email = 'Email'
     mapper = BooleanField("Is mapper?")
+    joindate = 'JoinDate'
     submit = SubmitField("Update user")
 
 class MapsForm(Form):
@@ -70,7 +71,8 @@ def dashboard_manage():
     if request.method == 'GET':
         member = DBTeam.query.filter_by(steamid=current_user.steamid).first()
         if member is None:
-            member.upgradeto_memberof_momentum()
+            current_user.upgradeto_memberof_momentum()
+            member = DBTeam.query.filter_by(steamid=current_user.steamid).first()
         form.nickname.data = member.nickname
         form.realname.data = member.realname
         form.role.data = member.role
@@ -137,6 +139,7 @@ def dashboard_manage_userlists():
             uform = UserlistForm()
             uform.username = user.username
             uform.email = user.email
+            uform.joindate = str(user.joindate)
             uform.access.data = user.access
             uform.steamid.data= user.steamid
             uform.translator.checked = user.is_translator

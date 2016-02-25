@@ -38,8 +38,8 @@
 	<body>
 		<center>
 			<p><strong>Access levels:</strong><br>
-				From <b>1</b> to <b>7</b>, the ranks names are:<br>
-				rank_user_banned (<b><i>1</i></b>), rank_user_normal (<b><i>2</i></b>), rank_user_senior (<b><i>3</i></b>), rank_momentum_normal (<b><i>4</i></b>), rank_momentum_senior (<b><i>5</i></b>), rank_momentum_admin (<b><i>6</i></b>), rank_webmaster (<b><i>7</i></b>)
+				From <b>0</b> to <b>6</b>, the ranks names are:<br>
+				rank_user_banned (<b><i>0</i></b>), rank_user_normal (<b><i>1</i></b>), rank_user_senior (<b><i>2</i></b>), rank_momentum_normal (<b><i>3</i></b>), rank_momentum_senior (<b><i>4</i></b>), rank_momentum_admin (<b><i>5</i></b>), rank_webmaster (<b><i>6</i></b>)
 				<br>Note that your edits won't be taken into account if you try to edit a member with more access level than you, nor try to edit yourself
 				<br>If you want to edit yourself, go <a href="{{ url_for('dashboard_settings',destination='settings')}}">to the settings page</a> or <a href="{{ url_for('dashboard_manage',destination='manage')}}">to the manage page</a></p>
 				<br>
@@ -59,6 +59,7 @@
 							<th>Access</th>
 							<th>Is mapper?</th>
 							<th>Is translator?</th>
+							<th>Join date</th>
 							<th></th>
 						</tr>
 					</thead>
@@ -71,6 +72,7 @@
 							<th>Access</th>
 							<th>Is mapper?</th>
 							<th>Is translator?</th>
+							<th>Join date</th>
 							<th></th>
 						</tr>
 					</tfoot>
@@ -93,6 +95,8 @@
 								<td><center>{{ user.mapper }}</center></td>
 
 								<td><center>{{ user.translator }}</center></td>
+
+								<td><center>{{ user.joindate }}</center></td>
 
 								<td>{{ user.submit }}</td>
 							</form>

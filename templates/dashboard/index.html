@@ -82,7 +82,7 @@
                                     <span>Settings</span>
                                 	</a>
                                 </li>
-                                {% if current_user.is_mapper or current_user.access >= rank_momentum_normal %}
+                                {% if current_user.is_mapper or current_user.access >= rank_momentum_senior %}
                                 <li>
                                     <a class="tooltip-tip {%if destination == 'maps'%}selected{%endif%}"
                                     href="{%if destination == 'maps'%}#{%else%}{{url_for('dashboard',destination='maps')}}{%endif%}" title="Momentum Mod map management">
