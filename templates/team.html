@@ -86,7 +86,7 @@
                     <div class="box-body" style="display: block;">
                     <h5>Momentum Team</h5>
                     {% for member in team %}
-                        	<p>{% if member.realname is not none %}{{ member.realname }}{% endif %}{% if member.nickname is not none %} ({{ member.nickname }}){% endif %}{% if member.role is not none %} - {{ member.role }}{% endif %}</p>
+                        	<p>{% if member.realname is not none %}{{ member.realname }}{% endif %}{% if member.nickname is not none %} {% if member.realname is not none %}({% endif %}{{ member.nickname }}{% if member.realname is not none %}){% endif %}{% endif %}{% if member.role is not none %}{% if member.realname is not none or member.nickname is not none%} -{% endif %} {{ member.role }}{% endif %}</p>
                     {% endfor %}
                     <h5>Contributors</h5>
                     {% for member in contributors %}
