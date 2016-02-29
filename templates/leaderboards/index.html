@@ -72,7 +72,7 @@
 
 							<ul class="left">
 
-								<h3 style="display: block;"><a href="{{ url_for('leaderboards_main') }}">Leaderboards</a></h3>
+								<h3 style="display: block;"><a href="{{ url_for('index') }}" title="Back to main page"><img src="{{ url_for('static', filename='frontend/images/' 'logo.svg') }}" width="45%" height="auto" style="-webkit-filter: sepia(90%) hue-rotate(90deg);filter: sepia(90%) hue-rotate(90deg);"></a></h3>
 							</ul>
 							{% if current_user.is_authenticated and current_user.get_id is not none %}
 							<ul class="right">
@@ -129,7 +129,7 @@
 							<!-- /.box-header -->
 							<div class="box-body " style="display: block;">
 								{% if qtype == 'map' %}
-								<h3>Runs for {{ map }}</h3>
+								<h3><img src="{{ get_map_thumbnail(map) }}" width="128px" height="128px" border="1px solid #CBA">Runs for {{ map }}</h3>
 								{% elif qtype=='player' %}
 								<h3>Runs for <a href="{{ url_for('leaderboards_player', steamid = pinfo.steamid) }}">{{ pinfo.personaname }}</a>
 									{% if map %}
@@ -168,7 +168,8 @@
 										<tr>
 											<td><img class="chat-pic" src="{{ get_steamid_avatar(score.steamid) }}"/><div class="username" style="margin-top:10px; font-weight:bold;"><a href="{{ url_for('leaderboards_player', steamid = score.steamid) }}">{{ get_steamid_personaname(score.steamid) }}</a></div></td>
 											{% if qtype != 'map' %}
-											<td><a href="{{ url_for('leaderboards_map', map = score.get_mapname() ) }}">{{ score.get_mapname() }}</a><img class="chat-pic" src="{{ get_map_thumbnail(score.get_mapname()) }}"/></td>
+											{% set mapname = get_mapname(score.mapid) %}
+											<td><a href="{{ url_for('leaderboards_map', map = mapname ) }}">{{ mapname }}</a><img class="chat-pic" src="{{ get_map_thumbnail(mapname) }}"/></td>
 											{% endif %}
 											<td>{{score.timeconverted}}</td>
 											<td>{{score.tick_rate}}</td>
@@ -194,6 +195,7 @@
 
 							</div>
 							<!-- end .timeline -->
+							<a href="{{ url_for('index') }}" title="Back to main page"><< Back to the main page</a>
 						</div>
 						<!-- box -->
 					</div>

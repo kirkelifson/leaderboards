@@ -1,7 +1,7 @@
 __author__ = 'rabsrincon'
 
 from functools import update_wrapper, wraps
-from flask import current_app, abort, request
+from flask import current_app, abort, request, flash
 from flask.ext.login import LoginManager, current_user
 from core import app
 
@@ -20,6 +20,25 @@ def access_required(access, nextUrl=None):
 			elif current_user.access < access:
 				if nextUrl is not None:
 					setattr(request, 'next_url', nextUrl)
+				return current_app.login_manager.unauthorized()
+			return func(*args, **kwargs)
+		return decorated
+	return accessWrapper
+
+def mapper_required(nextUrl=None):
+	def accessWrapper(func):
+		@wraps(func)
+		def decorated(*args, **kwargs):
+			if current_app.login_manager._login_disabled:
+				return func(*args, **kwargs)
+			elif not current_user.is_authenticated:
+				if nextUrl is not None:
+					setattr(request, 'next_url', nextUrl)
+				return current_app.login_manager.unauthorized()
+			elif current_user.access < rank_momentum_normal or not current_user.is_mapper:
+				if nextUrl is not None:
+					setattr(request, 'next_url', nextUrl)
+				flash('You don\'t have enough permissions')
 				return current_app.login_manager.unauthorized()
 			return func(*args, **kwargs)
 		return decorated
@@ -45,6 +64,7 @@ class ExtendedLoginManager(LoginManager):
 
 app.jinja_env.globals.update(rank_momentum_normal=rank_momentum_normal)
 app.jinja_env.globals.update(rank_momentum_admin=rank_momentum_admin)
+app.jinja_env.globals.update(rank_momentum_senior=rank_momentum_senior)
 
 
 

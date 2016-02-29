@@ -1,0 +1,86 @@
+<html>
+<head>
+	<title>Momentum Userslist management</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
+	<style type="text/css">
+		.flash {
+			background-color:red;
+			color:#FFF;
+		}
+	</style>
+	<link href="{{ url_for('static', filename='css/' 'dashboard.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/' 'style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/' 'dripicon.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/' 'typicons.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/' 'font-awesome.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='sass/css/' 'theme.css') }}" rel="stylesheet">
+
+    <!-- pace loader -->
+    <script src="{{ url_for('static', filename='js/pace/' 'pace.js') }}" type="text/javascript"></script>
+    <link href="{{ url_for('static', filename='js/pace/themes/orange/' 'pace-theme-flash.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='js/slicknav/' 'slicknav.css') }}" rel="stylesheet">
+
+
+    <script src="{{ url_for('static', filename='js/vendor/' 'modernizr.js') }}" type="text/javascript"></script>
+</head>
+<body>
+	<center>
+			{% for message in get_flashed_messages() %}
+			<div class="flash">
+				<h3>{{ message }}</h3>
+			</div>
+			{% endfor %}
+		</center>
+		<center>
+		<table class="display" style="width:50%">
+			<thead>
+				<tr>
+					<th>Steamid</th>
+					<th>Nickname</th>
+					<th>Realname</th>
+					<th>Role</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+
+			<tfoot>
+				<tr>
+					<th>Steamid</th>
+					<th>Nickname</th>
+					<th>Realname</th>
+					<th>Role</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</tfoot>
+
+			<tbody>
+				{% for user in listing %}
+				<tr>
+					<form action="#" method=post>
+						<input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+						{{ user.csrf_token }}
+
+						<td><center>{{ user.steamid(readonly="readonly") }}</center></td>
+
+						<td><center>{{ user.nickname }}</center></td>
+
+						<td><center>{{ user.realname }}</center></td>
+
+						<td><center>{{ user.role }}</center></td>
+
+						<td>{{ user.submit }}</td>
+
+						<td><button src="#">Pssgas</button></td>
+					</form>
+				</tr>
+				{% endfor %}
+
+			</tbody>
+		</table>
+		</center>
+
+	</body>
+	</html>

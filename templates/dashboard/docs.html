@@ -1,0 +1,52 @@
+{% extends "dashboard/index.html" %}
+{% block body %}
+{% if form is not none %}
+<script type="text/javascript">
+    function preview() {
+       alert(document.getElementById("text").value)
+   }
+</script>
+<div class="large columns" style="margin-top: 1.2em">
+    <div class="your-account">
+        <div class="row">
+            {% for message in get_flashed_messages() %}
+            <h5 class="flash">{{ message }}</h5>
+            {% endfor %}
+            <h3>
+                {% if edit %}
+                Editting doc entry
+                {% else %}
+                Creating new doc entry
+                {% endif %}
+            </h3>
+            <form action="#" method=post>
+                <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                {{ form.csrf_token }}
+
+                {{ form.title.label }}
+                {{ form.title(placeholder='Doc title',maxlength="256") }}
+
+                {{ form.subject.label }}
+                {% if edit %}
+                {{ form.subject(maxlength="56", readonly="readonly",style="display: none;") }}
+                {{ form.subject.data|string }}
+                {% else %}
+                {{ form.subject(placeholder='Subject of the doc. Only alphanumeric and a maximum of 56 characters',maxlength="56") }}
+                {% endif %}
+
+                {{ form.text.label }}
+                {{ form.text(placeholder='The documentaiton text. It accepts HTML', rows="10") }}
+
+                {{ form.submit }}
+
+                
+            </form>
+            <br>
+            <br>
+
+            <a onclick="preview()" href="#">Preview!</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

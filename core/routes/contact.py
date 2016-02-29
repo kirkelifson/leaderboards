@@ -82,7 +82,8 @@ def contact():
             form.department.data = depart.encode('utf-8')
         if not request.args.get('subject') is None:
             form.subject.data = request.args.get('subject').encode('utf-8')
-        if current_user.email is not None and current_user.verified:
-            form.email.data = current_user.email
-        form.name.data = current_user.username
+        if current_user is not None and current_user.is_authenticated:
+            if current_user.email:
+                form.email.data = current_user.email
+            form.name.data = current_user.username
         return render_template('contact.html', form=form)

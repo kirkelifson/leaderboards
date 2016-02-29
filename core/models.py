@@ -10,8 +10,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.mysql import *
 from sqlalchemy.sql import func
 from core import app
-from flask.ext.login import UserMixin
-from flask import url_for
+from flask.ext.login import UserMixin, current_user
+from flask import url_for, flash
 from core.routes.defuseraccess import rank_user_banned, rank_user_normal, rank_momentum_normal, rank_momentum_admin, rank_webmaster
 from core.routes.sendemail import EmailConnection
 
@@ -70,7 +70,7 @@ class DBMap(db.Model):
     
 def get_map_thumbnail(mapfilename):
     try:
-        map = DBMap.query.filter_by(game_map=mapfilename).first()
+        map = DBMap.query.filter_by(id=DBMap.get_id_for_game_map(mapfilename)).first()
         if map is None or not map.thumbnail:
             return 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'
         else:
@@ -112,6 +112,8 @@ def get_steamid_avatar(steamid):
     except:
         return 'http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'
 
+app.jinja_env.globals.update(get_steamid_avatar=get_steamid_avatar)
+
 def get_steamid_personaname(steamid):
     try:
         user = DBUser.query.filter_by(steamid=steamid).first()
@@ -124,7 +126,6 @@ def get_steamid_personaname(steamid):
     except:
         return 'Unknown'
 
-app.jinja_env.globals.update(get_steamid_avatar=get_steamid_avatar)
 app.jinja_env.globals.update(get_steamid_personaname=get_steamid_personaname)
 
 
@@ -151,7 +152,7 @@ class DBScore(db.Model):
         return {
             'id'         : self.id,
             'steamid'    : self.steamid,
-            'game_map'   : self.get_mapname,
+            'game_map'   : get_mapname(self.mapid),
             'tick_time'  : self.tick_time,
             'tick_rate'  : self.tick_rate,
             'zone_hash'  : self.zone_hash,
@@ -162,15 +163,18 @@ class DBScore(db.Model):
     def serialize_many2many(self):
         return [ item.serialize for item in self.many2many]
 
-    def get_mapname(self):
-        map = DBMap.query.filter_by(id=self.mapid).first()
-        if map is not None:
-            return str(map.game_map)
-        else:
-            return 'Unknown'
 
     def __repr__(self):
         return '<Score %s>' % self.id
+
+def get_mapname(MapID):
+    map = DBMap.query.filter_by(id=MapID).first()
+    if map is not None:
+        return str(map.game_map)
+    else:
+        return 'Unknown'
+
+app.jinja_env.globals.update(get_mapname=get_mapname)
 
 
 class DBUser(db.Model, UserMixin):
@@ -179,6 +183,8 @@ class DBUser(db.Model, UserMixin):
     username = db.Column(VARCHAR(30), unique=False)
     email = db.Column(VARCHAR(255), unique=True)
     verified = db.Column(BOOLEAN(), default=False)
+    is_translator = db.Column(BOOLEAN(), default=False)
+    is_mapper = db.Column(BOOLEAN(), default=False)
     access = db.Column(SMALLINT(unsigned=True), default=rank_user_normal)
     steamid = db.Column(BIGINT(unsigned=True), unique=True, nullable=False)
     avatar = db.Column(TEXT())
@@ -261,6 +267,16 @@ class DBUser(db.Model, UserMixin):
         if changes == True:
             db.session.commit()
         return changes
+
+    def update_translatorstatus(self, is_translator):
+        if self.is_translator != is_translator:
+            self.is_translator = is_translator
+            db.session.commit()
+
+    def update_mapperstatus(self, is_mapper):
+        if self.is_mapper != is_mapper:
+            self.is_mapper = is_mapper
+            db.session.commit()
 
     def update_handlenewemail(self, email):
         if email is not None:
@@ -377,4 +393,46 @@ class DBComment(db.Model):
         self.atsecond = atsecond
         db.session.commit()
 
+class DBDoc(db.Model):
+    __tablename__ = 'docs'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True)
+    steamid = db.Column(BIGINT(unsigned=True), unique=False, nullable=False)
+    subject = db.Column(VARCHAR(56), nullable=False, unique=True)
+    title = db.Column(VARCHAR(516), nullable=False, unique=True)
+    text = db.Column(TEXT(),nullable=False)
+    date = db.Column(DATETIME(),nullable=False)
+    is_deleted = db.Column(BOOLEAN(), default=False, nullable=False)
+    
+    def __init__(self, author, subject, title, text, date=func.utc_timestamp()):
+        self.steamid = author
+        self.subject = subject
+        self.title = title
+        self.text = text
+        self.date = date
+
+    def delete(self):
+        if current_user is not None and current_user.is_authenticated and (current_user.access >= rank_momentum_admin or current_user.steamid == self.steamid):
+            self.is_deleted = True
+            db.session.commit()
+            flash('Successfully deleted doc.')
+
+    
+class DBGlobal(db.Model):
+    __tablename__ = 'globals'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True)
+    name = db.Column(VARCHAR(516), nullable=False, unique=True)
+    value = db.Column(VARCHAR(516), nullable=False)
+
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
         
+
+class DBLocalization(db.Model):
+    __tablename__ = 'localizations'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True)
+    isfromgame = db.Column(BOOLEAN(),default=True, nullable=False)
+    isbase = db.Column(BOOLEAN(),default=False, nullable=False)
+    language = db.Column(VARCHAR(516),default='unknown', nullable=False)
+    token_name = db.Column(TEXT(),nullable=False)
+    translation = db.Column(TEXT(),nullable=False)
