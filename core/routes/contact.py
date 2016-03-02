@@ -1,6 +1,7 @@
 __author__ = 'rabsrincon'
 
 from flask import render_template, redirect, request, flash, url_for, jsonify
+from core.models import DBEmailingList, db
 from flask.ext.wtf import Form, RecaptchaField
 from wtforms import TextField, TextAreaField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Email, Optional
@@ -10,6 +11,8 @@ from urllib import urlencode
 import urllib2 as urlrequest
 
 import json
+import string
+import random
 
 from core import app
 
@@ -19,6 +22,11 @@ class ContactForm(Form):
     department = SelectField("Department to forward this message", choices=[('gen', 'General'), ('pro', 'Programmers'), ('map', 'Mappers'), ('web', 'WebMasters')], validators=[Optional()])
     subject = TextField("Subject", validators=[Optional()])
     message = TextAreaField("Message", validators=[InputRequired("Message can not be empty")])
+    recaptcha = RecaptchaField()
+    submit = SubmitField("Send")
+
+class MailListForm(Form):
+    email = email = TextField("Email", validators=[InputRequired("Please enter your email."), Email("Email must be valid")])
     recaptcha = RecaptchaField()
     submit = SubmitField("Send")
 
@@ -87,3 +95,77 @@ def contact():
                 form.email.data = current_user.email
             form.name.data = current_user.username
         return render_template('contact.html', form=form)
+
+@app.route('/mailinglist', methods=['GET', 'POST'])
+def mailinglist():
+    try:
+        if request.method == 'GET':
+            form = MailListForm()
+            return render_template('mailinglist.html', form=form)
+        else:
+            success = False
+            uform = MailListForm()
+            uform.email.data = request.form.get('email')
+            if uform.validate():
+                prev = DBEmailingList.query.filter_by(email= uform.email.data).first()
+                if prev is None:
+                    delete_token = ''
+                    confirmation_token = ''
+                    saltset = string.letters + string.digits
+                    sep = ''
+                    confirmation_token = sep.join([random.choice(saltset) for x in xrange(64)])
+                    delete_token = sep.join([random.choice(saltset) for x in xrange(64)])
+                    prev = DBEmailingList(uform.email.data, confirmation_token, delete_token)
+                    ## We need to send the confirmation email here!   
+                    db.session.add(prev)
+                    db.session.commit()
+                    flash('Thank you for joining us! A confirmation email has been sent.')
+                    success = True
+                elif prev.is_deleted:
+                    prev.update_confirmed()
+                    flash('Your email has been resubmitted to the mailing list. Thank you.')
+                    success = True
+                else:
+                    flash('Email already registered')
+            else:
+                flash('Check for errors, form could not be validated.')
+            return render_template('mailinglist.html', form = uform, success = success)
+                    
+    except:
+        flash('There was a problem with your request. Please check your data')
+        raise
+        return render_template('mailinglist.html', form=None)
+
+@app.route('/mailinglist/token/<token>', methods=['GET'])
+def mailinglist_token(token=None):
+    try:
+        success = False
+        if token is not None:
+            #Is this a confirmation link?
+            uconfirm = DBEmailingList.query.filter_by(confirm_token=token).first()
+            if uconfirm is not None:
+                #It is a confirmation email
+                uconfirm.update_confirmed()
+                flash('Your email has been confirmed. Thank you')
+                success = True
+            else:
+                ucancel = DBEmailingList.query.filter_by(delete_token=token).first()
+                #Is it a delete email?
+                if ucancel is not None:
+                    #It is a delete email
+                    ucancel.update_deleted()
+                    flash('Your email has been removed from the active mailing list.\n If you want to rejoin, please revisit your confirmation link or resubmit your email.')
+                    success = True
+                else:
+                    #It's not a valid token
+                    flash('Token is not valid. Please check the validity of the link')
+                    success = False
+        else:
+            flash('Received null token.')
+        return render_template('mailinglist_token.html', success = success)
+    except:
+        flash('There was a problem processing your token.')
+        raise
+        return redirect(url_for('mailinglist'))
+        
+        
