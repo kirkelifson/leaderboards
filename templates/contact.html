@@ -36,6 +36,12 @@
             border-bottom: 1px dotted #5B2345;
         }
 
+        .flash_success {
+            color: green;
+            padding: 10px;
+        }
+
+
         .flash:last-of-type {
              border-bottom: 0px;
         }
@@ -75,7 +81,9 @@
                     <!-- /.box-header -->
                     <div class="box-body " style="display: block;">
                         {% if success %}
-                        <p style="color:green">Thank you for your message {{ sender_name }}. We'll get back to you shortly.</p>
+                        {% for message in get_flashed_messages() %}
+                        <div class="flash_success">{{ message }}</div>
+                        {% endfor %}
                         {% else %}
                         {% for message in get_flashed_messages() %}
                         <div class="flash">{{ message }}</div>
@@ -95,6 +103,7 @@
                         {% for message in form.message.errors %}
                         <div class="flash">{{ message }}</div>
                         {% endfor %}
+                        {% if form is not none %}
                         <form action="#" method=post>
                         <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
                             {{ form.csrf_token }}
@@ -117,7 +126,8 @@
 
                             {{ form.submit }}
                         </form>
-
+                        <small>Your IP is recorded for security reasons. We only use it for loggin pourposes</small>
+                        {% endif %}
                         {% endif %}
                     </div>
                     <!-- end .timeline -->
