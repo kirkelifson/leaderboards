@@ -64,6 +64,9 @@ def contact():
             department_convert = {'gen': '<@channel>', 'pro': '<#C053U99PL|coders>', 'map':'<#C054J6L49|mappers>', 'web':'<#C0540H60C> & <#C054N9BDH>'}
             msg = "Message"
             try:
+                contact = DBContact(form.email.data.encode('utf-8'), form.name.data.encode('utf-8'), form.department.data.encode('utf-8'), form.subject.data.encode('utf-8'), form.message.data.encode('utf-8'), request.remote_addr)
+                db.session.add(contact)
+                db.session.commit()
                 userid = ''
                 if current_user.get_id() is not None and current_user.is_authenticated:
                     userid = '\n(Is logged in as <http://steamcommunity.com/profiles/'+ str(current_user.steamid) +'|' + str(current_user.steamid) +'>'
@@ -72,10 +75,8 @@ def contact():
                         if not current_user.verified:
                             userid += ' - Not verified'
                     userid += ')'
-                msg =  "New message from *" + str(form.name.data.encode('utf-8')) + "* (" + str(form.email.data.encode('utf-8')) + ") directed to " + department_convert.get(str(form.department.data.encode('utf-8')), "@channel") + str(userid) + "\nSubject: " + str(form.subject.data.encode('utf-8')) + "\n\n" + str(form.message.data.encode('utf-8'))
-                contact = DBContact(form.email.data.encode('utf-8'), form.name.data.encode('utf-8'), form.department.data.encode('utf-8'), form.subject.data.encode('utf-8'), form.message.data.encode('utf-8'), request.remote_addr)
-                db.session.add(contact)
-                db.session.commit()
+                msg =  "Message *#"+ str(contact.id) +"*\nNew message from *" + str(form.name.data.encode('utf-8')) + "* (" + str(form.email.data.encode('utf-8')) + ") directed to " + department_convert.get(str(form.department.data.encode('utf-8')), "@channel") + str(userid) + "\nSubject: " + str(form.subject.data.encode('utf-8')) + "\n\n" + str(form.message.data.encode('utf-8'))
+                
                 slack = Slack(url=app.config["SLACK_CONTACTBOT_URL"])
                 response = slack.notify(text=msg)
                 if response == 'ok':
@@ -86,7 +87,7 @@ def contact():
                     success = False
             except:
                 flash('An error ocurred while processing the message. Ensure the message is valid')
-                success = False
+                success = False        
         return render_template('contact.html', form = form, success = success)
             
     else:
