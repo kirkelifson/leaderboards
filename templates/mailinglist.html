@@ -86,7 +86,8 @@
                         {% for message in form.email.errors %}
                         <div class="flash">{{ message }}</div>
                         {% endfor %}
-                        
+                        <p>You can submit your email here to get notified of important events!</p>
+                        <small>We promise not to spam your inbox, nor to share it with anyone.</small>
                         <form action="#" method=post>
                         <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
                             {{ form.csrf_token }}
