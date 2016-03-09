@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contact form</title>
+    <title>Momentum Mailing List</title>
     <link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
     <link href="{{ url_for('static', filename='css/' 'foundation.css') }}" rel="stylesheet">
 
@@ -28,22 +28,16 @@
     <script src="{{ url_for('static', filename='js/vendor/' 'modernizr.js') }}" type="text/javascript"></script>
 
     <style>
-        .flash {
-            background-color: #FBB0B0;
-            color: #FFF;
-            font-weight: bold;
-            padding: 10px;
-            border-bottom: 1px dotted #5B2345;
-        }
-
         .flash_success {
             color: green;
             padding: 10px;
         }
 
-
-        .flash:last-of-type {
-             border-bottom: 0px;
+        .flash_error {
+            background-color: red;
+            color: #FFF;
+            font-weight: bold;
+            padding: 10px;
         }
     body { 
         background: url({{ url_for_random_background() }}) no-repeat center center fixed; 
@@ -86,53 +80,31 @@
                         {% endfor %}
                         {% else %}
                         {% for message in get_flashed_messages() %}
-                        <div class="flash">{{ message }}</div>
+                        <div class="flash_error">{{ message }}</div>
                         {% endfor %}
-                        {% for message in form.name.errors %}
-                        <div class="flash">{{ message }}</div>
-                        {% endfor %}
+                        {% if form is not none %}
                         {% for message in form.email.errors %}
                         <div class="flash">{{ message }}</div>
                         {% endfor %}
-                        {% for message in form.department.errors %}
-                        <div class="flash">{{ message }}</div>
-                        {% endfor %}
-                        {% for message in form.subject.errors %}
-                        <div class="flash">{{ message }}</div>
-                        {% endfor %}
-                        {% for message in form.message.errors %}
-                        <div class="flash">{{ message }}</div>
-                        {% endfor %}
-                        {% if form is not none %}
+                        <p>You can submit your email here to get notified of important events!</p>
+                        <small>We promise not to spam your inbox, nor to share it with anyone.</small>
                         <form action="#" method=post>
                         <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
                             {{ form.csrf_token }}
-                            {{ form.name.label }}
-                            {{ form.name(placeholder='Your name') }}
 
                             {{ form.email.label }}
                             {{ form.email(placeholder='Your email') }}
                             
-                            {{ form.department.label }}
-                            {{ form.department }}
-
-                            {{ form.subject.label }}
-                            {{ form.subject(placeholder='What do you want to talk about with us? (Optional but helpful)') }}
-
-                            {{ form.message.label }}
-                            {{ form.message(placeholder='Write your message here',rows=15) }}
-
                             {{ form.recaptcha }}
 
                             {{ form.submit }}
                         </form>
-                        <small>Your IP is recorded for security reasons. We only use it for loggin pourposes</small>
+
                         {% endif %}
                         {% endif %}
                     </div>
                     <!-- end .timeline -->
                     <center><a href="{{ url_for('index') }}">&lt;&lt; Back to Home page</center>
-                    {{ place_steamlink()|safe }}
                 </div>
                 <!-- box -->
                 

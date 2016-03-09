@@ -436,3 +436,50 @@ class DBLocalization(db.Model):
     language = db.Column(VARCHAR(516),default='unknown', nullable=False)
     token_name = db.Column(TEXT(),nullable=False)
     translation = db.Column(TEXT(),nullable=False)
+
+class DBEmailingList(db.Model):
+    __tablename__ = 'emails'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True)
+    email = db.Column(VARCHAR(516), nullable=False, unique=True)
+    confirm_token = db.Column(VARCHAR(516), nullable=False, unique=True)
+    is_confirmed = db.Column(BOOLEAN(), default=False, nullable=False)
+    delete_token = db.Column(VARCHAR(516), nullable=False, unique=True)
+    is_deleted = db.Column(BOOLEAN(), default=False, nullable=False)
+    ## *_token has to be a long-a#$% token so noone can delete our emails.
+    ## But fear not my dear, we ask for the email when deleting it!
+    
+    def __init__(self, email, confirm_token, delete_token):
+        self.email = email
+        self.confirm_token = confirm_token
+        self.delete_token = delete_token
+
+    def update_confirmed(self):
+        self.is_confirmed = True
+        self.is_deleted = False
+        db.session.commit()
+
+    def update_deleted(self):
+        self.is_deleted = True
+        db.session.commit()
+
+class DBContact(db.Model):
+    __tablename__ = 'contacts'
+    id = db.Column(INTEGER(unsigned=True), primary_key=True)
+    email = db.Column(VARCHAR(516), nullable=False, unique=False)
+    name = db.Column(VARCHAR(516), nullable=False, unique=False)
+    department = db.Column(VARCHAR(4), nullable=False, unique=False)
+    subject = db.Column(VARCHAR(516), nullable=True, unique=False)
+    message = db.Column(TEXT(),nullable=False)
+    ip = db.Column(VARCHAR(516), nullable=False, unique=False)
+    is_assigned = db.Column(BOOLEAN(), default=False, nullable=False)
+    is_resolved = db.Column(BOOLEAN(), default=False, nullable=False)
+    user = db.Column(VARCHAR(516), nullable=True, unique=False)
+
+    def __init__(self, email, name, department, subject, message, ip):
+        self.email = email
+        self.name = name
+        self.department = department
+        self.subject = subject
+        self.message = message
+        self.ip = ip
+    
