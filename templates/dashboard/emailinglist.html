@@ -1,0 +1,12 @@
+{% extends "dashboard/index.html" %}
+{% block body %}
+<div class="large columns" style="margin-top: 1.2em">
+	<div class="your-account">
+		<div class="row">
+			{% for email in listing %}
+			<p>{{ email }}</p>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+{% endblock %}

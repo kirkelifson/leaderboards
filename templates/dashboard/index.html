@@ -109,6 +109,15 @@
                                	 	</a>
                             	</li>
                             	{%endif%}
+                            	{% if current_user.access >= rank_momentum_senior %}
+                                <li>
+                                    <a class="tooltip-tip {%if destination == 'manageemailinglist'%}selected{%endif%}"
+                                    href="{%if destination == 'manageemailinglist'%}#{%else%}{{url_for('dashboard_manage_emailinglist',destination='manageemailinglist')}}{%endif%}" title="Momentum Mod Emailing List">
+                                    <i class="fontello-map"></i>
+                                    <span>Mailing List</span>
+                               	 	</a>
+                            	</li>
+                            	{%endif%}
                             <li>
                                 <a class="tooltip-tip" href="{{ url_for('index') }}">
                                     <i class=" icon-window"></i>
