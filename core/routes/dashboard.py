@@ -3,7 +3,7 @@ from flask import render_template, redirect, request, flash, url_for, abort
 from flask_login import login_user, logout_user, current_user, login_required
 
 from core import app
-from core.models import DBUser, DBTeam, DBContributor, DBMap, db, DBDoc
+from core.models import DBUser, DBTeam, DBContributor, DBMap, db, DBDoc, DBEmailingList
 from core.routes.defuseraccess import rank_user_banned, rank_momentum_normal, rank_momentum_admin, rank_webmaster, access_required, rank_momentum_senior, mapper_required
 from flask.ext.wtf import Form
 from wtforms import TextField, BooleanField, SubmitField, TextAreaField
@@ -13,6 +13,7 @@ import os
 import requests
 import re
 import string
+import json
 
 class ManageForm(Form):
     steamid = TextField("SteamID")
@@ -54,7 +55,7 @@ class DocsForm(Form):
     subject = TextField("Subject", validators=[InputRequired("Subject can not be empty")])
     submit = SubmitField("Submit doc")
     
-dashboard_destinations = ['home','manage','settings','manageuserslist','manageteamlist','maps','docs']
+dashboard_destinations = ['home','manage','settings','manageuserslist','manageteamlist', 'manageemailinglist' ,'maps','docs']
 
 def is_valid_destination(destination):
     return destination in dashboard_destinations
@@ -136,6 +137,14 @@ def bool_to_formdata(boolean):
 
 def formdata_to_bool(char):
     return char == 'y'
+
+@app.route('/dashboard/manage/emailinglist', methods=['GET'])
+@access_required(rank_momentum_senior,'dashboard_r_home')
+def dashboard_manage_emailinglist():
+    email = []
+    for entry in DBEmailingList.query.all():
+        email.append(entry.email)
+    return render_template('dashboard/emailinglist.html',destination='manageemailinglist', listing=email)
 
 @app.route('/dashboard/manage/userslist', methods=['GET', 'POST'])
 @access_required(rank_momentum_admin,'dashboard_r_home')
