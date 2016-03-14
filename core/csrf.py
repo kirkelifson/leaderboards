@@ -15,7 +15,8 @@ def csrf_protect():
         # token = session.pop('_csrf_token', None)
         token = session.get('_csrf_token', None)
         if not token or token != request.form.get('_csrf_token'):
-            abort(403)
+            if str(request.form.get('token')) != app.config["SLACK_CONTACTBOT_TOKEN"]:
+                abort(403)
 
 
 def generate_csrf_token():
