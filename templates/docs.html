@@ -72,7 +72,8 @@
                 {% endfor %}
             </ul>
         </div>
-        {%if is_doc %}
+        {% block docblock %}
+        {% if is_doc %}
         <div class="col-sm-10" id="right">
           <center><h2>{{ entry.title }}</h2></center>
           <div style="text-align: left;">
@@ -82,16 +83,18 @@
 
            <div style="text-align: left;border-top: 1px solid #000">
               <a href="{{url_for('dashboard_docs_edit',id=entry.id)}}"><i class="glyphicon glyphicon-edit"></i>Edit</a>
-              {% if current_user.access >= rank_momentum_admin or current_user.steamid == entry.steamid%}
-             	| <a href="javascript:confirmRemove('{{url_for('dashboard_docs_edit_remove',id=entry.id,_external=True)}}')"><i class="glyphicon glyphicon-remove"></i>Delete</a> 
-              {%endif %}
+              {% if current_user.access >= rank_momentum_admin or current_user.steamid == entry.steamid %}
+             	| <a href="javascript:confirmRemove('{{ url_for('dashboard_docs_edit_remove',id=entry.id,_external=True) }}')"><i class="glyphicon glyphicon-remove"></i>Delete</a> 
+              {% endif %}
           </div>
           {% endif %}
           <div style="text-align: right;color:gray">
-              Written by <a href="http://steamcommunity.com/profiles/{{entry.steamid}}" target="_blanck">{{ get_steamid_personaname(entry.steamid)}}</a><img src="{{get_steamid_avatar(entry.steamid)}}" style="border: 1px solid gray">
+              Written by <a href="http://steamcommunity.com/profiles/{{ entry.steamid }}" target="_blanck">{{ get_steamid_personaname(entry.steamid) }}</a><img src="{{ get_steamid_avatar(entry.steamid) }}" style="border: 1px solid gray">
           </div>
       </div>
-      {%endif%}
+
+      {% endif %}
+      {% endblock %}
   </div>
 </div>
 <br>

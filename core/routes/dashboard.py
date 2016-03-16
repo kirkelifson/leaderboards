@@ -301,6 +301,21 @@ def dashboard_docs_edit_remove(id=-1):
     except:
         return redirect(url_for('docs'))
 
+@app.route('/dashboard/docs/preview', methods=['GET'])
+@access_required(rank_momentum_normal,'dashboard_r_home')
+def dashboard_docs_preview():
+    text = ''
+    try:
+        text = request.args.get('text')
+    except:
+        text = 'Could not fetch form data. Please try again.'
+    try:
+        title = request.args.get('title')
+    except:
+        title = 'Could not fetch form data. Please try again.'
+    return render_template('dashboard/previewdocs.html',preview=text,title = title, is_doc=True)
+
+
 @app.route('/dashboard/maps', methods=['GET', 'POST'])
 @mapper_required('dashboard_maps')
 def dashboard_maps():

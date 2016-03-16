@@ -1,0 +1,18 @@
+{% extends "docs.html" %}
+{% block docblock %}
+{% if preview and title%}
+
+<div class="col-sm-10" id="right">
+  <center>
+      <h2>{{ title }}</h2>
+  </center>
+  <div style="text-align: left;">
+      {{ preview|safe }}
+  </div>   
+  <div style="text-align: right;color:gray">
+              Written by <a href="http://steamcommunity.com/profiles/{{ current_user.steamid }}" target="_blanck">{{ get_steamid_personaname(current_user.steamid) }}</a><img src="{{ get_steamid_avatar(current_user.steamid) }}" style="border: 1px solid gray">
+    </div>     
+</div>
+
+{% endif %}
+{% endblock %}

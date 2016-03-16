@@ -7,7 +7,7 @@ from wtforms import TextField, TextAreaField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Email, Optional
 from flask_login import current_user
 from urlparse import urljoin
-from urllib import urlencode
+from urllib import urlencode, unquote_plus
 import urllib2 as urlrequest
 
 import json
@@ -113,8 +113,7 @@ def contact_slackhook():
             commands = ['selfassign', 'setresolved', 'getinfo', 'help', 'listunresolved' ]
             commands_help = { 'selfassign': 'Assigns the given case to you.', 'setresolved': 'Marks the given case as resolved', 'getinfo': 'Gets the info from a given entry ID', 'help': 'Shows this help message', 'listunresolved': 'Lists unresolved entries'}
             tips_help = ['Add parameter _global_ at *the end* of a command and the bot will post the answer on the channel instead of PM\'ing it to you. _Example: !contactbot: help global_']
-            messaged = request.form.get('text')
-            message = messaged.replace("%21","!").replace("+"," ").replace("%3A",":").strip()
+            message = unquote_plus(request.form.get('text'))
             if message:
                 command = message.split(' ')[1]
                 if command in commands:

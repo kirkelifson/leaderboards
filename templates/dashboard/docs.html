@@ -2,8 +2,8 @@
 {% block body %}
 {% if form is not none %}
 <script type="text/javascript">
-    function preview() {
-       alert(document.getElementById("text").value)
+    function preview(link) {
+        window.open(link + '?text=' + encodeURIComponent(document.getElementById("text").value) + '&title=' + encodeURIComponent(document.getElementById("title").value) );
    }
 </script>
 <div class="large columns" style="margin-top: 1.2em">
@@ -31,7 +31,7 @@
                 {{ form.subject(maxlength="56", readonly="readonly",style="display: none;") }}
                 {{ form.subject.data|string }}
                 {% else %}
-                {{ form.subject(placeholder='Subject of the doc. Only alphanumeric and a maximum of 56 characters.Bear in mind that this will be part of the url',maxlength="56") }}
+                {{ form.subject(placeholder='Subject of the doc. Only alphanumeric and a maximum of 56 characters. Bear in mind that this will be part of the url',maxlength="56") }}
                 {% endif %}
 
                 {{ form.text.label }}
@@ -44,7 +44,7 @@
             <br>
             <br>
 
-            <a onclick="preview()" href="#">Preview!</a>
+            <a href="javascript:preview('{{ url_for('dashboard_docs_preview',_external=True) }}')">Preview!</a>
         </div>
     </div>
 </div>
