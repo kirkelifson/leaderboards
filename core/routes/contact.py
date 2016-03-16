@@ -209,7 +209,7 @@ def mailinglist():
                     ## We need to send the confirmation email here!   
                     db.session.add(prev)
                     db.session.commit()
-                    flash('Thank you for joining us! A confirmation email has been sent.')
+                    flash('Thank you for joining us!')
                     success = True
                 elif prev.is_deleted:
                     prev.update_confirmed()
