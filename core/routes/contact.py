@@ -103,14 +103,17 @@ def contact():
             form.name.data = current_user.username
         return render_template('contact.html', form=form)
 
+
+
 @app.route('/webhooks/incoming/contact', methods=['POST'])
 def contact_slackhook():
     response = { 'text':'' }
     try:
-        if request.args.get('token') == app.config["SLACK_CONTACTBOT_TOKEN"]: 
+        if request.form.get('token') == app.config["SLACK_CONTACTBOT_TOKEN"]: 
             commands = ['selfassign', 'setresolved', 'getinfo', 'help']
             commands_help = { 'selfassign': 'Assigns the given case to you.', 'setresolved': 'Marks the given case as resolved', 'getinfo': 'Gets the info from a given entry ID', 'help': 'Shows this help message'}
-            message = request.args.get('text')
+            messaged = request.form.get('text')
+            message = messaged.replace("%21","!").replace("+"," ").replace("%3A",":").strip()
             if message:
                 command = message.split(' ')[1]
                 if command in commands:
@@ -119,9 +122,9 @@ def contact_slackhook():
                         entry = DBContact.query.filter_by(id=contactid).first()
                         if entry is not None:
                             entry.is_assigned = True
-                            entry.user = request.args.get('user_name')
+                            entry.user = request.form.get('user_name')
                             db.session.commit()
-                            response['text'] = 'Case #' + str(contactid) + ' assigned to ' + str(request.args.get('user_name')) + '.'
+                            response['text'] = 'Case #' + str(contactid) + ' assigned to ' + str(request.form.get('user_name')) + '.'
                         else:
                             response['text'] = 'Couldn\'t find a case with ID #'+ str(contactid) + '.'
                     elif command == commands[1]:
@@ -163,7 +166,8 @@ def contact_slackhook():
                 response['text'] = 'Request had missisng argument text.'
         return jsonify(response), 200
     except:
-        response['text'] = 'Internal server error. Let @rabsrincon know about it.'
+        response['text'] = 'Internal server error (Probably your command was not formated correctly). Let @rabsrincon know about it.'
+        raise
         return jsonify(response), 200
 
 @app.route('/mailinglist', methods=['GET', 'POST'])

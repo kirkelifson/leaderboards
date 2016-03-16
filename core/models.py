@@ -13,7 +13,7 @@ from core import app
 from flask.ext.login import UserMixin, current_user
 from flask import url_for, flash
 from core.routes.defuseraccess import rank_user_banned, rank_user_normal, rank_momentum_normal, rank_momentum_admin, rank_webmaster
-from core.routes.sendemail import EmailConnection
+
 
 saltset = string.letters + string.digits
 db = SQLAlchemy(app)
@@ -285,8 +285,7 @@ class DBUser(db.Model, UserMixin):
             sep = ''
             self.token = sep.join([random.choice(saltset) for x in xrange(42)])
             self.email = email
-            mailing = EmailConnection('sender','server','port','username','password')
-            mailing.send(email,'Momentum Mod verify email','Please follow <a href=\"http://momentum-mod.org'+url_for('dashboard_settings_verifyemail',token=self.token)+'\">'+url_for('dashboard_settings_verifyemail',token=self.token)++'</a> to verify your email')
+            #mailing.send(email,'Momentum Mod verify email','Please follow <a href=\"http://momentum-mod.org'+url_for('dashboard_settings_verifyemail',token=self.token)+'\">'+url_for('dashboard_settings_verifyemail',token=self.token)++'</a> to verify your email')
             db.session.commit()
 
     def update_verifyemail(self):
