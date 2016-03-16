@@ -4,7 +4,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% block title %}
     <title>Documentation page</title>
+    {% endblock %}
     <link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
     <link href="{{ url_for('static', filename='css/' 'foundation.css') }}" rel="stylesheet">
 
@@ -42,7 +44,7 @@
     </style>
     <script type="text/javascript">
     	function confirmRemove(link) {
-    		var r = confirm("Do you really wish to delete this doc?");
+    		var r = confirm("Do you really wish to hide this doc?");
 			if (r == true) {
 				window.location.href = link;
     		}
@@ -76,6 +78,9 @@
         {% if is_doc %}
         <div class="col-sm-10" id="right">
           <center><h2>{{ entry.title }}</h2></center>
+          <script>
+          document.title = {{ entry.title }} + " | Momentum Mod";
+          </script>
           <div style="text-align: left;">
               {{ entry.text|safe }}
           </div>
@@ -84,7 +89,7 @@
            <div style="text-align: left;border-top: 1px solid #000">
               <a href="{{url_for('dashboard_docs_edit',id=entry.id)}}"><i class="glyphicon glyphicon-edit"></i>Edit</a>
               {% if current_user.access >= rank_momentum_admin or current_user.steamid == entry.steamid %}
-             	| <a href="javascript:confirmRemove('{{ url_for('dashboard_docs_edit_remove',id=entry.id,_external=True) }}')"><i class="glyphicon glyphicon-remove"></i>Delete</a> 
+             	| <a href="javascript:confirmRemove('{{ url_for('dashboard_docs_edit_hide',id=entry.id,_external=True) }}')"><i class="glyphicon glyphicon-remove"></i>Hide</a> 
               {% endif %}
           </div>
           {% endif %}

@@ -409,11 +409,11 @@ class DBDoc(db.Model):
         self.text = text
         self.date = date
 
-    def delete(self):
+    def hide(self):
         if current_user is not None and current_user.is_authenticated and (current_user.access >= rank_momentum_admin or current_user.steamid == self.steamid):
             self.is_deleted = True
             db.session.commit()
-            flash('Successfully deleted doc.')
+            flash('Successfully hidden doc.')
 
     
 class DBGlobal(db.Model):

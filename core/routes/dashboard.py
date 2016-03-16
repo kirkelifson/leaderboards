@@ -9,6 +9,8 @@ from flask.ext.wtf import Form
 from wtforms import TextField, BooleanField, SubmitField, TextAreaField
 from wtforms.validators import InputRequired, Email, Optional
 
+from urllib import quote_plus
+
 import os
 import requests
 import re
@@ -53,6 +55,7 @@ class DocsForm(Form):
     title = TextField("Title", validators=[InputRequired("Title can not be empty")])
     text = TextAreaField("Text", validators=[InputRequired("Documentation text can not be empty")])
     subject = TextField("Subject", validators=[InputRequired("Subject can not be empty")])
+    is_hidden = BooleanField("Is hidden?")
     submit = SubmitField("Submit doc")
     
 dashboard_destinations = ['home','manage','settings','manageuserslist','manageteamlist', 'manageemailinglist' ,'maps','docs']
@@ -235,8 +238,7 @@ def dashboard_docs():
         form.subject.data = request.form.get('subject')
         form.title.data = request.form.get('title')
         form.text.data = request.form.get('text')
-        pattern = re.compile('[\W_]+')
-        pattern.sub('', form.subject.data)
+        form.subject.data = quote_plus(form.subject.data)
         if form.validate():
             other = DBDoc.query.filter_by(subject=form.subject.data).first()
             tother = DBDoc.query.filter_by(title=form.title.data).first()
@@ -263,6 +265,7 @@ def dashboard_docs_edit(id=-1):
         form.subject.data = doc.subject
         form.title.data = doc.title
         form.text.data = doc.text
+        form.is_hidden.checked = doc.is_deleted
         return render_template('dashboard/docs.html',form = form, destination='docs',edit = True)
     else:
         try:
@@ -270,11 +273,13 @@ def dashboard_docs_edit(id=-1):
             form.subject.data = request.form.get('subject')
             form.title.data = request.form.get('title')
             form.text.data = request.form.get('text')
+            form.is_hidden.checked = formdata_to_bool(request.form.get('is_hidden'))  
             if form.validate():
                 edict = DBDoc.query.filter_by(subject=form.subject.data).first()
                 if edict is not None:
                     edict.title = form.title.data
                     edict.text = form.text.data
+                    edict.is_deleted = form.is_hidden.checked
                     db.session.commit()
                     flash('Successfully edited doc.')
                     return render_template('dashboard/docs.html',form = form, destination='docs', edit = True)
@@ -288,15 +293,15 @@ def dashboard_docs_edit(id=-1):
             raise
             return redirect(url_for('dashboard_docs'))
 
-@app.route('/dashboard/docs/edit/remove/<int:id>', methods=['GET'])
+@app.route('/dashboard/docs/edit/hide/<int:id>', methods=['GET'])
 @access_required(rank_momentum_normal,'dashboard_r_home')
-def dashboard_docs_edit_remove(id=-1):
+def dashboard_docs_edit_hide(id=-1):
     try:
         if id > 0:
-            ## Security is not very high here because doc.delete does that job
+            ## Security is not very high here because doc.hide does that job
             doc = DBDoc.query.filter_by(id=id).first()
             if doc is not None:
-                doc.delete()
+                doc.hide()
         return redirect(url_for('docs'))
     except:
         return redirect(url_for('docs'))

@@ -37,13 +37,18 @@
                 {{ form.text.label }}
                 {{ form.text(placeholder='The documentaiton text. It accepts HTML', rows="10") }}
 
+                {{ form.is_hidden.label }}
+                {{ form.is_hidden }}
+
+                <br>
+
                 {{ form.submit }}
 
                 
             </form>
             <br>
             <br>
-
+            <a href="{{ url_for('docs') }}/{{ form.subject.data }}">Go to the page of this doc</a><br>
             <a href="javascript:preview('{{ url_for('dashboard_docs_preview',_external=True) }}')">Preview!</a>
         </div>
     </div>
