@@ -67,7 +67,7 @@
         {%if is_doc %}
         <div class="col-sm-10" id="right">
           <center><h2>{{ entry.title }}</h2></center>
-          <div style="text-align: center;">
+          <div style="text-align: left;">
               {{ entry.text|safe }}
           </div>
           {% if current_user is not none and current_user.is_authenticated and (current_user.steamid == entry.steamid or current_user.access >= rank_momentum_senior) %}
