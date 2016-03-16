@@ -31,7 +31,7 @@
                 {{ form.subject(maxlength="56", readonly="readonly",style="display: none;") }}
                 {{ form.subject.data|string }}
                 {% else %}
-                {{ form.subject(placeholder='Subject of the doc. Only alphanumeric and a maximum of 56 characters',maxlength="56") }}
+                {{ form.subject(placeholder='Subject of the doc. Only alphanumeric and a maximum of 56 characters.Bear in mind that this will be part of the url',maxlength="56") }}
                 {% endif %}
 
                 {{ form.text.label }}
