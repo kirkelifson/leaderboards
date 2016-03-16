@@ -40,6 +40,14 @@
         }
 
     </style>
+    <script type="text/javascript">
+    	function confirmRemove(link) {
+    		var r = confirm("Do you really wish to delete this doc?");
+			if (r == true) {
+				window.location.href = link;
+    		}
+    	}
+    </script>
 </head>
 
 <body>
@@ -72,10 +80,10 @@
           </div>
           {% if current_user is not none and current_user.is_authenticated and (current_user.steamid == entry.steamid or current_user.access >= rank_momentum_senior) %}
 
-           <div style="text-align: left;">
+           <div style="text-align: left;border-top: 1px solid #000">
               <a href="{{url_for('dashboard_docs_edit',id=entry.id)}}"><i class="glyphicon glyphicon-edit"></i>Edit</a>
-              {% if current_user.access >= rank_momentum_admin or current_user.steamid == entry.steamid%} 
-              | <a href="{{url_for('dashboard_docs_edit_remove',id=entry.id)}}"><i class="glyphicon glyphicon-remove"></i>Delete</a> 
+              {% if current_user.access >= rank_momentum_admin or current_user.steamid == entry.steamid%}
+             	| <a href="javascript:confirmRemove('{{url_for('dashboard_docs_edit_remove',id=entry.id,_external=True)}}')"><i class="glyphicon glyphicon-remove"></i>Delete</a> 
               {%endif %}
           </div>
           {% endif %}
@@ -86,6 +94,8 @@
       {%endif%}
   </div>
 </div>
+<br>
+<a href="{{ url_for('index') }}" style="text-align: left"><< Back to main site</a>
 <!-- end paper bg -->
 <!-- end of inner-wrap -->
 <!-- main javascript library -->

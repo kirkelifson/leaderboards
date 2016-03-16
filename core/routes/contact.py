@@ -160,7 +160,7 @@ def contact_slackhook():
                             info = info + str(com) + ' (_' + str(commands_help[com]) + '_)\n'
                         info = info + '\n *TIPS* \n'
                         for tip in tips_help:
-                            info = info + '·' + str(tip) + '\n'
+                            info = info  + str(tip) + '\n'
                         response['text'] = info
                     elif command == commands[4]:
                         entries = DBContact.query.filter_by(is_resolved=False).all()
