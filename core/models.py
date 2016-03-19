@@ -27,12 +27,19 @@ def dump_datetime(value):
 class DBMap(db.Model):
     __tablename__ = 'maps'
     id = db.Column(INTEGER(unsigned=True), primary_key=True)
+    # This holds the filename 8Without extension). Extracted at submusion time from the file. 
     game_map = db.Column(VARCHAR(5000), nullable=False)
+    # Holds the mapname ready to be displayed. Can be anything from bhop_test to Test etc. Accepts spaces
     stylized_mapname = db.Column(VARCHAR(5000), nullable=True)
+    # Where to find the .bsp This will be the CDN once it's ready
     filepath = db.Column(VARCHAR(5000), nullable=False)
+    # Preview of the picture. No size limitation. Will also be stored on the CDN
     thumbnail = db.Column(VARCHAR(5000), nullable=False, default='http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg')
+    # Holds the gamemode as a number. Extracted at submision time from the file path. 1: Surf, 2:Bhop . 3:Unknown
     gamemode = db.Column(INTEGER(unsigned=True))
+    # Tier/Difficulty of the map. Submited by the mapper.
     difficulty = db.Column(INTEGER(unsigned=True))
+    # How many stages does it have. 1 for linear
     layout = db.Column(INTEGER(unsigned=True))
 
     def __init__(self, game_map, stylized_mapname, filepath, thumbnail, gamemode, difficulty, layout):
@@ -67,7 +74,8 @@ class DBMap(db.Model):
 
     def __repr__(self):
         return '<Map %s>' % self.id
-    
+
+# gets the map thumbanil. Needs to be feed a DBMap.game_map, which is the translated to its id    
 def get_map_thumbnail(mapfilename):
     try:
         map = DBMap.query.filter_by(id=DBMap.get_id_for_game_map(mapfilename)).first()
@@ -409,11 +417,11 @@ class DBDoc(db.Model):
         self.text = text
         self.date = date
 
-    def delete(self):
+    def hide(self):
         if current_user is not None and current_user.is_authenticated and (current_user.access >= rank_momentum_admin or current_user.steamid == self.steamid):
             self.is_deleted = True
             db.session.commit()
-            flash('Successfully deleted doc.')
+            flash('Successfully hidden doc.')
 
     
 class DBGlobal(db.Model):

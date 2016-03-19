@@ -13,6 +13,9 @@
                 {% for message in get_flashed_messages() %}
                 <h5 class="flash">{{ message }}</h5>
                 {% endfor %}
+                {% if editing %}
+                <h3>Editing {{ game_map }}</h3>
+                {% endif %}
             <form action="#" method=post>
                 <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
                 {{ form.csrf_token }}
@@ -23,7 +26,7 @@
                 {{ form.filepath.label }}
                 {{ form.filepath(placeholder='Path to the map .bsp file') }}
 
-                <img id="thumbnailprev" src="" width="128px" height="128px">
+                <img id="thumbnailprev" src="{{ form.thumbnail.data }}" width="128px" height="128px">
                 <p id="thumbnaillink"></p>
 
                 {{ form.thumbnail.label }}
@@ -32,7 +35,10 @@
 
 
                 {{ form.difficulty.label }}
-                {{ form.difficulty(placeholder='Difficulty',type='number',min="1",max="6",style="text-align: center;width: 30%;")}}
+                {{ form.difficulty(placeholder='Difficulty',type='number',min="1",max="10",style="text-align: center;width: 30%;")}}
+
+                {{ form.stages.label }}
+                {{ form.stages(placeholder='Stages',type='number',min="1",style="text-align: center;width: 30%;")}}
 
                 {{ form.submit }}
             </form>

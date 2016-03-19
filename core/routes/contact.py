@@ -7,7 +7,7 @@ from wtforms import TextField, TextAreaField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Email, Optional
 from flask_login import current_user
 from urlparse import urljoin
-from urllib import urlencode
+from urllib import urlencode, unquote_plus
 import urllib2 as urlrequest
 
 import json
@@ -107,13 +107,13 @@ def contact():
 
 @app.route('/webhooks/incoming/contact', methods=['POST'])
 def contact_slackhook():
-    response = { 'text':'' }
+    response = { 'text':'', 'channel':'#contact' }
     try:
         if request.form.get('token') == app.config["SLACK_CONTACTBOT_TOKEN"]: 
-            commands = ['selfassign', 'setresolved', 'getinfo', 'help']
-            commands_help = { 'selfassign': 'Assigns the given case to you.', 'setresolved': 'Marks the given case as resolved', 'getinfo': 'Gets the info from a given entry ID', 'help': 'Shows this help message'}
-            messaged = request.form.get('text')
-            message = messaged.replace("%21","!").replace("+"," ").replace("%3A",":").strip()
+            commands = ['selfassign', 'setresolved', 'getinfo', 'help', 'listunresolved' ]
+            commands_help = { 'selfassign': 'Assigns the given case to you.', 'setresolved': 'Marks the given case as resolved', 'getinfo': 'Gets the info from a given entry ID', 'help': 'Shows this help message', 'listunresolved': 'Lists unresolved entries'}
+            tips_help = ['Add parameter _global_ at *the end* of a command and the bot will post the answer on the channel instead of PM\'ing it to you. _Example: !contactbot: help global_']
+            message = unquote_plus(request.form.get('text'))
             if message:
                 command = message.split(' ')[1]
                 if command in commands:
@@ -124,7 +124,7 @@ def contact_slackhook():
                             entry.is_assigned = True
                             entry.user = request.form.get('user_name')
                             db.session.commit()
-                            response['text'] = 'Case #' + str(contactid) + ' assigned to ' + str(request.form.get('user_name')) + '.'
+                            response['text'] = 'Case *#' + str(contactid) + '* assigned to ' + str(request.form.get('user_name')) + '.'
                         else:
                             response['text'] = 'Couldn\'t find a case with ID #'+ str(contactid) + '.'
                     elif command == commands[1]:
@@ -133,41 +133,56 @@ def contact_slackhook():
                         if entry is not None:
                             entry.is_resolved = True
                             db.session.commit()
-                            response['text'] = 'Case #' + str(contactid) + ' marked as solved.'
+                            response['text'] = 'Case *#' + str(contactid) + '* marked as solved.'
                         else:
                             response['text'] = 'Couldn\'t find a case with ID #'+ str(contactid) + '.'
                     elif command == commands[2]:
                         contactid = message.split(' ')[2]
                         entry = DBContact.query.filter_by(id=contactid).first()
                         if entry is not None:
-                            info = 'Case #' + str(contactid) + ':\nSender\'s name:' + entry.name + '\nSender\' email:' + entry.email +'\nSender\'s IP: ' + entry.ip + '\nDepartment code: ' + entry.department + '\nSubject:' + entry.subject + '\n'
+                            info = 'Case *#' + str(contactid) + '* :\nSender\'s name: _' + entry.name + '_\nSender\'s email: _' + entry.email +'_\nSender\'s IP: ' + entry.ip + '\nDepartment code: _' + entry.department + '_\nSubject: _' + entry.subject + '_\n'
                             if entry.is_assigned:
-                                info = info + 'Assigned to: ' + entry.user + '.'
+                                info = info + 'Assigned to: _' + entry.user + '_.'
                             else:
                                 info = info + 'Not assigned to anyone yet.'
                             info = info + '\n'
                             if entry.is_resolved:
                                 info = info + '*Resolved*.'
                             else:
-                                info = info + 'Not resolved yet.'
+                                info = info + '*Not* resolved yet.'
                             response['text'] = info
                         else:
                             response['text'] = 'Couldn\'t find a case with ID #' + str(contactid) + '.'
                     elif command == commands[3]:
                         info = 'Available commands are:\n'
                         for com in commands:
-                            info = info + com + ' (_' + commands_help[com] + '_)\n'
+                            info = info + str(com) + ' (_' + str(commands_help[com]) + '_)\n'
+                        info = info + '\n *TIPS* \n'
+                        for tip in tips_help:
+                            info = info  + str(tip) + '\n'
+                        response['text'] = info
+                    elif command == commands[4]:
+                        entries = DBContact.query.filter_by(is_resolved=False).all()
+                        info = 'Unresolved cases are:\n'
+                        for entry in entries:
+                            info = info + '*# ' + str(entry.id) +'* - _' + str(entry.subject) +'_\n'
                         response['text'] = info
                     else:
-                        response['text'] = 'Unknown command \"'+ command + '\".'
+                        response['text'] = 'Unknown command \"'+ str(command) + '\".'
+                    if str(message.split(' ')[-1]) != "global":
+                        response['channel'] = '@' + request.form.get('user_name')
                 else:
-                    response['text'] = 'Unknown command \"'+ command + '\".'
+                    response['text'] = 'Unknown command \"'+ str(command) + '\".'
             else:
-                response['text'] = 'Request had missisng argument text.'
-        return jsonify(response), 200
+                response['text'] = 'Request had missisng argument text.' 
     except:
         response['text'] = 'Internal server error (Probably your command was not formated correctly). Let @rabsrincon know about it.'
-        raise
+    slack = Slack(url=app.config["SLACK_CONTACTBOT_URL"])
+    response = slack.notify(text=response['text'],channel=response['channel'])
+    if response == 'ok':
+        return "",200
+    else:
+        response['text'] = '*WebHook failed to deliver message using the default method. Fallback used.*\n\n' + response['text']
         return jsonify(response), 200
 
 @app.route('/mailinglist', methods=['GET', 'POST'])
@@ -193,7 +208,7 @@ def mailinglist():
                     ## We need to send the confirmation email here!   
                     db.session.add(prev)
                     db.session.commit()
-                    flash('Thank you for joining us! A confirmation email has been sent.')
+                    flash('Thank you for joining us!')
                     success = True
                 elif prev.is_deleted:
                     prev.update_confirmed()

@@ -2,8 +2,8 @@
 {% block body %}
 {% if form is not none %}
 <script type="text/javascript">
-    function preview() {
-       alert(document.getElementById("text").value)
+    function preview(link) {
+        window.open(link + '?text=' + encodeURIComponent(document.getElementById("text").value) + '&title=' + encodeURIComponent(document.getElementById("title").value) );
    }
 </script>
 <div class="large columns" style="margin-top: 1.2em">
@@ -14,7 +14,7 @@
             {% endfor %}
             <h3>
                 {% if edit %}
-                Editting doc entry
+                Editing doc entry
                 {% else %}
                 Creating new doc entry
                 {% endif %}
@@ -31,11 +31,16 @@
                 {{ form.subject(maxlength="56", readonly="readonly",style="display: none;") }}
                 {{ form.subject.data|string }}
                 {% else %}
-                {{ form.subject(placeholder='Subject of the doc. Only alphanumeric and a maximum of 56 characters',maxlength="56") }}
+                {{ form.subject(placeholder='Subject of the doc. Only alphanumeric and a maximum of 56 characters. Bear in mind that this will be part of the url',maxlength="56") }}
                 {% endif %}
 
                 {{ form.text.label }}
                 {{ form.text(placeholder='The documentaiton text. It accepts HTML', rows="10") }}
+
+                {{ form.is_hidden.label }}
+                {{ form.is_hidden }}
+
+                <br>
 
                 {{ form.submit }}
 
@@ -43,8 +48,8 @@
             </form>
             <br>
             <br>
-
-            <a onclick="preview()" href="#">Preview!</a>
+            <a href="{{ url_for('docs') }}/{{ form.subject.data }}">Go to the page of this doc</a><br>
+            <a href="javascript:preview('{{ url_for('dashboard_docs_preview',_external=True) }}')">Preview!</a>
         </div>
     </div>
 </div>

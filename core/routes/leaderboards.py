@@ -116,4 +116,8 @@ def leaderboars_me_friendsruns(map=None, page=1,):
         flash('An error ocurred when trying to access runs for ' + str(current_user.steamid))
         return redirect(url_for('leaderboards_main'))
 
+@app.route('/mapslist')
+def leaderboards_maplist():
+    maps = DBMap.query.order_by(DBMap.game_map).all()
+    return render_template('maplist.html', maps=maps)
 

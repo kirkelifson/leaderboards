@@ -9,6 +9,8 @@ from flask.ext.wtf import Form
 from wtforms import TextField, BooleanField, SubmitField, TextAreaField
 from wtforms.validators import InputRequired, Email, Optional
 
+from urllib import quote_plus
+
 import os
 import requests
 import re
@@ -44,15 +46,17 @@ class UserlistForm(Form):
 
 class MapsForm(Form):
     mapname = TextField("Map name", validators=[InputRequired("Map name can not be empty")])
-    filepath = TextField("File path", validators=[InputRequired("File path can not be empty")])
+    filepath = TextField("File path. Gamemode and mapname will be extracted from here, so make sure the path directs to a something like gamemode_mapname.bsp", validators=[InputRequired("File path can not be empty")])
     thumbnail = TextField("Thumbnail path", validators=[InputRequired("Thumbnail path can not be empty")])
     difficulty = TextField("Map tier", validators=[InputRequired("Difficulty can not be none")])
+    stages = TextField("Stages. Set it to 1 if the map is linear", validators=[InputRequired("Stages count can not be none")])
     submit = SubmitField("Submit map")
 
 class DocsForm(Form):
     title = TextField("Title", validators=[InputRequired("Title can not be empty")])
     text = TextAreaField("Text", validators=[InputRequired("Documentation text can not be empty")])
     subject = TextField("Subject", validators=[InputRequired("Subject can not be empty")])
+    is_hidden = BooleanField("Is hidden?")
     submit = SubmitField("Submit doc")
     
 dashboard_destinations = ['home','manage','settings','manageuserslist','manageteamlist', 'manageemailinglist' ,'maps','docs']
@@ -235,8 +239,7 @@ def dashboard_docs():
         form.subject.data = request.form.get('subject')
         form.title.data = request.form.get('title')
         form.text.data = request.form.get('text')
-        pattern = re.compile('[\W_]+')
-        pattern.sub('', form.subject.data)
+        form.subject.data = quote_plus(form.subject.data)
         if form.validate():
             other = DBDoc.query.filter_by(subject=form.subject.data).first()
             tother = DBDoc.query.filter_by(title=form.title.data).first()
@@ -263,6 +266,7 @@ def dashboard_docs_edit(id=-1):
         form.subject.data = doc.subject
         form.title.data = doc.title
         form.text.data = doc.text
+        form.is_hidden.checked = doc.is_deleted
         return render_template('dashboard/docs.html',form = form, destination='docs',edit = True)
     else:
         try:
@@ -270,50 +274,72 @@ def dashboard_docs_edit(id=-1):
             form.subject.data = request.form.get('subject')
             form.title.data = request.form.get('title')
             form.text.data = request.form.get('text')
+            form.is_hidden.checked = formdata_to_bool(request.form.get('is_hidden'))  
             if form.validate():
                 edict = DBDoc.query.filter_by(subject=form.subject.data).first()
                 if edict is not None:
                     edict.title = form.title.data
                     edict.text = form.text.data
+                    edict.is_deleted = form.is_hidden.checked
                     db.session.commit()
                     flash('Successfully edited doc.')
                     return render_template('dashboard/docs.html',form = form, destination='docs', edit = True)
                 else:
                     flash('Could not find matching doc.')
-                    raise Exception
             else:
                 flash('Form could not be validated. Check for errors.')
                 return render_template('dashboard/docs.html',form = form, destination='docs', edit = True)
         except:
-            raise
             return redirect(url_for('dashboard_docs'))
 
-@app.route('/dashboard/docs/edit/remove/<int:id>', methods=['GET'])
+@app.route('/dashboard/docs/edit/hide/<int:id>', methods=['GET'])
 @access_required(rank_momentum_normal,'dashboard_r_home')
-def dashboard_docs_edit_remove(id=-1):
+def dashboard_docs_edit_hide(id=-1):
     try:
         if id > 0:
-            ## Security is not very high here because doc.delete does that job
+            ## Security is not very high here because doc.hide does that job
             doc = DBDoc.query.filter_by(id=id).first()
             if doc is not None:
-                doc.delete()
+                doc.hide()
         return redirect(url_for('docs'))
     except:
         return redirect(url_for('docs'))
+
+@app.route('/dashboard/docs/preview', methods=['GET'])
+@access_required(rank_momentum_normal,'dashboard_r_home')
+def dashboard_docs_preview():
+    text = ''
+    try:
+        text = request.args.get('text')
+    except:
+        text = 'Could not fetch form data. Please try again.'
+    try:
+        title = request.args.get('title')
+    except:
+        title = 'Could not fetch form data. Please try again.'
+    return render_template('dashboard/previewdocs.html',preview=text,title = title, is_doc=True)
+
+def imagevalidation_soft(imagepath):
+    try:
+        return requests.head(thumbnail).status_code == 200
+    except:
+        return False
+
 
 @app.route('/dashboard/maps', methods=['GET', 'POST'])
 @mapper_required('dashboard_maps')
 def dashboard_maps():
     if request.method == 'GET':
         mform = MapsForm()
-        return render_template('dashboard/maps.html',destination='maps', form = mform)
+        return render_template('dashboard/maps.html',destination='maps', form = mform, editing=False)
     else:
+        mfrom = MapsForm()
         try:
-            mfrom = MapsForm()
             mfrom.mapname.data = request.form.get('mapname')
             mfrom.filepath.data = request.form.get('filepath')
             mfrom.thumbnail.data = request.form.get('thumbnail')
             mfrom.difficulty.data = request.form.get('difficulty')
+            mfrom.stages.data = request.form.get('stages')
             if mfrom.validate():
                 if DBMap.query.filter_by(stylized_mapname=str(request.form.get('mapname'))).count() != 0:
                     flash('There is already a map called '+ str(request.form.get('mapname')) +'.')
@@ -328,27 +354,73 @@ def dashboard_maps():
                             gamemode = 1
                         else:
                             gamemode = 3
-                        thumbnailcode = 0
-                        try:
-                            thumbnailcode = requests.head(thumbnail)
-                        except:
-                            thumbnailcode = None
-                        if thumbnail is not None and thumbnailcode.status_code == 200:
-                            mapo = DBMap(os.path.splitext(mapfile)[0], mfrom.mapname.data, mfrom.filepath.data, mfrom.thumbnail.data, gamemode, mfrom.difficulty.data, 0)
+                        if thumbnail is not None and imagevalidation_soft(thumbnail):
+                            mapo = DBMap(os.path.splitext(mapfile)[0], mfrom.mapname.data, mfrom.filepath.data, mfrom.thumbnail.data, gamemode, mfrom.difficulty.data, mfrom.stages.data)
                             db.session.add(mapo)
                             db.session.commit()
-                            flash('Map added successfully')
+                            flash('Map ' + str(mapo.game_map) + ' added successfully.')
                         else:
                             flash('Could not fetch thumbnail ' + str(thumbnail) + str(thumbnailcode) +'. Check the path to the image')
                     else:
                         flash('Check file extensions.')                    
             else:
                 flash('Form could not be validated. Check the errors')
-            return render_template('dashboard/maps.html',destination='maps', form = mfrom)
         except:
-            raise
             flash('Error while querying.')
-            return render_template('dashboard/maps.html',destination='maps', form = mfrom)
+        return render_template('dashboard/maps.html',destination='maps', form = mfrom, editing = False)
+
+
+
+@app.route('/dashboard/maps/edit/<id>', methods=['GET', 'POST'])
+@access_required(rank_momentum_senior,'dashboard_r_home')
+def dashboard_maps_edit(id):
+    map = DBMap.query.filter_by(id=id).first()
+    if map is not None:
+        if request.method == 'GET':
+            mfrom = MapsForm()
+            mfrom.mapname.data = map.stylized_mapname
+            mfrom.filepath.data = map.filepath
+            mfrom.thumbnail.data = map.thumbnail
+            mfrom.difficulty.data = map.difficulty
+            mfrom.stages.data = map.layout
+            return render_template('dashboard/maps.html',destination='maps', form = mfrom, game_map = map.game_map, editing=True)
+        else:
+            mfrom = MapsForm()
+            try:     
+                mfrom.mapname.data = request.form.get('mapname')
+                mfrom.filepath.data = request.form.get('filepath')
+                mfrom.thumbnail.data = request.form.get('thumbnail')
+                mfrom.difficulty.data = request.form.get('difficulty')
+                mfrom.stages.data = request.form.get('stages')
+                if mfrom.validate():
+                    edictmap = DBMap.query.filter_by(id=id).first()
+                    if edictmap:
+                        if edictmap.stylized_mapname != mfrom.mapname.data:
+                            edictmap.stylized_mapname = mfrom.mapname.data
+                            flash('Stylized mapname edited.')
+                        if edictmap.thumbnail != mfrom.thumbnail.data:
+                            if imagevalidation_soft(mfrom.thumbnail.data):
+                                edictmap.thumbnail = mfrom.thumbnail.data
+                                flash('Thumbnail edited.')
+                            else:
+                                flash('New image could not be fetched and was therfore not saved. Try again later')
+                        if str(edictmap.difficulty) != mfrom.difficulty.data:
+                            edictmap.difficulty = int(mfrom.difficulty.data)
+                            flash('Difficulty edited.')
+                        if str(edictmap.layout) != mfrom.stages.data and mfrom.stages.data > 0:
+                            edictmap.layout = int(mfrom.stages.data)
+                            flash('Stage count edited.')
+                        db.session.commit()                       
+                    else:
+                        flash('Map could not be edited. This error should not be happening.')        
+                else:
+                    flash('Form could not be validated. Check the errors')
+            except:
+                flash('Error while querying.')
+            return render_template('dashboard/maps.html',destination='maps', form = mfrom, editing=True)
+    else:
+        flash('No map found with id #' + str(id))
+    return render_template('dashboard/maps.html',destination='maps', form = MapsForm(), editing=True)
 
 @app.route('/dashboard/settings/verify/<token>')
 def dashboard_settings_verifyemail(token):

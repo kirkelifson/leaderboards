@@ -80,6 +80,7 @@
       				<ul class="nav navbar-nav navbar-right scroll-to">
       					<li class="active"><a href="#home">Home</a></li>
       					<li><a href="{{ url_for('leaderboards_main') }}">Leaderboards</a></li>
+      					<li><a href="http://momentummod.tumblr.com/">DevBlogs</a></li>
       					{% if current_user.is_authenticated %}
       					<li><a href="{{ url_for('dashboard',destination='home') }}">Dashboard</a></li>
       					{% endif %}
@@ -284,6 +285,14 @@
     		</div>
     	</div>
     	<!--quote section end-->
+    </section>
+    <section id="blog">
+    	<div class="gray-cta">
+    		<div class="container text-center scroll-to">
+    			<h2>You can read our devblogs <a href="http://momentummod.tumblr.com/"> on Tumblr</a></h2>
+    		</div>
+    	</div>
+    	<!--gray cta-->
     </section>
     <section id="contact">
     	<div class="gray-cta">
