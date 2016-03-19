@@ -286,12 +286,10 @@ def dashboard_docs_edit(id=-1):
                     return render_template('dashboard/docs.html',form = form, destination='docs', edit = True)
                 else:
                     flash('Could not find matching doc.')
-                    raise Exception
             else:
                 flash('Form could not be validated. Check for errors.')
                 return render_template('dashboard/docs.html',form = form, destination='docs', edit = True)
         except:
-            raise
             return redirect(url_for('dashboard_docs'))
 
 @app.route('/dashboard/docs/edit/hide/<int:id>', methods=['GET'])
@@ -419,7 +417,6 @@ def dashboard_maps_edit(id):
                     flash('Form could not be validated. Check the errors')
             except:
                 flash('Error while querying.')
-                raise
             return render_template('dashboard/maps.html',destination='maps', form = mfrom, editing=True)
     else:
         flash('No map found with id #' + str(id))
