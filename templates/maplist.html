@@ -128,7 +128,11 @@
                                             <th>Preview</th>
                                             <th>Name</th>
                                             <th>Tier</th>
+                                            <th>Stages</th>
                                             <th>WR</th>
+                                            {% if current_user is not none and current_user.is_authenticated and current_user.access >= rank_momentum_senior %}
+                                            <th>Actions</th>
+                                            {% endif %}
                                         </tr>
                                     </thead>
 
@@ -137,7 +141,11 @@
                                             <th>Preview</th>
                                             <th>Name</th>
                                             <th>Tier</th>
+                                            <th>Stages</th>
                                             <th>WR</th>
+                                            {% if current_user is not none and current_user.is_authenticated and current_user.access >= rank_momentum_senior %}
+                                            <th>Actions</th>
+                                            {% endif %}
                                         </tr>
                                     </tfoot>
 
@@ -146,8 +154,18 @@
                                         <tr>
                                             <td><img class="chat-pic" src="{{ get_map_thumbnail(map.game_map) }}" height="64px" width="64px" />{{ map.game_map }}</td>
                                             <td>{{ map.stylized_mapname }}</td>
+                                            <td>{{ map.difficulty }}</td>
+                                            <td>
+                                            {% if map.layout <= 1 %}
+                                            Linear
+                                            {% else %}
+                                            {{ map.layout }}
+                                            {% endif %}
+                                            </td>
                                             <td>-</td>
-                                            <td>-</td>
+                                            {% if current_user is not none and current_user.is_authenticated and current_user.access >= rank_momentum_senior %}
+                                            <th><a href="{{ url_for('dashboard_maps_edit',id=map.id) }}">Edit</a></th>
+                                            {% endif %}
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -224,7 +242,7 @@
             "use strict";
             $('#example').dataTable({
                 "order": [
-                [3, "desc"]
+                [1, "desc"]
                 ]
             });
         })(jQuery);
