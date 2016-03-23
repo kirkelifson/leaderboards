@@ -80,7 +80,7 @@
       				<ul class="nav navbar-nav navbar-right scroll-to">
       					<li class="active"><a href="#home">Home</a></li>
       					<li><a href="{{ url_for('leaderboards_main') }}">Leaderboards</a></li>
-      					<li><a href="http://momentummod.tumblr.com/">DevBlogs</a></li>
+      					<li><a href="http://momentummod.tumblr.com/" target="_blanck">DevBlogs</a></li>
       					{% if current_user.is_authenticated %}
       					<li><a href="{{ url_for('dashboard',destination='home') }}">Dashboard</a></li>
       					{% endif %}
