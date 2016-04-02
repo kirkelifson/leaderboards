@@ -145,10 +145,15 @@ def formdata_to_bool(char):
 @app.route('/dashboard/manage/emailinglist', methods=['GET'])
 @access_required(rank_momentum_senior,'dashboard_r_home')
 def dashboard_manage_emailinglist():
-    email = []
-    for entry in DBEmailingList.query.all():
-        email.append(entry.email)
-    return render_template('dashboard/emailinglist.html',destination='manageemailinglist', listing=email)
+    return render_template('dashboard/emailinglist.html',destination='manageemailinglist')
+
+@app.route('/dashboard/manage/emailinglist/csv', methods=['GET'])
+@access_required(rank_momentum_senior,'dashboard_r_home')
+def dashboard_manage_emailinglist_ascsv():
+    csv = "\"Email address\""
+    for entry in DBEmailingList.query.filter_by(is_confirmed=True).filter_by(is_deleted=False).all():
+        csv = csv + "\n\"" + str(entry.email) + "\""
+    return csv
 
 @app.route('/dashboard/manage/userslist', methods=['GET', 'POST'])
 @access_required(rank_momentum_admin,'dashboard_r_home')

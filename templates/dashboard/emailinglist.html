@@ -3,9 +3,7 @@
 <div class="large columns" style="margin-top: 1.2em">
 	<div class="your-account">
 		<div class="row">
-			{% for email in listing %}
-			<p>{{ email }}</p>
-			{% endfor %}
+			<a href="{{ url_for('dashboard_manage_emailinglist_ascsv') }}" download="momemaillist.csv">Get mailing list as .csv file</a>
 		</div>
 	</div>
 </div>
