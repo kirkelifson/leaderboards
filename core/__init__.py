@@ -3,6 +3,7 @@ __author__ = 'gnaughton'
 import os
 
 from flask import Flask
+from flask_mail import Mail
 
 from core import config
 
@@ -14,6 +15,8 @@ app.config.from_object(config)
 
 # 2 megabytes
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
+
+mail = Mail(app)
 
 #from util.form.form import render_control
 
