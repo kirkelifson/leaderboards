@@ -40,6 +40,7 @@ class UserlistForm(Form):
     access = TextField("Access", validators=[InputRequired("Access level can not be empty")])
     translator = BooleanField("Is translator?")
     email = 'Email'
+    verified = False
     mapper = BooleanField("Is mapper?")
     joindate = 'JoinDate'
     submit = SubmitField("Update user")
@@ -165,6 +166,7 @@ def dashboard_manage_userlists():
             uform = UserlistForm()
             uform.username = user.username
             uform.email = user.email
+            uform.verified = user.verified
             uform.joindate = str(user.joindate)
             uform.access.data = user.access
             uform.steamid.data= user.steamid
@@ -219,22 +221,6 @@ def dashboard_manage_userlists():
 @login_required
 def dashboard_home():
     return render_template('dashboard/home.html',destination='home')
-
-@app.route('/dashboard/settings', methods=['GET', 'POST'])
-@login_required
-def dashboard_settings():
-    form = SettingsForm()
-    if request.method == 'GET':
-        form.email.data = current_user.email
-    else:
-        try:
-            if not current_user.email == request.form.get('email'):
-                current_user.update_handlenewemail(form.email.data)
-                flash('Email adress updated. Verification email sent to ' + form.email.data)
-        except:
-            form.email.data = None
-            flash('An error occurred while trying to process your info. Your info has not been saved',category='dashboard')
-    return render_template('dashboard/settings.html', destination='settings', form=form)
 
 @app.route('/dashboard/docs', methods=['GET', 'POST'])
 @access_required(rank_momentum_normal,'dashboard_r_home')
@@ -427,20 +413,45 @@ def dashboard_maps_edit(id):
         flash('No map found with id #' + str(id))
     return render_template('dashboard/maps.html',destination='maps', form = MapsForm(), editing=True)
 
+
+@app.route('/dashboard/settings', methods=['GET', 'POST'])
+@login_required
+def dashboard_settings():
+    form = SettingsForm()
+    if request.method == 'GET':
+        form.email.data = current_user.email
+    else:
+        try:
+            if not current_user.email == request.form.get('email') and request.form.get('email'):
+                current_user.update_handlenewemail(form.email.data)
+                flash('Email adress updated. Verification email sent to ' + form.email.data)
+        except:
+            form.email.data = None
+            flash('An error occurred while trying to process your info. Your info has not been saved',category='dashboard')
+    return render_template('dashboard/settings.html', destination='settings', form=form)
+
+
 @app.route('/dashboard/settings/verify/<token>')
 def dashboard_settings_verifyemail(token):
     try:
+        msg = ''
+        success = False
         if token is not None:
+            #Is this a confirmation link?
             user = DBUser.query.filter_by(token=token).first()
             if user is not None:
-                if user.verified == False:
-                    user.update_verifyemail()
-                    return 'Success'
-                else:
-                    return 'Alredy verified'
-        return 'Bad token'
+                #It is a confirmation email
+                user.update_verifyemail()
+                msg ='Your email has been confirmed. Thank you. You can now close this window.'
+                success = True
+            else:         
+                msg = 'Token is not valid. Please check the validity of the link'
+                success = False
+        else:
+            msg = 'Received null token.'
     except:
-        return 'A problem has been detected. Email not verified. If the problem persists, <a href=\"'+ url_for('contact',department='web',subject='I can not validate my email ' + str(current_user.email) )+'\">you can contact us</a>'
+        msg = 'There was a problem processing your token. If the problem persists, <a href=\"'+ url_for('contact',department='web',subject='I can not validate my email ' + str(current_user.email) )+'\">you can contact us</a>.'
+    return str(msg)
 
 
 def momteam_pending():

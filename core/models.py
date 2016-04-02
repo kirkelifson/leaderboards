@@ -9,7 +9,8 @@ import json
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.mysql import *
 from sqlalchemy.sql import func
-from core import app
+from core import app, mail
+from flask_mail import Message
 from flask.ext.login import UserMixin, current_user
 from flask import url_for, flash
 from core.routes.defuseraccess import rank_user_banned, rank_user_normal, rank_momentum_normal, rank_momentum_admin, rank_webmaster
@@ -291,9 +292,11 @@ class DBUser(db.Model, UserMixin):
             #Here goes a random token sent to the email to confirm it
             self.verified = False
             sep = ''
-            self.token = sep.join([random.choice(saltset) for x in xrange(42)])
+            self.token = sep.join([random.choice(saltset) for x in xrange(32)])
             self.email = email
-            #mailing.send(email,'Momentum Mod verify email','Please follow <a href=\"http://momentum-mod.org'+url_for('dashboard_settings_verifyemail',token=self.token)+'\">'+url_for('dashboard_settings_verifyemail',token=self.token)++'</a> to verify your email')
+            msg = Message("Momentum Mod Email Confirmation", recipients=[self.email])
+            msg.html = "<p>In order to confirm your new email adress, you will need to follow:<br><a href='" + url_for('dashboard_settings_verifyemail',token=str(self.token),_external=True) + "' target='_blank'>" + url_for('dashboard_settings_verifyemail',token=str(self.token),_external=True) + "</a></p><p><small>If you did not request this email, you can ignore it.<br>We promise you that we won't spam you with useless emails. Only important facts! We won't either share your data. Your privacy is something we take seriouslly.</small></p><br><p><b>Kind regards,<br><i>Momentum Mod Team</i></b></p>" 
+            mail.send(msg)
             db.session.commit()
 
     def update_verifyemail(self):

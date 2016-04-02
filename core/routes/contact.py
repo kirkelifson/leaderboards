@@ -15,8 +15,7 @@ import json
 import string
 import random
 
-from core import app
-from core import mail
+from core import app, mail
 
 class ContactForm(Form):
     name = TextField("Name", validators=[InputRequired("Please enter your name.")])
@@ -207,7 +206,7 @@ def mailinglist():
                     confirmation_token = sep.join([random.choice(saltset) for x in xrange(64)])
                     delete_token = sep.join([random.choice(saltset) for x in xrange(64)])
                     prev = DBEmailingList(uform.email.data, confirmation_token, delete_token)
-                    msg = Message("Momentum Mailing List Confirmation Email", recipients=[prev.email])
+                    msg = Message("Momentum Mod Mailing List Confirmation Email", recipients=[prev.email])
                     msg.html = "<h2>It seems like you're interested in Momentum Mod!</h2><br><p>In order to complete your subscription to the mailing list, you will need to confirm your email by going to<br><a href='" + url_for('mailinglist_token',token=str(confirmation_token),_external=True) + "' target='_blank'>" + url_for('mailinglist_token',token=str(confirmation_token),_external=True) + "</a></p><p>You can always cancel your subscription by going to<br><a href='" + url_for('mailinglist_token',token=str(delete_token),_external=True) + "' target='_blank'>" + url_for('mailinglist_token',token=str(delete_token),_external=True) + "</a></p><p><small>If you did not request this email, just ignore it, we won't add you to the mailing list unless you confirm it!<br>We promise you that we won't spam you with useless emails. Only important facts! We won't either share your data. Your privacy is something we take seriouslly.</small></p><br><p><b>Kind regards,<br><i>Momentum Mod Team</i></b></p>" 
                     mail.send(msg)
                     ## We need to send the confirmation email here!   
@@ -227,7 +226,6 @@ def mailinglist():
                     
     except:
         flash('There was a problem with your request. Please check your data')
-        raise
         return render_template('mailinglist.html', form=None)
 
 @app.route('/mailinglist/token/<token>', methods=['GET'])
@@ -259,7 +257,6 @@ def mailinglist_token(token=None):
         return render_template('mailinglist_token.html', success = success)
     except:
         flash('There was a problem processing your token.')
-        raise
         return redirect(url_for('mailinglist'))
         
         

@@ -10,7 +10,7 @@
                 <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
                 {{ form.csrf_token }}
 
-                {%if not current_user.verified and current_user.email is not none %} <i class="fa fa-exclamation-triangle">Not verified yet</i>{% endif %}
+                {%if not current_user.verified and current_user.email%} <i class="fa fa-exclamation-triangle">Not verified yet</i>{% endif %}
 
                 {{ form.email.label }}
 

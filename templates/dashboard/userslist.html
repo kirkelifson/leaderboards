@@ -58,7 +58,7 @@
 
 								<td><center>{{ user.username }}</center></td>
 
-								<td><center>{{ user.email}}</center></td>
+								<td><center> {% if user.verified %}<i class="fontello-ok"></i>{% endif %}<a href="mailto:{{ user.email }}" target='_blank'>{{ user.email }}</a></center></td>
 
 								<td><center>{{ user.access(placeholder='Access level',type='number',min="0",max="6",style="text-align: center;") }}</center></td>
 
