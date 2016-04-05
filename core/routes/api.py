@@ -15,7 +15,7 @@ time_convert = {'66': 0.015, '100': 0.01}
 def api_post_score(steamid, map, ticks, tickrate):
     response = {}
     if str(tickrate) not in time_convert:
-        response['result'] = False
+        response['result'] = 'false'
         response['status'] = 'error'
         response['message'] = '#MOM_WebMsg_RunNotSaved_WrongTickrate'
         response['PBdiff'] = None
@@ -25,7 +25,7 @@ def api_post_score(steamid, map, ticks, tickrate):
             # takes 64-bit steamid
             mapid = DBMap.get_id_for_game_map(map)
             if mapid == -1:
-                response['result'] = False
+                response['result'] = 'false'
                 response['status'] = 'MissingMap'
                 response['message'] = '#MOM_WebMsg_RunNotSaved_MapNotFound'
                 response['PBdiff'] = None
@@ -43,10 +43,10 @@ def api_post_score(steamid, map, ticks, tickrate):
             score = DBScore(steamid, mapid, ticks, tickrate, 0)
             db.session.add(score)
             db.session.commit()  
-            response['result'] = True
+            response['result'] = 'true'
             response['status'] = 'submitted'
         except OperationalError as e:
-            response['result'] = False
+            response['result'] = 'false'
             response['status'] = 'error'
             response['message'] = '#MOM_WebMsg_RunNotSaved_InternalServerErrors'
             response['PBdiff'] = None
@@ -78,7 +78,7 @@ def api_get_scores_filtered(map, tickrate, steamid):
 ##         data = DBScore.query.filter_by(game_map=map).offset(start).limit(10).all()
 ##     return jsonify(json_list=[i.serialize for i in data])
     response = {}
-    response['result'] = False
+    response['result'] = 'false'
     response['message'] = 'Needs to be implemented'
     # We even retuenr a 501 code.
     return jsonify(response), 501
@@ -129,17 +129,17 @@ def api_getmapinfo(map):
         try:
             mapinfo = DBMap.query.filter_by(game_map=map).first()
             if mapinfo is not None:
-                response['result'] = True
+                response['result'] = 'true'
                 response['status'] = 'success'
                 response['mapinfo'] = mapinfo.serialize
             else:
-                response['result'] = False
+                response['result'] = 'false'
                 response['status'] = 'MissingMap'            
         except:
-            response['result'] = False
+            response['result'] = 'false'
             response['status'] = 'QueryError'
     else:
-        response['result'] = False
+        response['result'] = 'false'
         response['status'] = 'NullMap'
     return jsonify(json_list=[response])
 
