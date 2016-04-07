@@ -73,14 +73,14 @@
       				<span class="icon-bar"></span>
       				<span class="icon-bar"></span>
       			</button>
-      			<a class="navbar-brand" href="#home">
+      			<!--a class="navbar-brand" href="#home">
       				<img src="{{ url_for('static', filename='frontend/images/' 'logo.svg') }}" alt="Momentum" height="24px" width="127px"></a>
-      			</div>
+      			</div>-->
       			<div id="navbar" class="navbar-collapse collapse">
       				<ul class="nav navbar-nav navbar-right scroll-to">
       					<li class="active"><a href="#home">Home</a></li>
       					<li><a href="{{ url_for('leaderboards_main') }}">Leaderboards</a></li>
-      					<li><a href="http://momentummod.tumblr.com/" target="_blanck">DevBlogs</a></li>
+      					<li><a href="http://momentummod.tumblr.com/" target="_blank">DevBlogs</a></li>
       					{% if current_user.is_authenticated %}
       					<li><a href="{{ url_for('dashboard',destination='home') }}">Dashboard</a></li>
       					{% endif %}
@@ -376,6 +376,8 @@
     	<div class="container text-center">
     			<ul class="list-inline socials">
     				<!--<li><a href="#" class="fb"><i class="ion-social-facebook-outline"></i></a></li>-->
+            <li><a href="https://twitter.com/MomentumMod" target="_blank" class="twitter">
+              <img src="{{ url_for('static', filename='frontend/images/' 'twitter-mark.svg') }}" alt="Twitter @MomentumMod" data-toggle="tooltip" data-placement="right" title="@MomentumMod" width="32px" height="32px"></a></li>
     				<li><a href="https://www.trello.com/momentum49" class="trello" target="_blanck">
     					<img src="{{ url_for('static', filename='frontend/images/' 'trello-mark.svg') }}" alt="Trello" data-toggle="tooltip" data-placement="top" title="Trello" width="32px" height="32px"></a></li>
     				<!--<li><a href="#" class="g-plus"><i class="ion-social-googleplus-outline"></i></a></li>-->
