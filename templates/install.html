@@ -10,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Momentum Mod - Home</title>
+    <title>Momentum Mod - Install</title>
 
 	<!-- Bootstrap Core CSS -->
     <link href="{{ url_for('static', filename='css/' 'bootstrap.min.css') }}" rel="stylesheet">
@@ -75,9 +75,24 @@
     
     <div class="container">
         <div class="jumbotron">
-          <h2>Momentum</h2>
-          <p>Momentum Mod is an open source game modification based on the Source Engine. It’s aim is to recreate the <a href="https://www.youtube.com/watch?v=sY6qHjo2LKk">surf</a> and <a href="https://www.youtube.com/watch?v=8IvXWjjqHiA">bhop</a> game modes from Counter-Strike as closely as possible (Including all of the maps currently played on CS:GO, CS:S, TF2), only with added features. Momentum Mod will be a significant improvement over SourceMod based servers on CS:S and CS:GO, and the best part is, it will be completely free!</p>
-          <p><a class="btn btn-primary btn-lg" href="{{ url_for('about') }}" role="button">Learn more</a></p>
+          <h2>Install</h2>
+            <p>
+                The following steps are needed in order to be able to play the mod.
+            </p>
+            <p>
+                First, download the Source SDK Base 2013 Multiplayer. You can click here if you have Steam opened and it will start the download.
+            </p>    
+            <p>
+                Once it's installed, you want to go to its Betas window, so right click on it on your library, select properties, and then Betas. You will need beta_test in order to play the mod.
+            </p>    
+            <p>
+                Once it's installed, <a href="https://github.com/momentum-mod/game/releases/tag/0.2.0-prealpha">download the mod files from here</a>. Download the file "momentum.zip" and make sure to extract it inside Steam/Steamapps/sourcemods/
+            </p>    
+            <p>
+                Finally, restart Steam and you should see Momentum Mod listed on your Steam library ready to be played!
+            </p>
+
+          
         </div>
         <!-- /.row -->
     </div>
@@ -91,6 +106,7 @@
     <script>
         $(document).foundation();
     </script>
+
 </body>
 
 </html>

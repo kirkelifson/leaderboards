@@ -39,3 +39,4 @@ import core.routes.leaderboards
 import core.routes.contact
 import core.routes.docs
 import core.routes.errors
+import core.routes.static
