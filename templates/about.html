@@ -13,7 +13,7 @@
     <title>Momentum Mod - About</title>
 
 	<!-- Bootstrap Core CSS -->
-    <link href="{{ url_for('static', filename='css/' 'bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/' 'bootstrap.css') }}" rel="stylesheet">
 
     <!-- Custom CSS -->
 	<link href="{{ url_for('static', filename='css/' 'the-big-picture.css') }}" rel="stylesheet">
@@ -28,7 +28,7 @@
 
 <body>
 
-    <!-- Navigation -->
+	<!-- Navigation -->
     <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -40,6 +40,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="{{ url_for('index') }}">Momentum Mod</a>
+				<img src="{{ url_for('static', filename='frontend/images/' 'smallicon.png') }}" class="img-responsive" alt="Momentum">
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -79,21 +80,21 @@
             As Momentum Mod is still early in it's development timeline, there are not a lot of confirmed features we can share. We can promise Momentum Mod will offer everything surf and bhop servers have and more, and will be free to play!
             </br> </br>
     
-            If you want to see what we are working on, visit our <a href="https://trello.com/momentum_mod">Trello page</a>, <a href="https://github.com/momentum-mod">Github organization</a>, or <a href="http://momentummod.tumblr.com/">dev blog</a>.
+            If you want to see what we are working on, visit our <a href="https://trello.com/momentum_mod">Trello page</a>, <a href="https://github.com/momentum-mod">Github organization</a>, or read our <a href="http://momentummod.tumblr.com/">dev blog</a>.
             </br> </br>
             
-            If you would like to contribute to the project, feel free to <a href="#">contact us</a>. We are currently looking for C++ programmers, artists, and level designers that have some sort of experience. We are not in need of official playtesters at the current stage of development, but you are free to try out the mod at the <a href="install.html">install page</a>.
+            If you would like to contribute to the project, feel free to <a href="{{ url_for('contact') }}">contact us</a>. We are currently looking for C++ programmers, artists, and level designers that have some sort of experience. We are not in need of official playtesters at the current stage of development, but you are free to try out the mod at the <a href="{{ url_for('install') }}">install page</a>.
             </p>
 
           <h3>Who's involved?</h3>
 
             <p>
-                <a href="https://steamcommunity.com/my/profile">Nick K. (Gocnak)</a> - Project Leader, Programmer </br>
-                <a href="https://steamcommunity.com/my/profile">Rubén Rincón. (Rub #GO4U)</a> - Caretaker, Programmer </br>
-                <a href="https://steamcommunity.com/my/profile">Aidan S. (tuxxi)</a> - Programmer, Level Designer </br>
-                <a href="https://steamcommunity.com/my/profile">Jason Z. (Juxtapo)</a> - Level Designer, UX Designer </br>
-                <a href="https://steamcommunity.com/my/profile">Nolan O. (Rusty)</a> - Programmer </br>
-                <a href="https://steamcommunity.com/my/profile">razorlikes</a> -  </br>
+                <a href="http://steamcommunity.com/profiles/76561197979963054/">Nick K. (Gocnak)</a> - Project Leader, Programmer </br>
+                <a href="http://steamcommunity.com/profiles/76561198011358548/">Rubén Rincón. (Rub #GO4U)</a> - Caretaker, Programmer </br>
+                <a href="http://steamcommunity.com/profiles/76561198018587940/">Aidan S. (tuxxi)</a> - Programmer, Level Designer </br>
+                <a href="http://steamcommunity.com/profiles/76561197982874432/">Jason Z. (Juxtapo)</a> - Level Designer, UX Designer </br>
+                <a href="http://steamcommunity.com/profiles/76561198047369620/">Nolan O. (Rusty)</a> - Programmer </br>
+				<a href="http://steamcommunity.com/id/TheAsuro">Till W. (TheAsuro)</a> - Programmer</br>
             </p>
 
           

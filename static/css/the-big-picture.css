@@ -3,7 +3,7 @@
  * Code licensed under the Apache License v2.0.
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
  */
-
+ /* Contact form */
 body {
 	margin-top: 50px;
 	margin-bottom: 50px;
@@ -20,18 +20,15 @@ body {
 
 .jumbotron > p {
     color: white;
+	opacity: 0.5;
 }
 
 .jumbotron > h2 {
     color: white;
+	opacity: 0.5;
 }
 
 .jumbotron > h3 {
     color: white;
+	opacity: 0.5;
 }
-
-.jumbotron {
-    opacity: 0.5;
-    background-color: black;
-}
-

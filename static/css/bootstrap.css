@@ -4962,18 +4962,25 @@ a.badge:focus {
   padding-top: 30px;
   padding-bottom: 30px;
   margin-bottom: 30px;
-  color: inherit;
-  background-color: #eee;
+  background-color:rgba(0, 0, 0, 0.5);
 }
 .jumbotron h1,
 .jumbotron .h1 {
-  color: inherit;
+  color: white;
 }
+
 .jumbotron p {
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   font-size: 21px;
   font-weight: 200;
+  color: white;
+  opacity: 0.5;
 }
+.jumbotron h2 {
+  color: white;
+  opacity: 0.5;
+}
+
 .jumbotron > hr {
   border-top-color: #d5d5d5;
 }

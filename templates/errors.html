@@ -13,7 +13,7 @@
     <title>Momentum Mod - 404</title>
 
 	<!-- Bootstrap Core CSS -->
-    <link href="{{ url_for('static', filename='css/' 'bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/' 'bootstrap.css') }}" rel="stylesheet">
 
     <!-- Custom CSS -->
 	<link href="{{ url_for('static', filename='css/' 'the-big-picture.css') }}" rel="stylesheet">
@@ -29,7 +29,7 @@
 
 <body>
 
-    <!-- Navigation -->
+        <!-- Navigation -->
     <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -41,6 +41,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="{{ url_for('index') }}">Momentum Mod</a>
+				<img src="{{ url_for('static', filename='frontend/images/' 'smallicon.png') }}" class="img-responsive" alt="Momentum">
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">

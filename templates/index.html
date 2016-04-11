@@ -13,7 +13,7 @@
     <title>Momentum Mod - Home</title>
 
 	<!-- Bootstrap Core CSS -->
-    <link href="{{ url_for('static', filename='css/' 'bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/' 'bootstrap.css') }}" rel="stylesheet">
 
     <!-- Custom CSS -->
 	<link href="{{ url_for('static', filename='css/' 'the-big-picture.css') }}" rel="stylesheet">
@@ -41,6 +41,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="{{ url_for('index') }}">Momentum Mod</a>
+				<img src="{{ url_for('static', filename='frontend/images/' 'smallicon.png') }}" class="img-responsive" alt="Momentum">
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -75,9 +76,10 @@
     
     <div class="container">
         <div class="jumbotron">
-          <h2>Momentum</h2>
-          <p>Momentum Mod is an open source game modification based on the Source Engine. It’s aim is to recreate the <a href="https://www.youtube.com/watch?v=sY6qHjo2LKk">surf</a> and <a href="https://www.youtube.com/watch?v=8IvXWjjqHiA">bhop</a> game modes from Counter-Strike as closely as possible (Including all of the maps currently played on CS:GO, CS:S, TF2), only with added features. Momentum Mod will be a significant improvement over SourceMod based servers on CS:S and CS:GO, and the best part is, it will be completely free!</p>
-          <p><a class="btn btn-primary btn-lg" href="{{ url_for('about') }}" role="button">Learn more</a></p>
+          <img src="{{ url_for('static', filename='frontend/images/' 'logo.png') }}" class="img-responsive" alt="Momentum">
+		  <p></p>
+          <p>Momentum Mod is an open source game modification based on the Source Engine. It’s aim is to recreate the <a href="https://www.youtube.com/watch?v=sY6qHjo2LKk">surf</a> and <a href="https://www.youtube.com/watch?v=8IvXWjjqHiA">bhop</a> game modes from Counter-Strike as closely as possible (Including all of the maps currently played on CS:GO, CS:S, TF2 and GMOD), only with added features. Momentum Mod will be a significant improvement over SourceMod based servers on CS:S and CS:GO, and the best part is, it will be completely free!</p>
+			<p><a class="btn btn-primary btn-lg" href="{{ url_for('about') }}" role="button">Learn more</a></p>
         </div>
         <!-- /.row -->
     </div>
