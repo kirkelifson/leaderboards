@@ -29,3 +29,6 @@ body {
 .jumbotron > h2 {
     color: white;
 }
+.jumbotron > h5 {
+    color: white;
+}

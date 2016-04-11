@@ -28,19 +28,25 @@
             
             If you would like to contribute to the project, feel free to <a href="{{ url_for('contact') }}">contact us</a>. We are currently looking for C++ programmers, artists, and level designers that have some sort of experience. We are not in need of official playtesters at the current stage of development, but you are free to try out the mod at the <a href="{{ url_for('install') }}">install page</a>.
             </p>
-
-          <h3>Who's involved?</h3>
-
+			
+			<h3>Who's involved?</h3>
             <p>
-                <a href="http://steamcommunity.com/profiles/76561197979963054/">Nick K. (Gocnak)</a> - Project Leader, Programmer </br>
-                <a href="http://steamcommunity.com/profiles/76561198011358548/">Rubén Rincón. (Rub #GO4U)</a> - Caretaker, Programmer </br>
-                <a href="http://steamcommunity.com/profiles/76561198018587940/">Aidan S. (tuxxi)</a> - Programmer, Level Designer </br>
-                <a href="http://steamcommunity.com/profiles/76561197982874432/">Jason Z. (Juxtapo)</a> - Level Designer, UX Designer </br>
-                <a href="http://steamcommunity.com/profiles/76561198047369620/">Nolan O. (Rusty)</a> - Programmer </br>
-				<a href="http://steamcommunity.com/id/TheAsuro">Till W. (TheAsuro)</a> - Programmer</br>
+				{% for member in team %}
+				 <p>{% if member.realname is not none %}{{ member.realname }}{% endif %}{% if member.nickname is not none %} {% if member.realname is not none %}({% endif %}{{ member.nickname }}{% if member.realname is not none %}){% endif %}{% endif %}{% if member.role is not none %}{% if member.realname is not none or member.nickname is not none%} -{% endif %} {{ member.role }}{% endif %}</p>
+				{% endfor %}
+				<h5>Contributors</h5>
+				{% for member in contributors %}
+					<p class="name">{{ member.name }}{% if member.role is not none %} for {{ member.role }}{% endif %}</p>
+				{% endfor %} 
+				<h5>Special thanks to...</h5>
+				{% for member in specials %}
+					<p class="name">{{ member.name }}{% if member.role is not none %} for {{ member.role }}{% endif %}</p>
+				{% endfor %}
+				{% if showlink %}
+				<a href="{{ url_for('team_credits') }}">As credits.txt file</a>
+				{% endif %}
+				<small>{{ place_steamlink()|safe }}</small>
             </p>
-
-          
         </div>
         <!-- /.row -->
     </div>

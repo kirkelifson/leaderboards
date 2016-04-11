@@ -7,7 +7,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="layout for frontend using flask">
+    <meta name="description" content="Momentum Mod Frontpage">
     <meta name="author" content="tuxxi">
     <link rel="icon" href="{{ url_for('static', filename='frontend/images/' 'favicon.ico') }}" type="image/ico" sizes="16x16">
 
@@ -32,6 +32,7 @@
         <div id="status">&nbsp;</div>
     </div>
     <!-- Navigation -->
+
     <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -61,16 +62,37 @@
                         <a href="{{ url_for('mailinglist') }}">Mailing List</a>
                     </li>					
                     <li>
-                        <a href="http://momentummod.tumblr.com/">Dev Blog</a>
+                        <a href="http://momentummod.tumblr.com/" target="_blank">Dev Blog</a>
                     </li>
                     <li>
-                        <a href="https://github.com/momentum-mod">Github</a>
+					<a href="https://github.com/momentum-mod/" target="_blank">
+					<img src="{{ url_for('static', filename='frontend/images/' 'github-mark.svg') }}" style="border:none;" width="24px"; height="24px" alt="Momentum Mod Github"></a>
                     </li>
                     <li>
-                        <a href="https://trello.com/momentum_mod">Trello</a>
+                        <a href="https://trello.com/momentum_mod" target="_blank">
+						<img src="{{ url_for('static', filename='frontend/images/' 'trello-mark.svg') }}" style="border:none;" width="24px"; height="24px" alt="Momentum Mod Trello"></a>
                     </li>
-
+                    <li>
+                        <a href="https://twitter.com/momentummod" target="_blank">
+						<img src="{{ url_for('static', filename='frontend/images/' 'twitter-mark.svg') }}" style="border:none;" width="24px" height="24px" alt="Momentum Mod Twitter"></a>
+                    </li>
+					<li>
+                        <a href="http://www.moddb.com/mods/momentum2" target="_blank">
+						<img src="{{ url_for('static', filename='frontend/images/' 'moddb-32.png') }}" style="border:none;" width="24px" height="24px" alt="Momentum Mod ModDB"></a>
+                    </li>
+					{% if current_user.is_authenticated and current_user.access >= 3 %}
+                          <li><a href="{{ url_for('dashboard',destination='home') }}">Dashboard</a></li>
+					{% endif %}
                 </ul>
+				<ul class="nav navbar-nav navbar-right">
+					{% if not current_user.is_authenticated %}
+					<li><a href="{{ url_for('login') }}"><img src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_small.png"></a></li>
+					{% else %}
+					<li><a href="{{ url_for('logout') }}">Logout</a>
+					<li><sub><img src="{{ current_user.avatar }}" alt="{{ current_user.username }}'s profile picture" class="img-thumbnail">Hello, {{ current_user.username }}</sub></li>
+				    {% endif %}
+				</ul>
+
             </div>
             <!-- /.navbar-collapse -->
         </div>
