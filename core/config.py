@@ -1,1 +1,2 @@
-SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost/leaderboards?charset=utf8'
+# Silence SQLAlchemy warning
+SQLALCHEMY_TRACK_MODIFICATIONS = False
