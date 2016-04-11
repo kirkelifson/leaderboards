@@ -1,2 +1,1 @@
-SQLALCHEMY_DATABASE_URI = ''
-SECRET_KEY = ""
+SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost/leaderboards?charset=utf8'

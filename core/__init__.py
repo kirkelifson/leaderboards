@@ -11,6 +11,10 @@ from core import config
 app = Flask("leaderboards")
 app.config['APP_PATH'] = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 
+# Secrets
+app.config.from_envvar('SECRET_KEY')
+app.config.from_envvar('STEAM_API_KEY')
+
 app.config.from_object(config)
 
 # 2 megabytes
