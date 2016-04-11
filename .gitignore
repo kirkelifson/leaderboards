@@ -78,3 +78,9 @@ Temporary Items
 
 # Created by .ignore support plugin (hsz.mobi)
 *.pyc
+
+# virtualenv
+.Python
+bin/
+include/
+lib/
