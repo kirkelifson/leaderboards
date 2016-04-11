@@ -1,0 +1,62 @@
+<!doctype html>
+<html class="full" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="mailing list token">
+    <meta name="author" content="rabsrincon & tuxxi">
+
+    <title>Momentum Mod - Mailing List</title>
+	<!-- Custom CSS -->
+	<link href="{{ url_for('static', filename='css/' 'contact.css') }}" rel="stylesheet">
+	
+	<!-- pace loader -->
+    <script src="{{ url_for('static', filename='js/pace/' 'pace.js') }}" type="text/javascript"></script>
+
+    <script src="{{ url_for('static', filename='js/vendor/' 'modernizr.js') }}" type="text/javascript"></script>
+	
+	<style>
+        .flash_success {
+            color: green;
+            padding: 10px;
+        }
+
+        .flash_error {
+            background-color: red;
+            color: #FFF;
+            font-weight: bold;
+            padding: 10px;
+        }
+	</style>
+
+</head>
+{% extends "layout.html" %}
+{% block body %}
+    <div class="container">
+        <div class="jumbotron">
+			<h2>Momentum Mailing List</h2>
+			<div class="box-body " style="display: block;">
+				{% if success %}
+				{% for message in get_flashed_messages() %}
+				<div class="flash_success">{{ message }}</div>
+				{% endfor %} 
+				{% else %}
+				{% for message in get_flashed_messages() %}
+				<div class="flash_error">{{ message }}</div>
+				{% endfor %}     
+				{% endif %}
+			</div>
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container -->
+{% endblock %}
+
+    <!-- main javascript library -->
+    <script src="{{ url_for('static', filename='js/' 'waypoints.min.js') }}" type="text/javascript"></script>
+    <script src="{{ url_for('static', filename='js/' 'preloader-script.js') }}" type="text/javascript"></script>
+    <script src="{{ url_for('static', filename='js/' 'app.js') }}" type="text/javascript"></script>
+    <!-- additional javascript -->
+</html>

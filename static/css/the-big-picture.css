@@ -20,15 +20,12 @@ body {
 
 .jumbotron > p {
     color: white;
-	opacity: 0.5;
-}
-
-.jumbotron > h2 {
-    color: white;
-	opacity: 0.5;
 }
 
 .jumbotron > h3 {
     color: white;
-	opacity: 0.5;
+}
+
+.jumbotron > h2 {
+    color: white;
 }

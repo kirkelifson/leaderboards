@@ -4974,11 +4974,9 @@ a.badge:focus {
   font-size: 21px;
   font-weight: 200;
   color: white;
-  opacity: 0.5;
 }
 .jumbotron h2 {
   color: white;
-  opacity: 0.5;
 }
 
 .jumbotron > hr {
