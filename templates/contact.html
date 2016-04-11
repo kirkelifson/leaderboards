@@ -44,6 +44,11 @@
         .flash:last-of-type {
              border-bottom: 0px;
         }
+		
+		h2 {
+			color: white;
+		}
+
     </style>
 
 </head>
@@ -131,7 +136,7 @@
 				<div class="form-group">
 					<input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
 					{{ form.csrf_token }}
-					<label class="form.name" for="nameInput">Name </label>
+					<label for="nameInput">Name </label>
 					<input type="text" class="form.name" id="nameInput" placeholder="Your Name">
 				</div>
 				<div class="form-group">
@@ -146,12 +151,17 @@
 					<label for="subjectInput">Subject </label>
 					<input type="text" class="form.email" id="subjectInput" placeholder="What do you want to talk about with us? (Optional but helpful)">
 				</div>
-				<textarea class="form-control" rows="5"> </textarea>
-				<p></p>
-				{{ form.recaptcha }}
-				<p></p>
-				<button type="submit" class="form.submit" >Submit</button>
-				<p></p>
+				<div class="form-group">
+				  <label for="comment">Comment:</label>
+				  <textarea class="form-control" rows="5" id="comment"></textarea>
+				</div>
+				<div class="form-group">
+					{{ form.recaptcha }}
+				</div>
+				<div class="form-group">
+					<button type="submit" class="form.submit" >Submit</button>
+				</div>
+
 			</form>
 			<small>Your IP is recorded for security reasons. We only use it for loggin pourposes</small>
 			{% endif %}
