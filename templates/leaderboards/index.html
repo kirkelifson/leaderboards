@@ -192,10 +192,13 @@
 									{% endif %}
 									{% endfor %}
 								</ul>
-
+							{% if qtype != 'general' %}
+							<a href="{{ url_for('leaderboards_main') }}" title="Back to main leaderboards"><< Main Leaderboards</a>
+							{% endif %}
 							</div>
 							<!-- end .timeline -->
-							<a href="{{ url_for('index') }}" title="Back to main page"><< Back to the main page</a>
+
+							<a href="{{ url_for('index') }}" title="Back to momentum homepage"><< Momentum Homepage</a>
 						</div>
 						<!-- box -->
 					</div>
@@ -262,11 +265,14 @@
 	<script type="text/javascript">
 		(function($) {
 			"use strict";
-			$('#example').dataTable({
-				"order": [
-				[3, "desc"]
-				]
-			});
+			$('#example').DataTable( {
+				"order": [[ 3, "desc" ]],
+				scrollY:        '50vh',
+				scrollCollapse: true,
+				"lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+				"pageLegnth": 10,
+				} );
+			} );	
 		})(jQuery);
 
 

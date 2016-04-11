@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html class="full" lang="en">
+<!-- Make sure the <html> tag is set to the .full CSS class. Change the background image in the full.css file. -->
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Momentum Mod - Install</title>
+
+</head>
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Page Content -->
+    <div class="container">
+        <div class="jumbotron">
+          <h2>Install</h2>
+            <p>
+                Currently, you can play the prealpha builds of the mod as they are updated on GitHub.
+            </p>
+            <p>
+                First, download the Source SDK Base 2013 Multiplayer. You can click <a href="steam://install/243750/">here</a> if you have Steam opened and it will start the download.
+            </p>    
+            <p>
+                Once it's installed, you want to go to its Betas window, so right click on it on your library, select properties, and then Betas. You will need beta_test in order to play the mod.
+            </p>    
+            <p>
+                Once it's installed, <a href="https://github.com/momentum-mod/game/releases/">you can get the latest release from here</a>. Download the file "momentum-&ltversion&gt.zip" and make sure to extract it inside Steam/Steamapps/sourcemods/
+            </p>    
+            <p>
+                Finally, restart Steam and you should see Momentum Mod listed on your Steam library ready to be played! Remember that we are currently in Pre-Alpha state, and as such the current build is not reflective of final quality. We plan to add many more features before we release the mod!
+            </p>
+
+          
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container -->
+{% endblock %}
+</html>

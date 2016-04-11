@@ -1,0 +1,67 @@
+form label {
+  font-size: 1.2em;
+  font-weight: bold;
+  display: block;
+  padding: 10px 0;
+}
+form input#name,
+form input#email,
+form input#subject {
+  width: 500px;
+  background-color: #fafafa;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+  border: 1px solid #cccccc;
+  padding: 5px;
+  font-size: 1.1em;
+}
+form textarea#message {
+  width: 500px;
+  height: 100px;
+  background-color: #fafafa;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+  border: 1px solid #cccccc;
+  margin-bottom: 10px;
+  padding: 5px;
+  font-size: 1.1em;
+}
+ 
+form input#submit {
+  display: block;
+  -webkit-border-radius: 3px; 
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+  border:1px solid #d8d8d8;
+  padding: 10px; 
+  font-weight:bold; 
+  text-align: center; 
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+ 
+form input#submit:hover{
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74;
+}
+
+.flash {
+	background-color: #FBB0B0;
+	color: black;
+	font-weight: bold;
+	padding: 10px;
+	border-bottom: 5px white;
+}
+
+.flash_success {
+	color: green;
+	padding: 10px;
+}
+
+.flash:last-of-type {
+	 border-bottom: 0px;
+}

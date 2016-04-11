@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html class="full" lang="en">
+<!-- Make sure the <html> tag is set to the .full CSS class. Change the background image in the full.css file. -->
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="tuxxi & juxtapo">
+
+    <title>Momentum Mod - About</title>
+
+</head>
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Page Content -->
+    <div class="container">
+        <div class="jumbotron">
+          <h2>About</h2>
+            <p>
+            As Momentum Mod is still early in it's development timeline, there are not a lot of confirmed features we can share. We can promise Momentum Mod will offer everything surf and bhop servers have and more, and will be free to play!
+            </br> </br>
+    
+            If you want to see what we are working on, visit our <a href="https://trello.com/momentum_mod">Trello page</a>, <a href="https://github.com/momentum-mod">Github organization</a>, or read our <a href="http://momentummod.tumblr.com/">dev blog</a>. If you are interested in receiving emails with important updates, you can subscribe to our <a href="{{ url_for('mailinglist') }}">mailing list</a>.
+            </br> </br>
+            
+            If you would like to contribute to the project, feel free to <a href="{{ url_for('contact') }}">contact us</a>. We are currently looking for C++ programmers, artists, and level designers that have some sort of experience. We are not in need of official playtesters at the current stage of development, but you are free to try out the mod at the <a href="{{ url_for('install') }}">install page</a>.
+            </p>
+			
+			<h3>Who's involved?</h3>
+            <p>
+				{% for member in team %}
+				 <p>{% if member.realname is not none %}{{ member.realname }}{% endif %}{% if member.nickname is not none %} {% if member.realname is not none %}({% endif %}{{ member.nickname }}{% if member.realname is not none %}){% endif %}{% endif %}{% if member.role is not none %}{% if member.realname is not none or member.nickname is not none%} -{% endif %} {{ member.role }}{% endif %}</p>
+				{% endfor %}
+				<h5>Contributors</h5>
+				{% for member in contributors %}
+					<p class="name">{{ member.name }}{% if member.role is not none %} for {{ member.role }}{% endif %}</p>
+				{% endfor %} 
+				<h5>Special thanks to...</h5>
+				{% for member in specials %}
+					<p class="name">{{ member.name }}{% if member.role is not none %} for {{ member.role }}{% endif %}</p>
+				{% endfor %}
+				{% if showlink %}
+				<a href="{{ url_for('team_credits') }}">As credits.txt file</a>
+				{% endif %}
+				<small>{{ place_steamlink()|safe }}</small>
+            </p>
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container -->
+{% endblock %}
+</html>
