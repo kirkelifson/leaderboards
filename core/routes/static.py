@@ -1,11 +1,18 @@
 __author__ = 'tuxxi'
 
-from flask import render_template, redirect
+from flask import render_template, redirect, flash, url_for
 from core import app
+from core.models import DBDoc, db
 
 @app.route('/about')
-def about():    
-	return render_template('about.html')
+def about():
+	return redirect(url_for('team'))
+
 @app.route('/install')
-def install():    
-	return render_template('install.html')
+def install():
+	entry = ''
+	try:
+		entry = DBDoc.query.filter_by(subject="installing").first()
+	except:
+		pass
+	return render_template('install.html', entry=entry)    

@@ -6,19 +6,24 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="404">
-    <meta name="author" content="tuxxi & juxtapo">
-
-    <title>Momentum Mod - 404</title>
+    <meta name="author" content="tuxxi & juxtapo & rabsrincon">
+    <meta name="robots" content="noindex">
+    <title>Momentum Mod - {{ error.code }}</title>
 
 </head>
 {% extends "layout.html" %}
 {% block body %}
     <div class="container">
         <div class="jumbotron">
-          <h2>404</h2>
-          <p>Page not found!</p>
-          <p><a class="btn btn-primary btn-lg" href="{{ url_for('index') }}" role="button">Home</a></p>
+        <h2>Error {{ error.code }}</h2>
+        {% for message in get_flashed_messages() %}
+        <div class="flash">
+            <h3>{{ message }}</h3>
+        </div>
+        {% endfor %}
+        <p>{{ error.description }}</p>
+        <p><a href="{{ url_for('contact',department='web',subject='I got an unexpected error ' + error.code|string )}}">If you feel like it's needed, you can contact us</a></p>
+        <p><a class="btn btn-primary btn-lg" href="{{ url_for('index') }}" role="button">Home</a></p>
         </div>
         <!-- /.row -->
     </div>

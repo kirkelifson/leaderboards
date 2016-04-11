@@ -12,7 +12,7 @@ import random
 def index():
     return render_template('index.html')
 
-@app.route('/team')
+@app.route('/about')
 def team():
     team = DBTeam.query.order_by(DBTeam.priority).all()
     contributors = DBContributor.query.filter_by(special=False).order_by(DBContributor.id).all()
@@ -20,16 +20,16 @@ def team():
     showlink = False
     if current_user is not None and current_user.is_authenticated and current_user.access >= rank_momentum_senior:
         showlink = True
-    return render_template('team.html',showlink=showlink, team=team, contributors=contributors, specials=specials, asfile=False)
+    return render_template('about.html',showlink=showlink, team=team, contributors=contributors, specials=specials, asfile=False)
 
 
-@app.route('/team/credits.txt')
+@app.route('/about/credits.txt')
 @access_required(rank_momentum_senior)
 def team_credits():
     team = DBTeam.query.order_by(DBTeam.priority)
     contributors = DBContributor.query.filter_by(special=False).order_by(DBContributor.id)
     specials = DBContributor.query.filter_by(special=True).order_by(DBContributor.id)
-    return render_template('team.html', team=team.all(), contributors=contributors.all(), specials=specials.all(), asfile=True, time=(3 * team.count()) + contributors.count() + specials.count())
+    return render_template('about.html', team=team.all(), contributors=contributors.all(), specials=specials.all(), asfile=True, time=(3 * team.count()) + contributors.count() + specials.count())
 
 def url_for_random_background():
     number = random.randint(1, 3)

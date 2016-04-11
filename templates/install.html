@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="tuxxi & rabsrincon">
 
     <title>Momentum Mod - Install</title>
 
@@ -18,7 +18,16 @@
     <!-- Page Content -->
     <div class="container">
         <div class="jumbotron">
-          <h2>Install</h2>
+        {% if entry is not none %}
+            <h2>{{ entry.title }}</h2>
+            {{ entry.text|safe }}
+            {% if current_user is not none and current_user.is_authenticated and current_user.access >= rank_momentum_senior %}
+            <div style="text-align: left;border-top: 1px solid #000">
+                <a href="{{url_for('dashboard_docs_edit',id=entry.id)}}"><i class="glyphicon glyphicon-edit"></i>Edit</a>
+            </div>
+            {% endif %}
+        {% else %}
+            <h2>Install</h2>
             <p>
                 Currently, you can play the prealpha builds of the mod as they are updated on GitHub.
             </p>
@@ -34,9 +43,8 @@
             <p>
                 Finally, restart Steam and you should see Momentum Mod listed on your Steam library ready to be played! Remember that we are currently in Pre-Alpha state, and as such the current build is not reflective of final quality. We plan to add many more features before we release the mod!
             </p>
-
-          
-        </div>
+        {% endif %}
+        </div>   
         <!-- /.row -->
     </div>
     <!-- /.container -->
